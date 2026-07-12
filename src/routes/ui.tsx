@@ -928,7 +928,7 @@ function UIShowcase() {
           description="A native messaging surface — grouped bubbles, receipts, reactions, voice, media and composer."
         >
           <GlassPanel style={{ padding: 0, overflow: "hidden" }}>
-            <ChatHeader />
+            <ChatHeader name="Ana Rivera" avatarSrc={ana} online statusText="Active now" />
             <div
               className="flex flex-col"
               style={{
