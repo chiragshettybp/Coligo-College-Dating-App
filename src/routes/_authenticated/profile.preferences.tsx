@@ -32,7 +32,7 @@ function PreferencesPage() {
   const save = useServerFn(updatePreferences);
 
   const mutation = useMutation({
-    mutationFn: (patch: Parameters<typeof updatePreferences>[0]["data"]) => save({ data: patch }),
+    mutationFn: (patch: PrefsPatch) => save({ data: patch }),
     onMutate: async (patch) => {
       await qc.cancelQueries({ queryKey: preferencesQuery().queryKey });
       const prev = qc.getQueryData(preferencesQuery().queryKey);
