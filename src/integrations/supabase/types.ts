@@ -607,6 +607,9 @@ export type Database = {
           created_at: string
           id: string
           last_message_at: string | null
+          status: string
+          unmatched_at: string | null
+          unmatched_by: string | null
           user_a: string
           user_b: string
         }
@@ -614,6 +617,9 @@ export type Database = {
           created_at?: string
           id?: string
           last_message_at?: string | null
+          status?: string
+          unmatched_at?: string | null
+          unmatched_by?: string | null
           user_a: string
           user_b: string
         }
@@ -621,6 +627,9 @@ export type Database = {
           created_at?: string
           id?: string
           last_message_at?: string | null
+          status?: string
+          unmatched_at?: string | null
+          unmatched_by?: string | null
           user_a?: string
           user_b?: string
         }
@@ -660,6 +669,39 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      notifications: {
+        Row: {
+          body: string | null
+          created_at: string
+          data: Json
+          id: string
+          read_at: string | null
+          title: string
+          type: string
+          user_id: string
+        }
+        Insert: {
+          body?: string | null
+          created_at?: string
+          data?: Json
+          id?: string
+          read_at?: string | null
+          title: string
+          type?: string
+          user_id: string
+        }
+        Update: {
+          body?: string | null
+          created_at?: string
+          data?: Json
+          id?: string
+          read_at?: string | null
+          title?: string
+          type?: string
+          user_id?: string
+        }
+        Relationships: []
       }
       photos: {
         Row: {
@@ -810,6 +852,8 @@ export type Database = {
           created_at: string
           discovery_enabled: boolean
           email_enabled: boolean
+          match_filters: Json
+          match_sort: string
           push_enabled: boolean
           updated_at: string
           user_id: string
@@ -818,6 +862,8 @@ export type Database = {
           created_at?: string
           discovery_enabled?: boolean
           email_enabled?: boolean
+          match_filters?: Json
+          match_sort?: string
           push_enabled?: boolean
           updated_at?: string
           user_id: string
@@ -826,6 +872,8 @@ export type Database = {
           created_at?: string
           discovery_enabled?: boolean
           email_enabled?: boolean
+          match_filters?: Json
+          match_sort?: string
           push_enabled?: boolean
           updated_at?: string
           user_id?: string
@@ -991,6 +1039,7 @@ export type Database = {
         Returns: boolean
       }
       is_active_member: { Args: { _folder: string }; Returns: boolean }
+      match_detail: { Args: { _match_id: string }; Returns: Json }
       match_participants: {
         Args: { _match_id: string }
         Returns: {
@@ -1005,6 +1054,27 @@ export type Database = {
         }[]
       }
       match_screen: { Args: { _match_id: string }; Returns: Json }
+      my_matches: {
+        Args: never
+        Returns: {
+          age: number
+          college_id: string
+          college_name: string
+          created_at: string
+          department_name: string
+          full_name: string
+          last_login_at: string
+          last_message_at: string
+          last_message_at_msg: string
+          last_message_body: string
+          last_message_sender: string
+          match_id: string
+          other_id: string
+          primary_photo: string
+          same_college: boolean
+          unread_count: number
+        }[]
+      }
       my_matches_today: { Args: { _user_id: string }; Returns: Json }
       new_members: {
         Args: { _limit?: number }
@@ -1016,6 +1086,7 @@ export type Database = {
           id: string
         }[]
       }
+      note_status: { Args: { _match_id: string }; Returns: boolean }
       phone_available: { Args: { _e164: string }; Returns: boolean }
       platform_stats: { Args: never; Returns: Json }
       swipe_profile: {
@@ -1025,6 +1096,7 @@ export type Database = {
         }
         Returns: Json
       }
+      unmatch: { Args: { _match_id: string }; Returns: boolean }
     }
     Enums: {
       account_status: "active" | "suspended" | "deleted"

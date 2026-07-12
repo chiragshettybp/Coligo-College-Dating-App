@@ -43,12 +43,19 @@ import { Route as PublicPrivacyRouteImport } from './routes/_public/privacy'
 import { Route as PublicContactRouteImport } from './routes/_public/contact'
 import { Route as PublicCommunityGuidelinesRouteImport } from './routes/_public/community-guidelines'
 import { Route as PublicAboutRouteImport } from './routes/_public/about'
+import { Route as AuthenticatedMatchesRouteImport } from './routes/_authenticated/matches'
 import { Route as AuthenticatedHomeRouteImport } from './routes/_authenticated/home'
 import { Route as AuthenticatedDiscoverRouteImport } from './routes/_authenticated/discover'
+import { Route as AuthenticatedMatchesIndexRouteImport } from './routes/_authenticated/matches.index'
 import { Route as AuthenticatedHomeIndexRouteImport } from './routes/_authenticated/home.index'
 import { Route as AuthenticatedDiscoverIndexRouteImport } from './routes/_authenticated/discover.index'
+import { Route as AuthenticatedMatchesMatchIdRouteImport } from './routes/_authenticated/matches.$matchId'
 import { Route as AuthenticatedHomeCollegeRankingsRouteImport } from './routes/_authenticated/home.college-rankings'
 import { Route as AuthenticatedDiscoverNoMoreProfilesRouteImport } from './routes/_authenticated/discover.no-more-profiles'
+import { Route as AuthenticatedMatchesMatchIdUnmatchRouteImport } from './routes/_authenticated/matches.$matchId.unmatch'
+import { Route as AuthenticatedMatchesMatchIdReportRouteImport } from './routes/_authenticated/matches.$matchId.report'
+import { Route as AuthenticatedMatchesMatchIdNoteRouteImport } from './routes/_authenticated/matches.$matchId.note'
+import { Route as AuthenticatedMatchesMatchIdBlockRouteImport } from './routes/_authenticated/matches.$matchId.block'
 import { Route as AuthenticatedHomeCollegeCollegeIdRouteImport } from './routes/_authenticated/home.college.$collegeId'
 import { Route as AuthenticatedDiscoverProfileUserIdRouteImport } from './routes/_authenticated/discover.profile.$userId'
 import { Route as AuthenticatedDiscoverMatchMatchIdRouteImport } from './routes/_authenticated/discover.match.$matchId'
@@ -223,6 +230,11 @@ const PublicAboutRoute = PublicAboutRouteImport.update({
   path: '/about',
   getParentRoute: () => PublicRouteRoute,
 } as any)
+const AuthenticatedMatchesRoute = AuthenticatedMatchesRouteImport.update({
+  id: '/matches',
+  path: '/matches',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
 const AuthenticatedHomeRoute = AuthenticatedHomeRouteImport.update({
   id: '/home',
   path: '/home',
@@ -233,6 +245,12 @@ const AuthenticatedDiscoverRoute = AuthenticatedDiscoverRouteImport.update({
   path: '/discover',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedMatchesIndexRoute =
+  AuthenticatedMatchesIndexRouteImport.update({
+    id: '/',
+    path: '/',
+    getParentRoute: () => AuthenticatedMatchesRoute,
+  } as any)
 const AuthenticatedHomeIndexRoute = AuthenticatedHomeIndexRouteImport.update({
   id: '/',
   path: '/',
@@ -243,6 +261,12 @@ const AuthenticatedDiscoverIndexRoute =
     id: '/',
     path: '/',
     getParentRoute: () => AuthenticatedDiscoverRoute,
+  } as any)
+const AuthenticatedMatchesMatchIdRoute =
+  AuthenticatedMatchesMatchIdRouteImport.update({
+    id: '/$matchId',
+    path: '/$matchId',
+    getParentRoute: () => AuthenticatedMatchesRoute,
   } as any)
 const AuthenticatedHomeCollegeRankingsRoute =
   AuthenticatedHomeCollegeRankingsRouteImport.update({
@@ -255,6 +279,30 @@ const AuthenticatedDiscoverNoMoreProfilesRoute =
     id: '/no-more-profiles',
     path: '/no-more-profiles',
     getParentRoute: () => AuthenticatedDiscoverRoute,
+  } as any)
+const AuthenticatedMatchesMatchIdUnmatchRoute =
+  AuthenticatedMatchesMatchIdUnmatchRouteImport.update({
+    id: '/unmatch',
+    path: '/unmatch',
+    getParentRoute: () => AuthenticatedMatchesMatchIdRoute,
+  } as any)
+const AuthenticatedMatchesMatchIdReportRoute =
+  AuthenticatedMatchesMatchIdReportRouteImport.update({
+    id: '/report',
+    path: '/report',
+    getParentRoute: () => AuthenticatedMatchesMatchIdRoute,
+  } as any)
+const AuthenticatedMatchesMatchIdNoteRoute =
+  AuthenticatedMatchesMatchIdNoteRouteImport.update({
+    id: '/note',
+    path: '/note',
+    getParentRoute: () => AuthenticatedMatchesMatchIdRoute,
+  } as any)
+const AuthenticatedMatchesMatchIdBlockRoute =
+  AuthenticatedMatchesMatchIdBlockRouteImport.update({
+    id: '/block',
+    path: '/block',
+    getParentRoute: () => AuthenticatedMatchesMatchIdRoute,
   } as any)
 const AuthenticatedHomeCollegeCollegeIdRoute =
   AuthenticatedHomeCollegeCollegeIdRouteImport.update({
@@ -284,6 +332,7 @@ export interface FileRoutesByFullPath {
   '/ui': typeof UiRoute
   '/discover': typeof AuthenticatedDiscoverRouteWithChildren
   '/home': typeof AuthenticatedHomeRouteWithChildren
+  '/matches': typeof AuthenticatedMatchesRouteWithChildren
   '/about': typeof PublicAboutRoute
   '/community-guidelines': typeof PublicCommunityGuidelinesRoute
   '/contact': typeof PublicContactRoute
@@ -312,11 +361,17 @@ export interface FileRoutesByFullPath {
   '/onboarding/': typeof OnboardingIndexRoute
   '/discover/no-more-profiles': typeof AuthenticatedDiscoverNoMoreProfilesRoute
   '/home/college-rankings': typeof AuthenticatedHomeCollegeRankingsRoute
+  '/matches/$matchId': typeof AuthenticatedMatchesMatchIdRouteWithChildren
   '/discover/': typeof AuthenticatedDiscoverIndexRoute
   '/home/': typeof AuthenticatedHomeIndexRoute
+  '/matches/': typeof AuthenticatedMatchesIndexRoute
   '/discover/match/$matchId': typeof AuthenticatedDiscoverMatchMatchIdRoute
   '/discover/profile/$userId': typeof AuthenticatedDiscoverProfileUserIdRoute
   '/home/college/$collegeId': typeof AuthenticatedHomeCollegeCollegeIdRoute
+  '/matches/$matchId/block': typeof AuthenticatedMatchesMatchIdBlockRoute
+  '/matches/$matchId/note': typeof AuthenticatedMatchesMatchIdNoteRoute
+  '/matches/$matchId/report': typeof AuthenticatedMatchesMatchIdReportRoute
+  '/matches/$matchId/unmatch': typeof AuthenticatedMatchesMatchIdUnmatchRoute
 }
 export interface FileRoutesByTo {
   '/': typeof PublicIndexRoute
@@ -351,11 +406,17 @@ export interface FileRoutesByTo {
   '/onboarding': typeof OnboardingIndexRoute
   '/discover/no-more-profiles': typeof AuthenticatedDiscoverNoMoreProfilesRoute
   '/home/college-rankings': typeof AuthenticatedHomeCollegeRankingsRoute
+  '/matches/$matchId': typeof AuthenticatedMatchesMatchIdRouteWithChildren
   '/discover': typeof AuthenticatedDiscoverIndexRoute
   '/home': typeof AuthenticatedHomeIndexRoute
+  '/matches': typeof AuthenticatedMatchesIndexRoute
   '/discover/match/$matchId': typeof AuthenticatedDiscoverMatchMatchIdRoute
   '/discover/profile/$userId': typeof AuthenticatedDiscoverProfileUserIdRoute
   '/home/college/$collegeId': typeof AuthenticatedHomeCollegeCollegeIdRoute
+  '/matches/$matchId/block': typeof AuthenticatedMatchesMatchIdBlockRoute
+  '/matches/$matchId/note': typeof AuthenticatedMatchesMatchIdNoteRoute
+  '/matches/$matchId/report': typeof AuthenticatedMatchesMatchIdReportRoute
+  '/matches/$matchId/unmatch': typeof AuthenticatedMatchesMatchIdUnmatchRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -368,6 +429,7 @@ export interface FileRoutesById {
   '/ui': typeof UiRoute
   '/_authenticated/discover': typeof AuthenticatedDiscoverRouteWithChildren
   '/_authenticated/home': typeof AuthenticatedHomeRouteWithChildren
+  '/_authenticated/matches': typeof AuthenticatedMatchesRouteWithChildren
   '/_public/about': typeof PublicAboutRoute
   '/_public/community-guidelines': typeof PublicCommunityGuidelinesRoute
   '/_public/contact': typeof PublicContactRoute
@@ -397,11 +459,17 @@ export interface FileRoutesById {
   '/onboarding/': typeof OnboardingIndexRoute
   '/_authenticated/discover/no-more-profiles': typeof AuthenticatedDiscoverNoMoreProfilesRoute
   '/_authenticated/home/college-rankings': typeof AuthenticatedHomeCollegeRankingsRoute
+  '/_authenticated/matches/$matchId': typeof AuthenticatedMatchesMatchIdRouteWithChildren
   '/_authenticated/discover/': typeof AuthenticatedDiscoverIndexRoute
   '/_authenticated/home/': typeof AuthenticatedHomeIndexRoute
+  '/_authenticated/matches/': typeof AuthenticatedMatchesIndexRoute
   '/_authenticated/discover/match/$matchId': typeof AuthenticatedDiscoverMatchMatchIdRoute
   '/_authenticated/discover/profile/$userId': typeof AuthenticatedDiscoverProfileUserIdRoute
   '/_authenticated/home/college/$collegeId': typeof AuthenticatedHomeCollegeCollegeIdRoute
+  '/_authenticated/matches/$matchId/block': typeof AuthenticatedMatchesMatchIdBlockRoute
+  '/_authenticated/matches/$matchId/note': typeof AuthenticatedMatchesMatchIdNoteRoute
+  '/_authenticated/matches/$matchId/report': typeof AuthenticatedMatchesMatchIdReportRoute
+  '/_authenticated/matches/$matchId/unmatch': typeof AuthenticatedMatchesMatchIdUnmatchRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -414,6 +482,7 @@ export interface FileRouteTypes {
     | '/ui'
     | '/discover'
     | '/home'
+    | '/matches'
     | '/about'
     | '/community-guidelines'
     | '/contact'
@@ -442,11 +511,17 @@ export interface FileRouteTypes {
     | '/onboarding/'
     | '/discover/no-more-profiles'
     | '/home/college-rankings'
+    | '/matches/$matchId'
     | '/discover/'
     | '/home/'
+    | '/matches/'
     | '/discover/match/$matchId'
     | '/discover/profile/$userId'
     | '/home/college/$collegeId'
+    | '/matches/$matchId/block'
+    | '/matches/$matchId/note'
+    | '/matches/$matchId/report'
+    | '/matches/$matchId/unmatch'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -481,11 +556,17 @@ export interface FileRouteTypes {
     | '/onboarding'
     | '/discover/no-more-profiles'
     | '/home/college-rankings'
+    | '/matches/$matchId'
     | '/discover'
     | '/home'
+    | '/matches'
     | '/discover/match/$matchId'
     | '/discover/profile/$userId'
     | '/home/college/$collegeId'
+    | '/matches/$matchId/block'
+    | '/matches/$matchId/note'
+    | '/matches/$matchId/report'
+    | '/matches/$matchId/unmatch'
   id:
     | '__root__'
     | '/_authenticated'
@@ -497,6 +578,7 @@ export interface FileRouteTypes {
     | '/ui'
     | '/_authenticated/discover'
     | '/_authenticated/home'
+    | '/_authenticated/matches'
     | '/_public/about'
     | '/_public/community-guidelines'
     | '/_public/contact'
@@ -526,11 +608,17 @@ export interface FileRouteTypes {
     | '/onboarding/'
     | '/_authenticated/discover/no-more-profiles'
     | '/_authenticated/home/college-rankings'
+    | '/_authenticated/matches/$matchId'
     | '/_authenticated/discover/'
     | '/_authenticated/home/'
+    | '/_authenticated/matches/'
     | '/_authenticated/discover/match/$matchId'
     | '/_authenticated/discover/profile/$userId'
     | '/_authenticated/home/college/$collegeId'
+    | '/_authenticated/matches/$matchId/block'
+    | '/_authenticated/matches/$matchId/note'
+    | '/_authenticated/matches/$matchId/report'
+    | '/_authenticated/matches/$matchId/unmatch'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -785,6 +873,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PublicAboutRouteImport
       parentRoute: typeof PublicRouteRoute
     }
+    '/_authenticated/matches': {
+      id: '/_authenticated/matches'
+      path: '/matches'
+      fullPath: '/matches'
+      preLoaderRoute: typeof AuthenticatedMatchesRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/home': {
       id: '/_authenticated/home'
       path: '/home'
@@ -798,6 +893,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/discover'
       preLoaderRoute: typeof AuthenticatedDiscoverRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/matches/': {
+      id: '/_authenticated/matches/'
+      path: '/'
+      fullPath: '/matches/'
+      preLoaderRoute: typeof AuthenticatedMatchesIndexRouteImport
+      parentRoute: typeof AuthenticatedMatchesRoute
     }
     '/_authenticated/home/': {
       id: '/_authenticated/home/'
@@ -813,6 +915,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedDiscoverIndexRouteImport
       parentRoute: typeof AuthenticatedDiscoverRoute
     }
+    '/_authenticated/matches/$matchId': {
+      id: '/_authenticated/matches/$matchId'
+      path: '/$matchId'
+      fullPath: '/matches/$matchId'
+      preLoaderRoute: typeof AuthenticatedMatchesMatchIdRouteImport
+      parentRoute: typeof AuthenticatedMatchesRoute
+    }
     '/_authenticated/home/college-rankings': {
       id: '/_authenticated/home/college-rankings'
       path: '/college-rankings'
@@ -826,6 +935,34 @@ declare module '@tanstack/react-router' {
       fullPath: '/discover/no-more-profiles'
       preLoaderRoute: typeof AuthenticatedDiscoverNoMoreProfilesRouteImport
       parentRoute: typeof AuthenticatedDiscoverRoute
+    }
+    '/_authenticated/matches/$matchId/unmatch': {
+      id: '/_authenticated/matches/$matchId/unmatch'
+      path: '/unmatch'
+      fullPath: '/matches/$matchId/unmatch'
+      preLoaderRoute: typeof AuthenticatedMatchesMatchIdUnmatchRouteImport
+      parentRoute: typeof AuthenticatedMatchesMatchIdRoute
+    }
+    '/_authenticated/matches/$matchId/report': {
+      id: '/_authenticated/matches/$matchId/report'
+      path: '/report'
+      fullPath: '/matches/$matchId/report'
+      preLoaderRoute: typeof AuthenticatedMatchesMatchIdReportRouteImport
+      parentRoute: typeof AuthenticatedMatchesMatchIdRoute
+    }
+    '/_authenticated/matches/$matchId/note': {
+      id: '/_authenticated/matches/$matchId/note'
+      path: '/note'
+      fullPath: '/matches/$matchId/note'
+      preLoaderRoute: typeof AuthenticatedMatchesMatchIdNoteRouteImport
+      parentRoute: typeof AuthenticatedMatchesMatchIdRoute
+    }
+    '/_authenticated/matches/$matchId/block': {
+      id: '/_authenticated/matches/$matchId/block'
+      path: '/block'
+      fullPath: '/matches/$matchId/block'
+      preLoaderRoute: typeof AuthenticatedMatchesMatchIdBlockRouteImport
+      parentRoute: typeof AuthenticatedMatchesMatchIdRoute
     }
     '/_authenticated/home/college/$collegeId': {
       id: '/_authenticated/home/college/$collegeId'
@@ -889,14 +1026,53 @@ const AuthenticatedHomeRouteChildren: AuthenticatedHomeRouteChildren = {
 const AuthenticatedHomeRouteWithChildren =
   AuthenticatedHomeRoute._addFileChildren(AuthenticatedHomeRouteChildren)
 
+interface AuthenticatedMatchesMatchIdRouteChildren {
+  AuthenticatedMatchesMatchIdBlockRoute: typeof AuthenticatedMatchesMatchIdBlockRoute
+  AuthenticatedMatchesMatchIdNoteRoute: typeof AuthenticatedMatchesMatchIdNoteRoute
+  AuthenticatedMatchesMatchIdReportRoute: typeof AuthenticatedMatchesMatchIdReportRoute
+  AuthenticatedMatchesMatchIdUnmatchRoute: typeof AuthenticatedMatchesMatchIdUnmatchRoute
+}
+
+const AuthenticatedMatchesMatchIdRouteChildren: AuthenticatedMatchesMatchIdRouteChildren =
+  {
+    AuthenticatedMatchesMatchIdBlockRoute:
+      AuthenticatedMatchesMatchIdBlockRoute,
+    AuthenticatedMatchesMatchIdNoteRoute: AuthenticatedMatchesMatchIdNoteRoute,
+    AuthenticatedMatchesMatchIdReportRoute:
+      AuthenticatedMatchesMatchIdReportRoute,
+    AuthenticatedMatchesMatchIdUnmatchRoute:
+      AuthenticatedMatchesMatchIdUnmatchRoute,
+  }
+
+const AuthenticatedMatchesMatchIdRouteWithChildren =
+  AuthenticatedMatchesMatchIdRoute._addFileChildren(
+    AuthenticatedMatchesMatchIdRouteChildren,
+  )
+
+interface AuthenticatedMatchesRouteChildren {
+  AuthenticatedMatchesMatchIdRoute: typeof AuthenticatedMatchesMatchIdRouteWithChildren
+  AuthenticatedMatchesIndexRoute: typeof AuthenticatedMatchesIndexRoute
+}
+
+const AuthenticatedMatchesRouteChildren: AuthenticatedMatchesRouteChildren = {
+  AuthenticatedMatchesMatchIdRoute:
+    AuthenticatedMatchesMatchIdRouteWithChildren,
+  AuthenticatedMatchesIndexRoute: AuthenticatedMatchesIndexRoute,
+}
+
+const AuthenticatedMatchesRouteWithChildren =
+  AuthenticatedMatchesRoute._addFileChildren(AuthenticatedMatchesRouteChildren)
+
 interface AuthenticatedRouteRouteChildren {
   AuthenticatedDiscoverRoute: typeof AuthenticatedDiscoverRouteWithChildren
   AuthenticatedHomeRoute: typeof AuthenticatedHomeRouteWithChildren
+  AuthenticatedMatchesRoute: typeof AuthenticatedMatchesRouteWithChildren
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedDiscoverRoute: AuthenticatedDiscoverRouteWithChildren,
   AuthenticatedHomeRoute: AuthenticatedHomeRouteWithChildren,
+  AuthenticatedMatchesRoute: AuthenticatedMatchesRouteWithChildren,
 }
 
 const AuthenticatedRouteRouteWithChildren =

@@ -339,7 +339,7 @@ function HomeDashboardPage() {
             icon={<Users style={{ width: 18, height: 18 }} />}
           />
           <div
-            onClick={() => setComingSoon("Matches")}
+            onClick={() => navigate({ to: "/matches" })}
             className="ds-press"
             style={{ cursor: "pointer" }}
           >
@@ -554,7 +554,7 @@ function HomeDashboardPage() {
             active={0}
             onChange={(i) => {
               if (i === 1) navigate({ to: "/discover" });
-              else if (i === 2) setComingSoon("Matches");
+              else if (i === 2) navigate({ to: "/matches" });
               else if (i === 3) setComingSoon("Profile");
             }}
           />

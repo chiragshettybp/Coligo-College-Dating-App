@@ -83,7 +83,8 @@ export function DiscoverShell({
               if (tab === active) return;
               if (tab === "home") navigate({ to: "/home" });
               else if (tab === "discover") navigate({ to: "/discover" });
-              else setComingSoon(tab === "matches" ? "Matches" : "Profile");
+              else if (tab === "matches") navigate({ to: "/matches" });
+              else setComingSoon("Profile");
             }}
           />
         </div>

@@ -1,75 +1,62 @@
-# Discovery & Swipe Module — Implementation Plan
+# Matches Module — Implementation Plan
 
-Builds `/discover`, `/discover/profile/$userId`, `/discover/match/$matchId`, and `/discover/no-more-profiles` as a fully backed, realtime, mobile-first swipe experience. Every swipe, match, block, and report persists to Supabase; UI is assembled strictly from the `/ui` design system (swipe card/deck/controls/overlays + `MatchCelebration`).
+Builds the full Matches module for Coligo (`/matches`, `/matches/:matchId`, `/matches/:matchId/note`, plus dedicated confirm/report pages), fully wired to Supabase. Reuses the existing `/ui` design system (`src/components/ds/*`, tokens in `src/lib/ds.ts`), the `DiscoverShell` frame, photo-signing, and the auth/RLS patterns already used by Discovery.
 
-## Scope confirmation
-Only the four routes above plus the backend and shared swipe components they require. No Chat UI is built here — but the `messages` table and "Send Note" write are created so a match can seed the first message for the future Chat module.
+## What already exists (reused, not rebuilt)
+- `matches` table (`user_a`, `user_b`, `created_at`, `last_message_at`) with owner-only SELECT RLS. Realtime already on.
+- `messages` table with `read_at` (drives unread counts — no separate `message_reads` table needed for 1:1 chat). Realtime already on. RLS: participants read/insert, recipients mark read.
+- `blocks`, `reports` tables + RLS, and `blockUser` / `reportUser` / `sendMatchNote` server functions in `src/lib/discover.functions.ts`.
+- `match_screen` / `match_participants` RPCs, photo `signPaths` helper, presence hooks (`use-presence-set.ts`), `DiscoverShell` with a Matches tab (currently opens a "coming soon" sheet).
 
----
-
-## Phase 1 — Database foundations (migration)
-
-New tables (all with RLS + GRANTs + timestamps):
-
-- **swipes** — `actor_id`, `target_id`, `action` enum `swipe_action('like','pass','super')`, `created_at`. `UNIQUE(actor_id, target_id)`. Enables reciprocal checks + future Undo.
-- **messages** — `match_id`→matches, `sender_id`, `body`, `read_at`, `created_at`. Seeds first note; consumed later by Chat.
-- **blocks** — `blocker_id`, `blocked_id`, `created_at`, `UNIQUE(blocker_id, blocked_id)`.
-- **reports** — `reporter_id`, `reported_id`, `reason`, `details`, `status` default `open`, `created_at`.
-
-Alter existing **matches**: add `last_message_at`, add a canonical-order guard (`CHECK user_a < user_b`) + `UNIQUE(user_a, user_b)` to make duplicate matches impossible.
-
-RLS summary (plain English):
-- Swipes: a user reads and creates only their own.
-- Matches: a user sees only matches they are part of; inserts happen only through the match RPC.
-- Messages: only the two people in a match can read or send in it.
-- Blocks/Reports: a user manages only their own rows.
-
-## Phase 2 — Server logic (SECURITY DEFINER RPCs)
-
-- **`discover_candidates(_limit)`** — returns eligible target ids + core card fields (name, dob→age, college, department, semester, grad year, bio). Excludes: self, non-active/`account_status`, incomplete onboarding, `discovery_enabled=false`, already-swiped, blocked either direction, reported-by-me. Enforces mutual gender/`looking_for` preference (viewer wants target AND target wants viewer; 18+). Ordered to support future ranking (shared interests / same college first).
-- **`swipe_profile(_target, _action)`** — single transaction: upsert swipe; if `action` in (like,super) AND reciprocal like/super exists, create the match in canonical order (`ON CONFLICT DO NOTHING`) and return `{ matched: true, match_id }`, else `{ matched: false }`. Advisory-lock on the ordered pair to prevent race/duplicate.
-- **`match_participants(_match_id)`** — returns both profiles for the celebration screen, only if caller is a participant.
-
-## Phase 3 — Server functions (`src/lib/discover.functions.ts`)
-
-All `createServerFn` + `requireSupabaseAuth`, RLS-scoped:
-- `getDiscoveryFeed()` — calls `discover_candidates`, then batch-loads photos + interests, computes mutual interests vs. me, and signs private photo URLs with the RLS-scoped client (storage policy already allows reading active members' photos). Returns ready-to-render cards.
-- `getDiscoverProfile(userId)` — full public profile + gallery + interests + mutual interests; guards deleted/blocked/private/self.
-- `submitSwipe({ targetId, action })` — calls `swipe_profile`; returns match result.
-- `getMatch(matchId)` — celebration data via `match_participants` + signed avatars + shared context (college/semester/interests/compatibility, seeded opener).
-- `sendMatchNote({ matchId, body })` / `skipMatch({ matchId })` — insert first message or no-op; update `last_message_at`.
-- `blockUser({ userId })`, `reportUser({ userId, reason, details })`.
-Query option factories + query keys for cache wiring.
-
-## Phase 4 — Shared swipe components (design-system extraction)
-
-Promote the `/ui` showcase patterns into reusable, data-driven `src/components/ds` components (same tokens/motion, no redesign):
-- `SwipeCard` — photo carousel (lazy/progressive/fallback), identity/presence badges, expandable bio, interest chips, mutual-interest badges.
-- `SwipeDeck` — card stack with pointer/touch drag physics, LIKE/NOPE/SUPER overlays, mouse-drag on desktop, arrow-key shortcuts, reduced-motion fallback, prefetch of next cards.
-- `SwipeControls` — Undo/Pass/Super/Like/Boost buttons wired to the same backend calls as gestures, disabled during in-flight requests to prevent duplicates.
-Reuse existing `MatchCelebration`, `EmptyState`/presets, `TopBar`, `BottomSheet`.
-
-## Phase 5 — Routes & flows (under `_authenticated/`)
-
-- **`/discover`** — loads feed (skeletons while fetching), renders `SwipeDeck` + `SwipeControls`. Swipe/like → optimistic card exit → `submitSwipe`; on `matched` navigate to `/discover/match/$matchId`; on empty queue navigate to `/discover/no-more-profiles`. Realtime: subscribe to my new matches, to blocks targeting me (drop card instantly), and to new eligible `profiles` inserts (offer refresh). Onboarding guard inherited from `/home`-style layout loader.
-- **`/discover/profile/$userId`** — full profile via shared-element expand; Like/Pass/Back preserve queue order (state via router/query cache); handles invalid/deleted/blocked/private.
-- **`/discover/match/$matchId`** — `MatchCelebration`; Send Note (`sendMatchNote`) / Skip (`skipMatch`) / Open Chat (routes to future chat path, guarded). Prevents duplicate match/chat.
-- **`/discover/no-more-profiles`** — friendly empty state; Retry re-runs feed; realtime auto-detects new users and offers refresh; Return Home.
-
-## Phase 6 — Realtime, integration & verification
-
-- Enable realtime on `matches`, `messages`, `blocks`; keep RLS so subscribers only get permitted rows.
-- Wire Home/BottomNav "Discover" + "Matches" badge to real counts.
-- Verify end-to-end with two seeded test profiles (via migration seed): mutual like → single match row → celebration → note persists; pass hides profile; block/report remove from feed; typecheck + lint clean; no console/runtime errors.
+## Gaps to close
+- No `notifications` table.
+- `matches` has no unmatch/archive state or DELETE path.
+- `settings` has no sort/filter preference storage.
+- No matches-list RPC (list + latest message + unread count in one query).
+- Matches tab + home "Matches today" card are not linked to real routes.
 
 ---
 
-## Technical notes
-- **Photos**: single private `profile-photos` bucket; the existing "members read active member photos" storage policy already lets the RLS-scoped client sign other members' gallery URLs — no service-role key needed.
-- **No duplicate matches / race safety**: canonical ordering (`user_a < user_b`) + `UNIQUE` + advisory lock inside `swipe_profile`.
-- **Preference matching enum mapping**: `woman→women`, `man→men`, `nonbinary/other→everyone`; match requires mutual want.
-- **Extensibility**: `swipes.action` enum + candidate ordering leave room for Super Likes, Boosts, and ranking without schema redesign.
-- **Age**: computed from `date_of_birth`, 18+ enforced; numeric range deferred (no range field in `settings` yet).
-- **State**: TanStack Query for feed/queue with prefetch; optimistic swipe UI with rollback on failure so swipe state is never lost.
+## Phase 1 — Database (single migration)
+1. `matches`: add `status text NOT NULL DEFAULT 'active'` (`active` | `unmatched`), `unmatched_by uuid`, `unmatched_at timestamptz`. Add owner UPDATE policy (participants only) so unmatch can flip status. Keep messages intact (archive, not delete).
+2. `notifications` table: `id`, `user_id`, `type` (`match` | `message` | `note` | `system`), `title`, `body`, `data jsonb`, `read_at`, `created_at`. GRANTs (`authenticated`, `service_role`), RLS (users see/update only their own), realtime enabled.
+3. `settings`: add `match_sort text DEFAULT 'recent_activity'` and `match_filters jsonb DEFAULT '[]'` for persisted preferences.
+4. SECURITY DEFINER RPCs:
+   - `my_matches()` → for each active match of `auth.uid()`: other participant (name, age, college, department, primary photo path, last_login_at), match `created_at`/`last_message_at`, latest message body+sender+time, unread count (messages where `sender_id <> me AND read_at IS NULL`). Excludes blocked relationships and unmatched rows.
+   - `match_detail(_match_id)` → full participant profile (gallery paths, bio, interests, common interests, semester, grad year, last active) + match meta + conversation-exists flag; validates ownership; returns null for invalid/blocked/removed.
+   - `unmatch(_match_id)` → validates ownership, sets `status='unmatched'`, stamps `unmatched_by/at` (transactional).
+   - `note_status(_match_id)` → whether the current user already sent a first note (prevents duplicates).
+5. Notification triggers: on new `matches` row → insert `match` notifications for both users; on new `messages` row → insert `message`/`note` notification for the recipient.
 
-Approve and I'll implement phase by phase, starting with the migration.
+## Phase 2 — Server functions (`src/lib/matches.functions.ts`)
+All `createServerFn` + `requireSupabaseAuth`, returning plain DTOs, with `queryOptions` factories:
+- `matchesListQuery()` — calls `my_matches`, signs primary photo paths, returns `MatchListItem[]`.
+- `matchDetailQuery(matchId)` — calls `match_detail`, signs gallery paths.
+- `sendFirstNote({matchId, body})` — validates (non-empty, max length), checks `note_status`, inserts message, returns conversation target. (Extends existing `sendMatchNote`.)
+- `openConversation({matchId})` — ensures/opens conversation (1:1 match already is the conversation; guarantees no duplicate), returns route target.
+- `unmatch({matchId})`, and reuse existing `blockUser` / `reportUser`.
+- `updateMatchPrefs({sort, filters})` — persists to `settings`.
+- Unread total helper for the nav badge.
+
+## Phase 3 — Routes & UI (mobile-first, `/ui` components only)
+- `_authenticated/matches.tsx` — layout guard (onboarding complete) + `<Outlet/>`, mirrors `discover.tsx`.
+- `_authenticated/matches.index.tsx` — dashboard: skeleton loaders, match cards (photo, name, age, college, department, match timestamp, latest-message preview, unread badge, online dot, Open Chat / View Match / Preview actions), instant local **search** (name/college/department), **sort** menu (recent match, newest messages, unread first, online first, alphabetical), **filter** chips (unread, online, recently matched, same college, same department), empty + error states. Sort/filter persisted via `updateMatchPrefs`. Realtime: subscribe to `matches`, `messages`, `blocks`, `profiles` to update list live.
+- `_authenticated/matches.$matchId.tsx` — match details: gallery (reuse `PhotoCarousel`), profile info, common interests, match date, online/last-active, actions (Open Chat, Send Note, View Full Profile → reuse `/discover/profile/:userId`, Unmatch, Block, Report). Realtime online/profile refresh.
+- `_authenticated/matches.$matchId.note.tsx` — first-note composer: multiline input, live char counter + max limit, validation, loading button; if a note exists, show it read-only; on send → create message + navigate to chat target. Guards duplicate/deleted/blocked.
+- `_authenticated/matches.$matchId.unmatch.tsx`, `.block.tsx`, `.report.tsx` — dedicated full-page confirm/report flows (no popups), each with consequences copy, confirmation, and rollback-safe calls.
+
+## Phase 4 — Wiring & sync
+- `DiscoverShell`: Matches tab navigates to `/matches` (remove its coming-soon branch); feed the live unread/matches count into `matchesBadge` across Home/Discover/Matches.
+- Home dashboard: "Matches today" card and match-related CTAs navigate to `/matches`.
+- Discovery match celebration "Send note" path already writes a real message — confirm it lands the user in the Matches/chat flow consistently.
+- Root `onAuthStateChange` already invalidates queries; add match/notification query keys to realtime invalidation so counts stay synced app-wide.
+
+## Phase 5 — Verification
+- `tsgo` typecheck clean; no console/runtime errors.
+- Playwright pass on `/matches` and detail/note/unmatch/block/report flows against the live preview (with the injected Supabase session), plus realtime sanity (new message updates unread badge).
+
+## Notes / decisions
+- Chat module isn't built yet; "Open Chat" targets the conversation for a match (the match *is* the 1:1 conversation). If no `/chat` route exists at build time, Open Chat routes to the note/detail surface and is chat-ready without redesign. I'll confirm the intended chat target before finalizing that link.
+- `message_reads` from the spec is intentionally folded into `messages.read_at` (correct for 1:1); a separate table would add no value and I'll note this rather than build dead structure.
+
+Approve and I'll start with the Phase 1 migration.
