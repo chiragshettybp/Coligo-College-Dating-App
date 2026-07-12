@@ -933,6 +933,7 @@ function SharedGallery({ images }: { images: string[] }) {
   }, [active]);
 
   const close = useCallback(() => {
+    haptic("light");
     const img = imgRef.current;
     const rect = originRef.current;
     if (!img || !rect) return setActive(null);
