@@ -38,6 +38,7 @@ export const getMyProfile = createServerFn({ method: "GET" })
       phone: data.phone,
       displayName: data.display_name,
       avatarUrl: data.avatar_url,
+      collegeId: data.college_id,
       verificationStatus: data.verification_status ?? "unverified",
       onboardingCompleted: data.onboarding_completed ?? false,
       accountStatus: (data.account_status ?? "active") as AccountStatus,
