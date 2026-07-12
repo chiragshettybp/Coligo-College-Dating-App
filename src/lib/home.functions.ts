@@ -112,14 +112,18 @@ type StatsJson = {
 /** Batch-sign private avatar storage paths using the admin client. Only the
  *  curated public-facing paths passed here are ever signed. Full https URLs are
  *  passed through untouched. */
-async function signAvatars(paths: (string | null)[]): Promise<Map<string, string>> {
+type SignerClient = { storage: { from: (b: string) => { createSignedUrls: (paths: string[], ttl: number) => Promise<{ data: { path: string | null; signedUrl: string }[] | null }> } } };
+
+async function signAvatars(
+  client: SignerClient,
+  paths: (string | null)[],
+): Promise<Map<string, string>> {
   const toSign = Array.from(
     new Set(paths.filter((p): p is string => !!p && !p.startsWith("http"))),
   );
   const map = new Map<string, string>();
   if (toSign.length === 0) return map;
-  const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-  const { data } = await supabaseAdmin.storage.from(BUCKET).createSignedUrls(toSign, SIGN_TTL);
+  const { data } = await client.storage.from(BUCKET).createSignedUrls(toSign, SIGN_TTL);
   for (const row of data ?? []) {
     if (row.signedUrl && row.path) map.set(row.path, row.signedUrl);
   }
