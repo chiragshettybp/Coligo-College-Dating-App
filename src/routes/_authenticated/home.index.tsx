@@ -31,6 +31,7 @@ import {
   type Announcement,
 } from "@/lib/home.functions";
 import { useOnlinePresence } from "@/lib/use-online-presence";
+import { useNotificationsRealtime, useUnreadNotifications } from "@/lib/use-notifications";
 import {
   APP_BACKGROUND,
   FONT_FAMILY,
@@ -132,6 +133,10 @@ function HomeDashboardPage() {
 
   const online = useOnlinePresence(data.profile.id, data.profile.collegeId);
 
+  // Live unread notification count for the header bell, kept fresh by realtime.
+  useNotificationsRealtime(data.profile.id);
+  const unread = useUnreadNotifications();
+
   // Realtime: refresh dashboard when announcements change.
   useEffect(() => {
     const channel = supabase
@@ -207,7 +212,11 @@ function HomeDashboardPage() {
             </div>
           </button>
           <div className="flex items-center" style={{ gap: spacing[0] }}>
-            <NavIconButton label="Notifications" onClick={() => setComingSoon("Notifications")}>
+            <NavIconButton
+              label="Notifications"
+              badge={unread || undefined}
+              onClick={() => navigate({ to: "/notifications" })}
+            >
               <Bell style={{ width: 22, height: 22 }} />
             </NavIconButton>
             <NavIconButton label="Settings" onClick={() => setComingSoon("Settings")}>

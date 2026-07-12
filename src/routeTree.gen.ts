@@ -47,15 +47,18 @@ import { Route as AuthenticatedMatchesRouteImport } from './routes/_authenticate
 import { Route as AuthenticatedHomeRouteImport } from './routes/_authenticated/home'
 import { Route as AuthenticatedDiscoverRouteImport } from './routes/_authenticated/discover'
 import { Route as AuthenticatedChatRouteImport } from './routes/_authenticated/chat'
+import { Route as AuthenticatedNotificationsIndexRouteImport } from './routes/_authenticated/notifications.index'
 import { Route as AuthenticatedMatchesIndexRouteImport } from './routes/_authenticated/matches.index'
 import { Route as AuthenticatedHomeIndexRouteImport } from './routes/_authenticated/home.index'
 import { Route as AuthenticatedDiscoverIndexRouteImport } from './routes/_authenticated/discover.index'
 import { Route as AuthenticatedChatIndexRouteImport } from './routes/_authenticated/chat.index'
 import { Route as ApiPublicPushRouteImport } from './routes/api/public/push'
+import { Route as AuthenticatedNotificationsNotificationIdRouteImport } from './routes/_authenticated/notifications.$notificationId'
 import { Route as AuthenticatedMatchesMatchIdRouteImport } from './routes/_authenticated/matches.$matchId'
 import { Route as AuthenticatedHomeCollegeRankingsRouteImport } from './routes/_authenticated/home.college-rankings'
 import { Route as AuthenticatedDiscoverNoMoreProfilesRouteImport } from './routes/_authenticated/discover.no-more-profiles'
 import { Route as AuthenticatedChatChatIdRouteImport } from './routes/_authenticated/chat.$chatId'
+import { Route as AuthenticatedNotificationsNotificationIdDeleteRouteImport } from './routes/_authenticated/notifications.$notificationId.delete'
 import { Route as AuthenticatedMatchesMatchIdUnmatchRouteImport } from './routes/_authenticated/matches.$matchId.unmatch'
 import { Route as AuthenticatedMatchesMatchIdReportRouteImport } from './routes/_authenticated/matches.$matchId.report'
 import { Route as AuthenticatedMatchesMatchIdNoteRouteImport } from './routes/_authenticated/matches.$matchId.note'
@@ -258,6 +261,12 @@ const AuthenticatedChatRoute = AuthenticatedChatRouteImport.update({
   path: '/chat',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedNotificationsIndexRoute =
+  AuthenticatedNotificationsIndexRouteImport.update({
+    id: '/notifications/',
+    path: '/notifications/',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const AuthenticatedMatchesIndexRoute =
   AuthenticatedMatchesIndexRouteImport.update({
     id: '/',
@@ -285,6 +294,12 @@ const ApiPublicPushRoute = ApiPublicPushRouteImport.update({
   path: '/api/public/push',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AuthenticatedNotificationsNotificationIdRoute =
+  AuthenticatedNotificationsNotificationIdRouteImport.update({
+    id: '/notifications/$notificationId',
+    path: '/notifications/$notificationId',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const AuthenticatedMatchesMatchIdRoute =
   AuthenticatedMatchesMatchIdRouteImport.update({
     id: '/$matchId',
@@ -308,6 +323,12 @@ const AuthenticatedChatChatIdRoute = AuthenticatedChatChatIdRouteImport.update({
   path: '/$chatId',
   getParentRoute: () => AuthenticatedChatRoute,
 } as any)
+const AuthenticatedNotificationsNotificationIdDeleteRoute =
+  AuthenticatedNotificationsNotificationIdDeleteRouteImport.update({
+    id: '/delete',
+    path: '/delete',
+    getParentRoute: () => AuthenticatedNotificationsNotificationIdRoute,
+  } as any)
 const AuthenticatedMatchesMatchIdUnmatchRoute =
   AuthenticatedMatchesMatchIdUnmatchRouteImport.update({
     id: '/unmatch',
@@ -416,11 +437,13 @@ export interface FileRoutesByFullPath {
   '/discover/no-more-profiles': typeof AuthenticatedDiscoverNoMoreProfilesRoute
   '/home/college-rankings': typeof AuthenticatedHomeCollegeRankingsRoute
   '/matches/$matchId': typeof AuthenticatedMatchesMatchIdRouteWithChildren
+  '/notifications/$notificationId': typeof AuthenticatedNotificationsNotificationIdRouteWithChildren
   '/api/public/push': typeof ApiPublicPushRoute
   '/chat/': typeof AuthenticatedChatIndexRoute
   '/discover/': typeof AuthenticatedDiscoverIndexRoute
   '/home/': typeof AuthenticatedHomeIndexRoute
   '/matches/': typeof AuthenticatedMatchesIndexRoute
+  '/notifications/': typeof AuthenticatedNotificationsIndexRoute
   '/chat/$chatId/info': typeof AuthenticatedChatChatIdInfoRoute
   '/chat/$chatId/media': typeof AuthenticatedChatChatIdMediaRoute
   '/chat/$chatId/report': typeof AuthenticatedChatChatIdReportRoute
@@ -432,6 +455,7 @@ export interface FileRoutesByFullPath {
   '/matches/$matchId/note': typeof AuthenticatedMatchesMatchIdNoteRoute
   '/matches/$matchId/report': typeof AuthenticatedMatchesMatchIdReportRoute
   '/matches/$matchId/unmatch': typeof AuthenticatedMatchesMatchIdUnmatchRoute
+  '/notifications/$notificationId/delete': typeof AuthenticatedNotificationsNotificationIdDeleteRoute
 }
 export interface FileRoutesByTo {
   '/': typeof PublicIndexRoute
@@ -468,11 +492,13 @@ export interface FileRoutesByTo {
   '/discover/no-more-profiles': typeof AuthenticatedDiscoverNoMoreProfilesRoute
   '/home/college-rankings': typeof AuthenticatedHomeCollegeRankingsRoute
   '/matches/$matchId': typeof AuthenticatedMatchesMatchIdRouteWithChildren
+  '/notifications/$notificationId': typeof AuthenticatedNotificationsNotificationIdRouteWithChildren
   '/api/public/push': typeof ApiPublicPushRoute
   '/chat': typeof AuthenticatedChatIndexRoute
   '/discover': typeof AuthenticatedDiscoverIndexRoute
   '/home': typeof AuthenticatedHomeIndexRoute
   '/matches': typeof AuthenticatedMatchesIndexRoute
+  '/notifications': typeof AuthenticatedNotificationsIndexRoute
   '/chat/$chatId/info': typeof AuthenticatedChatChatIdInfoRoute
   '/chat/$chatId/media': typeof AuthenticatedChatChatIdMediaRoute
   '/chat/$chatId/report': typeof AuthenticatedChatChatIdReportRoute
@@ -484,6 +510,7 @@ export interface FileRoutesByTo {
   '/matches/$matchId/note': typeof AuthenticatedMatchesMatchIdNoteRoute
   '/matches/$matchId/report': typeof AuthenticatedMatchesMatchIdReportRoute
   '/matches/$matchId/unmatch': typeof AuthenticatedMatchesMatchIdUnmatchRoute
+  '/notifications/$notificationId/delete': typeof AuthenticatedNotificationsNotificationIdDeleteRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -529,11 +556,13 @@ export interface FileRoutesById {
   '/_authenticated/discover/no-more-profiles': typeof AuthenticatedDiscoverNoMoreProfilesRoute
   '/_authenticated/home/college-rankings': typeof AuthenticatedHomeCollegeRankingsRoute
   '/_authenticated/matches/$matchId': typeof AuthenticatedMatchesMatchIdRouteWithChildren
+  '/_authenticated/notifications/$notificationId': typeof AuthenticatedNotificationsNotificationIdRouteWithChildren
   '/api/public/push': typeof ApiPublicPushRoute
   '/_authenticated/chat/': typeof AuthenticatedChatIndexRoute
   '/_authenticated/discover/': typeof AuthenticatedDiscoverIndexRoute
   '/_authenticated/home/': typeof AuthenticatedHomeIndexRoute
   '/_authenticated/matches/': typeof AuthenticatedMatchesIndexRoute
+  '/_authenticated/notifications/': typeof AuthenticatedNotificationsIndexRoute
   '/_authenticated/chat/$chatId/info': typeof AuthenticatedChatChatIdInfoRoute
   '/_authenticated/chat/$chatId/media': typeof AuthenticatedChatChatIdMediaRoute
   '/_authenticated/chat/$chatId/report': typeof AuthenticatedChatChatIdReportRoute
@@ -545,6 +574,7 @@ export interface FileRoutesById {
   '/_authenticated/matches/$matchId/note': typeof AuthenticatedMatchesMatchIdNoteRoute
   '/_authenticated/matches/$matchId/report': typeof AuthenticatedMatchesMatchIdReportRoute
   '/_authenticated/matches/$matchId/unmatch': typeof AuthenticatedMatchesMatchIdUnmatchRoute
+  '/_authenticated/notifications/$notificationId/delete': typeof AuthenticatedNotificationsNotificationIdDeleteRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -589,11 +619,13 @@ export interface FileRouteTypes {
     | '/discover/no-more-profiles'
     | '/home/college-rankings'
     | '/matches/$matchId'
+    | '/notifications/$notificationId'
     | '/api/public/push'
     | '/chat/'
     | '/discover/'
     | '/home/'
     | '/matches/'
+    | '/notifications/'
     | '/chat/$chatId/info'
     | '/chat/$chatId/media'
     | '/chat/$chatId/report'
@@ -605,6 +637,7 @@ export interface FileRouteTypes {
     | '/matches/$matchId/note'
     | '/matches/$matchId/report'
     | '/matches/$matchId/unmatch'
+    | '/notifications/$notificationId/delete'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -641,11 +674,13 @@ export interface FileRouteTypes {
     | '/discover/no-more-profiles'
     | '/home/college-rankings'
     | '/matches/$matchId'
+    | '/notifications/$notificationId'
     | '/api/public/push'
     | '/chat'
     | '/discover'
     | '/home'
     | '/matches'
+    | '/notifications'
     | '/chat/$chatId/info'
     | '/chat/$chatId/media'
     | '/chat/$chatId/report'
@@ -657,6 +692,7 @@ export interface FileRouteTypes {
     | '/matches/$matchId/note'
     | '/matches/$matchId/report'
     | '/matches/$matchId/unmatch'
+    | '/notifications/$notificationId/delete'
   id:
     | '__root__'
     | '/_authenticated'
@@ -701,11 +737,13 @@ export interface FileRouteTypes {
     | '/_authenticated/discover/no-more-profiles'
     | '/_authenticated/home/college-rankings'
     | '/_authenticated/matches/$matchId'
+    | '/_authenticated/notifications/$notificationId'
     | '/api/public/push'
     | '/_authenticated/chat/'
     | '/_authenticated/discover/'
     | '/_authenticated/home/'
     | '/_authenticated/matches/'
+    | '/_authenticated/notifications/'
     | '/_authenticated/chat/$chatId/info'
     | '/_authenticated/chat/$chatId/media'
     | '/_authenticated/chat/$chatId/report'
@@ -717,6 +755,7 @@ export interface FileRouteTypes {
     | '/_authenticated/matches/$matchId/note'
     | '/_authenticated/matches/$matchId/report'
     | '/_authenticated/matches/$matchId/unmatch'
+    | '/_authenticated/notifications/$notificationId/delete'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -1000,6 +1039,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedChatRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/notifications/': {
+      id: '/_authenticated/notifications/'
+      path: '/notifications'
+      fullPath: '/notifications/'
+      preLoaderRoute: typeof AuthenticatedNotificationsIndexRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/matches/': {
       id: '/_authenticated/matches/'
       path: '/'
@@ -1035,6 +1081,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiPublicPushRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/_authenticated/notifications/$notificationId': {
+      id: '/_authenticated/notifications/$notificationId'
+      path: '/notifications/$notificationId'
+      fullPath: '/notifications/$notificationId'
+      preLoaderRoute: typeof AuthenticatedNotificationsNotificationIdRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/matches/$matchId': {
       id: '/_authenticated/matches/$matchId'
       path: '/$matchId'
@@ -1062,6 +1115,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/chat/$chatId'
       preLoaderRoute: typeof AuthenticatedChatChatIdRouteImport
       parentRoute: typeof AuthenticatedChatRoute
+    }
+    '/_authenticated/notifications/$notificationId/delete': {
+      id: '/_authenticated/notifications/$notificationId/delete'
+      path: '/delete'
+      fullPath: '/notifications/$notificationId/delete'
+      preLoaderRoute: typeof AuthenticatedNotificationsNotificationIdDeleteRouteImport
+      parentRoute: typeof AuthenticatedNotificationsNotificationIdRoute
     }
     '/_authenticated/matches/$matchId/unmatch': {
       id: '/_authenticated/matches/$matchId/unmatch'
@@ -1251,11 +1311,28 @@ const AuthenticatedMatchesRouteChildren: AuthenticatedMatchesRouteChildren = {
 const AuthenticatedMatchesRouteWithChildren =
   AuthenticatedMatchesRoute._addFileChildren(AuthenticatedMatchesRouteChildren)
 
+interface AuthenticatedNotificationsNotificationIdRouteChildren {
+  AuthenticatedNotificationsNotificationIdDeleteRoute: typeof AuthenticatedNotificationsNotificationIdDeleteRoute
+}
+
+const AuthenticatedNotificationsNotificationIdRouteChildren: AuthenticatedNotificationsNotificationIdRouteChildren =
+  {
+    AuthenticatedNotificationsNotificationIdDeleteRoute:
+      AuthenticatedNotificationsNotificationIdDeleteRoute,
+  }
+
+const AuthenticatedNotificationsNotificationIdRouteWithChildren =
+  AuthenticatedNotificationsNotificationIdRoute._addFileChildren(
+    AuthenticatedNotificationsNotificationIdRouteChildren,
+  )
+
 interface AuthenticatedRouteRouteChildren {
   AuthenticatedChatRoute: typeof AuthenticatedChatRouteWithChildren
   AuthenticatedDiscoverRoute: typeof AuthenticatedDiscoverRouteWithChildren
   AuthenticatedHomeRoute: typeof AuthenticatedHomeRouteWithChildren
   AuthenticatedMatchesRoute: typeof AuthenticatedMatchesRouteWithChildren
+  AuthenticatedNotificationsNotificationIdRoute: typeof AuthenticatedNotificationsNotificationIdRouteWithChildren
+  AuthenticatedNotificationsIndexRoute: typeof AuthenticatedNotificationsIndexRoute
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
@@ -1263,6 +1340,9 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedDiscoverRoute: AuthenticatedDiscoverRouteWithChildren,
   AuthenticatedHomeRoute: AuthenticatedHomeRouteWithChildren,
   AuthenticatedMatchesRoute: AuthenticatedMatchesRouteWithChildren,
+  AuthenticatedNotificationsNotificationIdRoute:
+    AuthenticatedNotificationsNotificationIdRouteWithChildren,
+  AuthenticatedNotificationsIndexRoute: AuthenticatedNotificationsIndexRoute,
 }
 
 const AuthenticatedRouteRouteWithChildren =

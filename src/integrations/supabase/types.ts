@@ -698,12 +698,47 @@ export type Database = {
           },
         ]
       }
+      notification_preferences: {
+        Row: {
+          category: string
+          created_at: string
+          email: boolean
+          id: string
+          in_app: boolean
+          push: boolean
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          category: string
+          created_at?: string
+          email?: boolean
+          id?: string
+          in_app?: boolean
+          push?: boolean
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          category?: string
+          created_at?: string
+          email?: boolean
+          id?: string
+          in_app?: boolean
+          push?: boolean
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       notifications: {
         Row: {
           body: string | null
           created_at: string
           data: Json
+          deleted_at: string | null
           id: string
+          priority: string
           read_at: string | null
           title: string
           type: string
@@ -713,7 +748,9 @@ export type Database = {
           body?: string | null
           created_at?: string
           data?: Json
+          deleted_at?: string | null
           id?: string
+          priority?: string
           read_at?: string | null
           title: string
           type?: string
@@ -723,7 +760,9 @@ export type Database = {
           body?: string | null
           created_at?: string
           data?: Json
+          deleted_at?: string | null
           id?: string
+          priority?: string
           read_at?: string | null
           title?: string
           type?: string
@@ -1068,7 +1107,9 @@ export type Database = {
       }
       is_active_member: { Args: { _folder: string }; Returns: boolean }
       is_chat_participant: { Args: { _match_id: string }; Returns: boolean }
+      mark_all_notifications_read: { Args: never; Returns: number }
       mark_delivered: { Args: { _match_id: string }; Returns: number }
+      mark_notification_read: { Args: { _id: string }; Returns: number }
       mark_read: { Args: { _match_id: string }; Returns: number }
       match_detail: { Args: { _match_id: string }; Returns: Json }
       match_participants: {
@@ -1118,8 +1159,14 @@ export type Database = {
         }[]
       }
       note_status: { Args: { _match_id: string }; Returns: boolean }
+      notif_channel_enabled: {
+        Args: { _category: string; _channel: string; _user_id: string }
+        Returns: boolean
+      }
+      notification_category: { Args: { _type: string }; Returns: string }
       phone_available: { Args: { _e164: string }; Returns: boolean }
       platform_stats: { Args: never; Returns: Json }
+      soft_delete_notification: { Args: { _id: string }; Returns: boolean }
       swipe_profile: {
         Args: {
           _action: Database["public"]["Enums"]["swipe_action"]
@@ -1132,6 +1179,7 @@ export type Database = {
         Returns: Json
       }
       unmatch: { Args: { _match_id: string }; Returns: boolean }
+      unread_notifications_count: { Args: never; Returns: number }
     }
     Enums: {
       account_status: "active" | "suspended" | "deleted"
