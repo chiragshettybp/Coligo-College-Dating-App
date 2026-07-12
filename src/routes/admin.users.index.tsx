@@ -74,7 +74,7 @@ const SORTS: { value: AdminUserSort; label: string }[] = [
   { value: "profile_completion", label: "Profile completion" },
 ];
 
-export const Route = createFileRoute("/admin/users")({
+export const Route = createFileRoute("/admin/users/")({
   head: () => ({
     meta: [
       { title: "User management — Coligo admin" },
