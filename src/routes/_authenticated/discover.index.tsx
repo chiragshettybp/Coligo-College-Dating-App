@@ -143,6 +143,7 @@ function DiscoverFeedPage() {
     <DiscoverShell active="discover">
       <TopBar
         title="Discover"
+        onBack={() => navigate({ to: "/home" })}
         trailing={
           <NavIconButton label="Notifications" onClick={() => toast("No new notifications")}>
             <Bell style={{ width: 20, height: 20 }} />
