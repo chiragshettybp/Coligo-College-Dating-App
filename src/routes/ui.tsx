@@ -892,7 +892,11 @@ function UIShowcase() {
             <ChatHeader />
             <div
               className="flex flex-col"
-              style={{ padding: `${spacing[4]}px ${spacing[4]}px ${spacing[3]}px`, gap: 2 }}
+              style={{
+                padding: `${spacing[4]}px ${spacing[4]}px ${spacing[3]}px`,
+                gap: 2,
+                background: "linear-gradient(180deg, #f6f7f9 0%, #f3f4f6 100%)",
+              }}
             >
               <DayDivider label="Today" />
 
