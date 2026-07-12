@@ -387,23 +387,49 @@ export function Avatar({
     </div>
   );
 
+  const glowBlur = Math.max(10, Math.round(px * 0.26));
+
   return (
-    <div className="relative inline-block" style={{ width: px, height: px }}>
+    <div
+      className={`relative inline-block ${ring ? "ds-halo" : ""}`}
+      style={{ width: px, height: px }}
+    >
+      {ring && (
+        <>
+          {/* Layer 3 — soft outer white diffusion + separation from background. */}
+          <div
+            className="absolute rounded-full"
+            style={{
+              inset: 0,
+              boxShadow: `0 0 ${glowBlur}px rgba(255,255,255,0.30), 0 0 ${glowBlur * 2}px rgba(255,255,255,0.12), 0 10px 22px rgba(0,0,0,0.45)`,
+            }}
+          />
+          {/* Layer 2 + 4 — semi-transparent white ring with a slow moving specular arc. */}
+          <div
+            className="ds-halo-sweep absolute rounded-full"
+            style={{ inset: 0, background: HALO_SWEEP }}
+          />
+          {/* Dark gap so the ring reads as light wrapping the avatar. */}
+          <div
+            className="absolute rounded-full"
+            style={{ inset: ringW, background: AVATAR_GAP }}
+          />
+        </>
+      )}
+
+      {/* Disc — Layer 1 crisp white edge sits right against the photo. */}
       <div
-        className="h-full w-full rounded-full"
+        className="absolute rounded-full"
         style={{
-          padding: ring ? ringW : 0,
-          background: ring ? STORY_RING : "transparent",
-          boxShadow: `${shadows.soft}, 0 8px 20px rgba(0,0,0,0.4)`,
+          inset: ring ? ringW + gapW : 0,
+          boxShadow: ring
+            ? "0 0 0 1px rgba(255,255,255,0.9), 0 0 6px rgba(255,255,255,0.35)"
+            : shadows.soft,
         }}
       >
-        <div
-          className="h-full w-full rounded-full"
-          style={{ padding: ring ? gapW : 0, background: ring ? AVATAR_GAP : "transparent" }}
-        >
-          {disc}
-        </div>
+        {disc}
       </div>
+
 
       {status && (
         <span
