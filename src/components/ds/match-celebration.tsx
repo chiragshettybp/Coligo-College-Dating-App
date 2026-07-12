@@ -253,7 +253,6 @@ export function MatchCelebration({
   const indicators = [
     { icon: <GraduationCap style={{ width: 15, height: 15 }} />, label: shared.college },
     { icon: <CalendarDays style={{ width: 15, height: 15 }} />, label: shared.semester },
-    { icon: <Sparkles style={{ width: 15, height: 15 }} />, label: `${shared.interests.length} shared interests` },
     { icon: <Heart style={{ width: 15, height: 15 }} />, label: `${shared.compatibility}% compatibility` },
   ];
 
