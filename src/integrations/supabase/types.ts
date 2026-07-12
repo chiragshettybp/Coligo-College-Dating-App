@@ -637,34 +637,46 @@ export type Database = {
       }
       messages: {
         Row: {
+          audio_duration_ms: number | null
+          audio_path: string | null
           body: string
           created_at: string
+          delivered_at: string | null
           id: string
           image_path: string | null
           kind: string
           match_id: string
+          reactions: Json
           read_at: string | null
           reply_to: string | null
           sender_id: string
         }
         Insert: {
+          audio_duration_ms?: number | null
+          audio_path?: string | null
           body?: string
           created_at?: string
+          delivered_at?: string | null
           id?: string
           image_path?: string | null
           kind?: string
           match_id: string
+          reactions?: Json
           read_at?: string | null
           reply_to?: string | null
           sender_id: string
         }
         Update: {
+          audio_duration_ms?: number | null
+          audio_path?: string | null
           body?: string
           created_at?: string
+          delivered_at?: string | null
           id?: string
           image_path?: string | null
           kind?: string
           match_id?: string
+          reactions?: Json
           read_at?: string | null
           reply_to?: string | null
           sender_id?: string
@@ -1056,6 +1068,7 @@ export type Database = {
       }
       is_active_member: { Args: { _folder: string }; Returns: boolean }
       is_chat_participant: { Args: { _match_id: string }; Returns: boolean }
+      mark_delivered: { Args: { _match_id: string }; Returns: number }
       mark_read: { Args: { _match_id: string }; Returns: number }
       match_detail: { Args: { _match_id: string }; Returns: Json }
       match_participants: {
@@ -1112,6 +1125,10 @@ export type Database = {
           _action: Database["public"]["Enums"]["swipe_action"]
           _target: string
         }
+        Returns: Json
+      }
+      toggle_reaction: {
+        Args: { _emoji: string; _message_id: string }
         Returns: Json
       }
       unmatch: { Args: { _match_id: string }; Returns: boolean }
