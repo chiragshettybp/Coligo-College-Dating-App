@@ -17,6 +17,7 @@ import {
   Smile,
   ArrowUp,
   Plus,
+  Mic,
   X,
 } from "lucide-react";
 
