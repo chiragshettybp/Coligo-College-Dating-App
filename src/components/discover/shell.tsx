@@ -29,7 +29,6 @@ export function DiscoverShell({
   maxWidth?: number;
 }) {
   const navigate = useNavigate();
-  const [comingSoon, setComingSoon] = useState<string | null>(null);
 
   const navItems: BottomNavItem[] = [
     { icon: (p) => <Heart {...p} fill="currentColor" />, label: "Home" },
