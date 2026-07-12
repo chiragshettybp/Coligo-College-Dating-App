@@ -892,7 +892,11 @@ function UIShowcase() {
             <ChatHeader />
             <div
               className="flex flex-col"
-              style={{ padding: `${spacing[4]}px ${spacing[4]}px ${spacing[3]}px`, gap: 2 }}
+              style={{
+                padding: `${spacing[4]}px ${spacing[4]}px ${spacing[3]}px`,
+                gap: 2,
+                background: "linear-gradient(180deg, #f6f7f9 0%, #f3f4f6 100%)",
+              }}
             >
               <DayDivider label="Today" />
 
@@ -2446,12 +2450,12 @@ function bubbleRadii(mine: boolean, pos: GroupPos) {
 }
 
 function Ticks({ state }: { state: MsgState }) {
-  const color = state === "read" ? colors.primary : "rgba(255,255,255,0.7)";
+  const color = state === "read" ? colors.primary : colors.textMuted;
   if (state === "sending")
     return (
       <span
         className="ds-rec-pulse inline-block rounded-full"
-        style={{ width: 9, height: 9, border: `1.5px solid rgba(255,255,255,0.6)` }}
+        style={{ width: 9, height: 9, border: `1.5px solid ${colors.textMuted}` }}
         aria-label="Sending"
       />
     );
@@ -2518,9 +2522,9 @@ function Bubble({
             fontSize: 15,
             lineHeight: 1.35,
             fontWeight: weights.medium,
-            color: "#fff",
+            color: isMine ? "#ffffff" : colors.textPrimary,
             background: isMine ? gradients.primaryButton : surfaces.glassSoft,
-            border: `1px solid ${isMine ? "transparent" : surfaces.border}`,
+            border: `1px solid ${isMine ? "transparent" : surfaces.borderSoft}`,
             boxShadow: isMine ? shadows.primaryGlow : shadows.soft,
             wordBreak: "break-word",
           }}
@@ -2535,8 +2539,8 @@ function Bubble({
               bottom: -12,
               [isMine ? "right" : "left"]: 10,
               padding: "2px 7px",
-              background: "rgba(8,12,26,0.9)",
-              border: `1px solid ${surfaces.border}`,
+              background: surfaces.glassSoft,
+              border: `1px solid ${surfaces.borderSoft}`,
               boxShadow: shadows.soft,
               fontSize: 12,
             }}
@@ -2578,7 +2582,8 @@ function ChatHeader() {
       style={{
         padding: `${spacing[3]}px ${spacing[4]}px`,
         borderBottom: `1px solid ${surfaces.borderSoft}`,
-        background: "rgba(8,12,26,0.5)",
+        background: "rgba(255,255,255,0.82)",
+        backdropFilter: "blur(20px)",
       }}
     >
       <button
@@ -2590,13 +2595,13 @@ function ChatHeader() {
       </button>
       <Avatar src={ana} size="sm" status="online" />
       <div className="min-w-0 flex-1">
-        <div style={{ ...type.titleMd, color: "#fff" }} className="truncate">
+        <div style={{ ...type.titleMd, color: colors.textPrimary }} className="truncate">
           Ana Rivera
         </div>
         <div className="flex items-center gap-1.5">
           <span
             className="rounded-full"
-            style={{ width: 7, height: 7, background: colors.success, boxShadow: shadows.glow }}
+            style={{ width: 7, height: 7, background: colors.success }}
           />
           <span style={{ ...type.caption, color: colors.success }}>Active now</span>
         </div>
@@ -2604,14 +2609,14 @@ function ChatHeader() {
       <button
         aria-label="Voice call"
         className="flex shrink-0 items-center justify-center rounded-full"
-        style={{ width: 40, height: 40, color: "#fff", background: surfaces.glassSoft, border: `1px solid ${surfaces.border}` }}
+        style={{ width: 40, height: 40, color: colors.primary, background: "rgba(120,120,128,0.10)", border: `1px solid ${surfaces.borderSoft}` }}
       >
         <Phone style={{ width: 18, height: 18 }} />
       </button>
       <button
         aria-label="Video call"
         className="flex shrink-0 items-center justify-center rounded-full"
-        style={{ width: 40, height: 40, color: "#fff", background: surfaces.glassSoft, border: `1px solid ${surfaces.border}` }}
+        style={{ width: 40, height: 40, color: colors.primary, background: "rgba(120,120,128,0.10)", border: `1px solid ${surfaces.borderSoft}` }}
       >
         <Video style={{ width: 18, height: 18 }} />
       </button>
@@ -2653,13 +2658,16 @@ const WAVE_BARS = [0.4, 0.7, 1, 0.6, 0.85, 0.5, 0.75, 1, 0.55, 0.9, 0.45, 0.7, 0
 
 function VoiceMessage({ mine }: { mine?: boolean }) {
   const isMine = !!mine;
+  const fg = isMine ? "#ffffff" : colors.primary;
+  const dim = isMine ? "rgba(255,255,255,0.4)" : "rgba(60,60,67,0.25)";
+  const meta = isMine ? "rgba(255,255,255,0.85)" : colors.textMuted;
   return (
     <Bubble mine={isMine} groupPos="single" tail time="9:43" state={isMine ? "read" : undefined}>
       <div className="flex items-center gap-3" style={{ minWidth: 190 }}>
         <button
           aria-label="Play voice message"
           className="flex shrink-0 items-center justify-center rounded-full"
-          style={{ width: 34, height: 34, background: "rgba(255,255,255,0.16)", color: "#fff" }}
+          style={{ width: 34, height: 34, background: isMine ? "rgba(255,255,255,0.18)" : "rgba(10,132,255,0.12)", color: fg }}
         >
           <Play style={{ width: 15, height: 15, marginLeft: 1 }} fill="currentColor" />
         </button>
@@ -2671,13 +2679,13 @@ function VoiceMessage({ mine }: { mine?: boolean }) {
                 flex: 1,
                 height: `${Math.round(h * 100)}%`,
                 borderRadius: 2,
-                background: i < 6 ? "#fff" : "rgba(255,255,255,0.4)",
+                background: i < 6 ? fg : dim,
                 transformOrigin: "center",
               }}
             />
           ))}
         </div>
-        <span style={{ ...type.caption, color: "rgba(255,255,255,0.85)" }}>0:12</span>
+        <span style={{ ...type.caption, color: meta }}>0:12</span>
       </div>
     </Bubble>
   );
@@ -2743,7 +2751,8 @@ function Composer() {
       style={{
         padding: `${spacing[2]}px ${spacing[3]}px calc(${spacing[3]}px + env(safe-area-inset-bottom, 0px))`,
         borderTop: `1px solid ${surfaces.borderSoft}`,
-        background: "rgba(8,12,26,0.6)",
+        background: "rgba(255,255,255,0.82)",
+        backdropFilter: "blur(20px)",
       }}
     >
       <ComposerAction icon={<Plus style={{ width: 22, height: 22 }} />} label="Attachments" />
@@ -2753,8 +2762,8 @@ function Composer() {
           minHeight: 42,
           padding: "6px 8px 6px 16px",
           borderRadius: radii.lg,
-          background: surfaces.glassSoft,
-          border: `1px solid ${surfaces.border}`,
+          background: "rgba(120,120,128,0.10)",
+          border: `1px solid ${surfaces.borderSoft}`,
         }}
       >
         <span style={{ ...type.bodyLg, fontSize: 15, color: colors.textMuted, flex: 1 }}>
