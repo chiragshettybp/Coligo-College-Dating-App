@@ -4,7 +4,19 @@
 // Every future screen imports these. Do not re-style; compose.
 // ============================================================================
 import * as React from "react";
-import { Check, Loader2 } from "lucide-react";
+import {
+  Check,
+  Loader2,
+  ShieldCheck,
+  Sparkles,
+  GraduationCap,
+  Building2,
+  CalendarDays,
+  Heart,
+  Flame,
+  Star,
+  Users,
+} from "lucide-react";
 
 import {
   colors,
