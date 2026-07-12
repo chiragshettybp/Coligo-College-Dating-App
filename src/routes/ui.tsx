@@ -2144,8 +2144,8 @@ function Alert({
   );
 }
 
-/** Floating toast — lightweight blurred surface, spring entry, swipe/tap to
- *  dismiss. Stacked and auto-dismissed by ToastHost. */
+/** Floating toast — light card, soft elevation, spring entry, swipe-to-dismiss
+ *  (horizontal) and tap-to-dismiss. Stacked and auto-dismissed by ToastHost. */
 function Toast({
   tone,
   icon,
@@ -2157,23 +2157,57 @@ function Toast({
   message: string;
   onDismiss: () => void;
 }) {
-  const c = feedbackColor[tone];
+  const [dx, setDx] = useState(0);
+  const [leaving, setLeaving] = useState(false);
+  const start = useRef<number | null>(null);
+  const moved = useRef(false);
+
+  const finish = () => {
+    if (leaving) return;
+    setLeaving(true);
+    haptic("light");
+    window.setTimeout(onDismiss, 180);
+  };
+
   return (
     <div
       role="status"
-      onClick={onDismiss}
-      className="ds-toast-in ds-feedback flex items-center gap-2.5 backdrop-blur-xl"
+      onPointerDown={(e) => {
+        start.current = e.clientX;
+        moved.current = false;
+        (e.currentTarget as HTMLElement).setPointerCapture(e.pointerId);
+      }}
+      onPointerMove={(e) => {
+        if (start.current == null) return;
+        const d = e.clientX - start.current;
+        if (Math.abs(d) > 3) moved.current = true;
+        setDx(d);
+      }}
+      onPointerUp={() => {
+        if (start.current == null) return;
+        start.current = null;
+        if (Math.abs(dx) > 96) finish();
+        else setDx(0);
+      }}
+      onClick={() => {
+        if (!moved.current) finish();
+      }}
+      className="ds-toast-in flex items-center gap-2.5"
       style={{
         borderRadius: radii.pill,
-        padding: "9px 16px 9px 10px",
-        background: "linear-gradient(165deg, rgba(28,37,69,0.86), rgba(14,20,48,0.86))",
-        border: `1px solid ${surfaces.border}`,
-        boxShadow: `${shadows.large}, 0 0 22px ${c}22`,
+        padding: "8px 18px 8px 8px",
+        background: surfaces.glassSoft,
+        border: `1px solid ${surfaces.borderSoft}`,
+        boxShadow: shadows.large,
         cursor: "pointer",
+        touchAction: "pan-y",
+        transform: `translateX(${dx}px)`,
+        opacity: leaving ? 0 : Math.max(0, 1 - Math.abs(dx) / 200),
+        transition: start.current == null ? "transform 0.28s cubic-bezier(0.34,1.56,0.64,1), opacity 0.18s ease" : "none",
       }}
     >
-      <FeedbackIcon tone={tone} icon={icon} size={28} />
-      <span style={{ color: "#fff", fontSize: 14, fontWeight: 600, letterSpacing: "-0.01em" }}>
+      <FeedbackIcon tone={tone} icon={icon} size={30} />
+      <span style={{ color: colors.textPrimary, fontSize: 14, fontWeight: 600, letterSpacing: "-0.01em" }}>
         {message}
       </span>
     </div>
