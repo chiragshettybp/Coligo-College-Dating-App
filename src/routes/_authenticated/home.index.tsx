@@ -1,0 +1,489 @@
+// ============================================================================
+// /home — personalized dashboard. Every figure is live Supabase data; online
+// counts come from realtime presence and announcements refresh in realtime.
+// Composed entirely from the /ui design system. Mobile-first vertical scroll.
+// ============================================================================
+import { useEffect, useMemo, useState } from "react";
+import { createFileRoute, useNavigate, useRouter } from "@tanstack/react-router";
+import { useSuspenseQuery, useQueryClient } from "@tanstack/react-query";
+import {
+  Bell,
+  Settings,
+  GraduationCap,
+  Users,
+  Heart,
+  Flame,
+  ChevronRight,
+  TrendingUp,
+  Trophy,
+  Zap,
+  Megaphone,
+  Sparkles,
+  Building2,
+  UserRound,
+} from "lucide-react";
+
+import { supabase } from "@/integrations/supabase/client";
+import {
+  homeDashboardQuery,
+  type HomeDashboard,
+  type GenderMap,
+  type Announcement,
+} from "@/lib/home.functions";
+import { useOnlinePresence } from "@/lib/use-online-presence";
+import {
+  APP_BACKGROUND,
+  FONT_FAMILY,
+  colors,
+  spacing,
+  radii,
+  gradients,
+  shadows,
+  surfaces,
+} from "@/lib/ds";
+import { Text, Avatar, Button, Badge, Skeleton } from "@/components/ds/glass";
+import { Card, CardHeader, StatCard } from "@/components/ds/card";
+import { BottomNav, BottomSheet, NavIconButton, type BottomNavItem } from "@/components/ds/navigation";
+import { EmptyStateFromPreset } from "@/components/ds/empty-state";
+
+export const Route = createFileRoute("/_authenticated/home/")({
+  loader: ({ context }) => context.queryClient.ensureQueryData(homeDashboardQuery()),
+  pendingComponent: HomeSkeleton,
+  errorComponent: HomeError,
+  component: HomeDashboardPage,
+});
+
+/* --------------------------------------------------------------- helpers -- */
+
+function greeting(d = new Date()): string {
+  const h = d.getHours();
+  if (h < 12) return "Good morning";
+  if (h < 17) return "Good afternoon";
+  return "Good evening";
+}
+
+function genderSummary(g: GenderMap): { label: string; parts: { key: string; count: number }[] } {
+  const entries = Object.entries(g).filter(([, v]) => v > 0);
+  const total = entries.reduce((s, [, v]) => s + v, 0);
+  if (total === 0) return { label: "No data yet", parts: [] };
+  const women = g["female"] ?? 0;
+  const men = g["male"] ?? 0;
+  const label =
+    women + men > 0
+      ? `${Math.round((women / (women + men)) * 100)}% / ${Math.round((men / (women + men)) * 100)}% W·M`
+      : `${total} members`;
+  return { label, parts: entries.map(([key, count]) => ({ key, count })) };
+}
+
+function nfmt(n: number): string {
+  if (n >= 1000) return `${(n / 1000).toFixed(n % 1000 === 0 ? 0 : 1)}k`;
+  return String(n);
+}
+
+/* ------------------------------------------------------------ section head - */
+
+function SectionHead({ title, actionLabel, onAction }: { title: string; actionLabel?: string; onAction?: () => void }) {
+  return (
+    <div className="flex items-center justify-between" style={{ marginBottom: spacing[2] }}>
+      <Text variant="headingSm" color={colors.textPrimary}>
+        {title}
+      </Text>
+      {actionLabel && (
+        <button
+          onClick={onAction}
+          className="ds-press inline-flex items-center"
+          style={{ gap: 2, color: colors.primary, background: "transparent", fontWeight: 600, fontSize: 14 }}
+        >
+          {actionLabel}
+          <ChevronRight style={{ width: 16, height: 16 }} />
+        </button>
+      )}
+    </div>
+  );
+}
+
+/* --------------------------------------------------------------- page ----- */
+
+function HomeDashboardPage() {
+  const navigate = useNavigate();
+  const queryClient = useQueryClient();
+  const { data } = useSuspenseQuery(homeDashboardQuery());
+  const [comingSoon, setComingSoon] = useState<string | null>(null);
+  const [openAnn, setOpenAnn] = useState<Announcement | null>(null);
+
+  const online = useOnlinePresence(data.profile.id, data.profile.collegeId);
+
+  // Realtime: refresh dashboard when announcements change.
+  useEffect(() => {
+    const channel = supabase
+      .channel("home:announcements")
+      .on("postgres_changes", { event: "*", schema: "public", table: "announcements" }, () => {
+        queryClient.invalidateQueries({ queryKey: ["home", "dashboard"] });
+      })
+      .subscribe();
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [queryClient]);
+
+  // Refresh stats when the tab regains focus.
+  useEffect(() => {
+    const onFocus = () => queryClient.invalidateQueries({ queryKey: ["home", "dashboard"] });
+    window.addEventListener("focus", onFocus);
+    return () => window.removeEventListener("focus", onFocus);
+  }, [queryClient]);
+
+  const navItems: BottomNavItem[] = useMemo(
+    () => [
+      { icon: (p) => <Heart {...p} fill="currentColor" />, label: "Home" },
+      { icon: (p) => <Flame {...p} />, label: "Discover" },
+      { icon: (p) => <Sparkles {...p} />, label: "Matches", badge: data.matches.mine || undefined },
+      { icon: (p) => <UserRound {...p} />, label: "Profile" },
+    ],
+    [data.matches.mine],
+  );
+
+  const gs = data.college ? genderSummary(data.college.gender) : null;
+
+  return (
+    <div style={{ minHeight: "100vh", background: APP_BACKGROUND, backgroundAttachment: "fixed", fontFamily: FONT_FAMILY }}>
+      <main
+        style={{
+          maxWidth: 560,
+          margin: "0 auto",
+          padding: `${spacing[4]}px ${spacing[4]}px ${spacing[9] + 64}px`,
+          display: "flex",
+          flexDirection: "column",
+          gap: spacing[5],
+        }}
+      >
+        {/* Header */}
+        <header className="flex items-center justify-between" style={{ gap: spacing[2] }}>
+          <button
+            onClick={() => setComingSoon("Profile")}
+            className="ds-press flex items-center"
+            style={{ gap: spacing[2], background: "transparent" }}
+            aria-label="Open profile"
+          >
+            <Avatar
+              src={data.profile.avatarUrl ?? undefined}
+              initials={(data.profile.firstName ?? "U").slice(0, 1).toUpperCase()}
+              size="md"
+              ring
+            />
+            <div style={{ textAlign: "left" }}>
+              <Text variant="caption" tone="muted">
+                {greeting()}
+              </Text>
+              <Text variant="headingSm" color={colors.textPrimary}>
+                {data.profile.firstName ?? "there"} 👋
+              </Text>
+            </div>
+          </button>
+          <div className="flex items-center" style={{ gap: spacing[0] }}>
+            <NavIconButton label="Notifications" onClick={() => setComingSoon("Notifications")}>
+              <Bell style={{ width: 22, height: 22 }} />
+            </NavIconButton>
+            <NavIconButton label="Settings" onClick={() => setComingSoon("Settings")}>
+              <Settings style={{ width: 22, height: 22 }} />
+            </NavIconButton>
+          </div>
+        </header>
+
+        {/* Start swiping CTA */}
+        <Card
+          interactive
+          padding={0}
+          onClick={() => setComingSoon("Discovery")}
+          style={{ background: gradients.primaryButton, boxShadow: shadows.primaryGlow, border: "1px solid transparent" }}
+        >
+          <div className="flex items-center justify-between" style={{ padding: spacing[5], gap: spacing[3] }}>
+            <div style={{ minWidth: 0 }}>
+              <Text variant="overline" style={{ color: "rgba(255,255,255,0.8)" }}>
+                Ready to connect
+              </Text>
+              <Text variant="displaySm" color="#fff" style={{ marginTop: 2 }}>
+                Start swiping
+              </Text>
+              <Text variant="bodySm" style={{ color: "rgba(255,255,255,0.85)", marginTop: spacing[1] }}>
+                Discover verified students near you.
+              </Text>
+            </div>
+            <span
+              aria-hidden
+              className="inline-flex items-center justify-center"
+              style={{ width: 56, height: 56, borderRadius: radii.pill, background: "rgba(255,255,255,0.2)", color: "#fff", flexShrink: 0 }}
+            >
+              <Zap style={{ width: 28, height: 28 }} fill="currentColor" />
+            </span>
+          </div>
+        </Card>
+
+        {/* College card */}
+        <section>
+          <SectionHead title="Your college" />
+          {data.college ? (
+            <Card interactive onClick={() => navigate({ to: "/home/college/$collegeId", params: { collegeId: data.college!.id } })}>
+              <CardHeader
+                leading={
+                  data.college.logoUrl ? (
+                    <Avatar src={data.college.logoUrl} size="lg" />
+                  ) : (
+                    <span
+                      aria-hidden
+                      className="inline-flex items-center justify-center"
+                      style={{ width: 68, height: 68, borderRadius: radii.lg, background: "rgba(10,132,255,0.10)", color: colors.primary }}
+                    >
+                      <GraduationCap style={{ width: 32, height: 32 }} />
+                    </span>
+                  )
+                }
+                title={data.college.name}
+                subtitle={data.college.city ?? undefined}
+                trailing={<ChevronRight style={{ width: 20, height: 20, color: colors.textMuted }} />}
+              />
+              <div className="flex flex-wrap items-center" style={{ gap: spacing[1], marginTop: spacing[3] }}>
+                {data.college.rank != null && (
+                  <Badge tone="warning">
+                    <Trophy style={{ width: 12, height: 12 }} /> Rank #{data.college.rank}
+                  </Badge>
+                )}
+                <Badge tone="primary">
+                  <Users style={{ width: 12, height: 12 }} /> {nfmt(data.college.memberCount)} students
+                </Badge>
+                <Badge tone="neutral">
+                  <Building2 style={{ width: 12, height: 12 }} /> {data.college.departmentCount} departments
+                </Badge>
+                {gs && gs.parts.length > 0 && <Badge tone="accent">{gs.label}</Badge>}
+              </div>
+            </Card>
+          ) : (
+            <EmptyStateFromPreset preset="noCollege" onPrimary={() => navigate({ to: "/onboarding" })} />
+          )}
+        </section>
+
+        {/* Live activity: online + matches today */}
+        <section className="grid" style={{ gridTemplateColumns: "1fr 1fr", gap: spacing[3] }}>
+          <StatCard
+            label="Online now"
+            value={nfmt(online.national)}
+            delta={online.connected ? `${nfmt(online.college)} at your college` : "Reconnecting…"}
+            deltaTone={online.connected ? "up" : "neutral"}
+            icon={<Users style={{ width: 18, height: 18 }} />}
+          />
+          <div onClick={() => setComingSoon("Matches")} className="ds-press" style={{ cursor: "pointer" }}>
+            <StatCard
+              label="Matches today"
+              value={nfmt(data.matches.total)}
+              delta={data.matches.mine > 0 ? `${data.matches.mine} of them yours` : "Make your first"}
+              deltaTone={data.matches.mine > 0 ? "up" : "neutral"}
+              icon={<Heart style={{ width: 18, height: 18 }} />}
+            />
+          </div>
+        </section>
+
+        {/* Rankings preview */}
+        <section>
+          <SectionHead title="College rankings" actionLabel="View all" onAction={() => navigate({ to: "/home/college-rankings" })} />
+          {data.rankingsPreview.length > 0 ? (
+            <Card padding={0}>
+              {data.rankingsPreview.map((r, i) => (
+                <button
+                  key={r.id}
+                  onClick={() => navigate({ to: "/home/college/$collegeId", params: { collegeId: r.id } })}
+                  className="ds-press flex w-full items-center"
+                  style={{
+                    gap: spacing[2],
+                    padding: spacing[3],
+                    background: "transparent",
+                    borderTop: i === 0 ? "none" : `1px solid ${surfaces.borderSoft}`,
+                    textAlign: "left",
+                  }}
+                >
+                  <Text variant="headingSm" color={i === 0 ? colors.warning : colors.textMuted} style={{ width: 28 }} numeric>
+                    {r.rank}
+                  </Text>
+                  <div className="min-w-0 flex-1">
+                    <Text variant="title" color={colors.textPrimary} truncate>
+                      {r.name}
+                    </Text>
+                    <Text variant="caption" tone="muted">
+                      {nfmt(r.memberCount)} students
+                    </Text>
+                  </div>
+                  {r.growth30d > 0 && (
+                    <span className="inline-flex items-center" style={{ gap: 2, color: colors.success, fontSize: 13, fontWeight: 600 }}>
+                      <TrendingUp style={{ width: 14, height: 14 }} /> +{nfmt(r.growth30d)}
+                    </span>
+                  )}
+                </button>
+              ))}
+            </Card>
+          ) : (
+            <Card>
+              <Text variant="body" tone="secondary">
+                Rankings will appear as students join.
+              </Text>
+            </Card>
+          )}
+        </section>
+
+        {/* New members */}
+        <section>
+          <SectionHead title="New members" />
+          {data.newMembers.length > 0 ? (
+            <div className="flex overflow-x-auto" style={{ gap: spacing[3], scrollbarWidth: "none", padding: "2px" }}>
+              {data.newMembers.map((m) => (
+                <button
+                  key={m.id}
+                  onClick={() => setComingSoon("Discovery")}
+                  className="ds-press flex flex-col items-center shrink-0"
+                  style={{ width: 76, background: "transparent" }}
+                >
+                  <Avatar src={m.avatarUrl ?? undefined} initials={(m.name ?? "?").slice(0, 1).toUpperCase()} size="lg" ring />
+                  <Text variant="caption" color={colors.textPrimary} truncate style={{ marginTop: spacing[1], maxWidth: 76 }}>
+                    {m.name?.split(" ")[0] ?? "Member"}
+                  </Text>
+                </button>
+              ))}
+            </div>
+          ) : (
+            <Card>
+              <Text variant="body" tone="secondary">
+                New verified students will show up here.
+              </Text>
+            </Card>
+          )}
+        </section>
+
+        {/* Quick stats */}
+        <section>
+          <SectionHead title="On CampusMatch" />
+          <div className="grid" style={{ gridTemplateColumns: "1fr 1fr", gap: spacing[3] }}>
+            <StatCard label="Verified students" value={nfmt(data.platform.totalStudents)} icon={<GraduationCap style={{ width: 18, height: 18 }} />} />
+            <StatCard label="Colleges" value={nfmt(data.platform.participatingColleges)} icon={<Building2 style={{ width: 18, height: 18 }} />} />
+            <StatCard label="Active today" value={nfmt(data.platform.activeUsers)} icon={<Zap style={{ width: 18, height: 18 }} />} />
+            <StatCard label="Matches today" value={nfmt(data.platform.matchesToday)} icon={<Heart style={{ width: 18, height: 18 }} />} />
+          </div>
+        </section>
+
+        {/* Announcements */}
+        <section>
+          <SectionHead title="Announcements" />
+          {data.announcements.length > 0 ? (
+            <div className="flex flex-col" style={{ gap: spacing[2] }}>
+              {data.announcements.map((a) => (
+                <Card key={a.id} interactive onClick={() => setOpenAnn(a)}>
+                  <CardHeader
+                    leading={
+                      <span
+                        aria-hidden
+                        className="inline-flex items-center justify-center"
+                        style={{ width: 40, height: 40, borderRadius: radii.md, background: "rgba(10,132,255,0.10)", color: colors.primary }}
+                      >
+                        <Megaphone style={{ width: 20, height: 20 }} />
+                      </span>
+                    }
+                    title={
+                      <div className="flex items-center" style={{ gap: spacing[1] }}>
+                        <Text variant="title" color={colors.textPrimary} truncate>
+                          {a.title}
+                        </Text>
+                        {a.isPinned && <Badge tone="warning">Pinned</Badge>}
+                      </div>
+                    }
+                    subtitle={<Text variant="bodySm" tone="secondary" clamp={1}>{a.body}</Text>}
+                    trailing={<ChevronRight style={{ width: 18, height: 18, color: colors.textMuted }} />}
+                  />
+                </Card>
+              ))}
+            </div>
+          ) : (
+            <Card>
+              <Text variant="body" tone="secondary">
+                No announcements right now — you're all caught up.
+              </Text>
+            </Card>
+          )}
+        </section>
+      </main>
+
+      {/* Bottom navigation */}
+      <div style={{ position: "fixed", left: 0, right: 0, bottom: 0, padding: `0 ${spacing[4]}px ${spacing[3]}px`, zIndex: 30, pointerEvents: "none" }}>
+        <div style={{ maxWidth: 560, margin: "0 auto", pointerEvents: "auto" }}>
+          <BottomNav
+            items={navItems}
+            active={0}
+            onChange={(i) => {
+              if (i === 1) setComingSoon("Discovery");
+              else if (i === 2) setComingSoon("Matches");
+              else if (i === 3) setComingSoon("Profile");
+            }}
+          />
+        </div>
+      </div>
+
+      {/* Announcement detail */}
+      <BottomSheet open={openAnn != null} onClose={() => setOpenAnn(null)} title={openAnn?.title}>
+        <Text variant="body" tone="secondary" style={{ whiteSpace: "pre-wrap", marginTop: spacing[2] }}>
+          {openAnn?.body}
+        </Text>
+        <Button variant="secondary" fullWidth style={{ marginTop: spacing[5] }} onClick={() => setOpenAnn(null)}>
+          Close
+        </Button>
+      </BottomSheet>
+
+      {/* Coming-soon for modules not yet built */}
+      <BottomSheet open={comingSoon != null} onClose={() => setComingSoon(null)} title={`${comingSoon ?? ""} — coming soon`}>
+        <Text variant="body" tone="secondary" style={{ marginTop: spacing[2] }}>
+          The {comingSoon} experience is on its way. It will plug into this dashboard using your current session.
+        </Text>
+        <Button variant="primary" fullWidth style={{ marginTop: spacing[5] }} onClick={() => setComingSoon(null)}>
+          Got it
+        </Button>
+      </BottomSheet>
+    </div>
+  );
+}
+
+/* ------------------------------------------------------- pending / error -- */
+
+function Shell({ children }: { children: React.ReactNode }) {
+  return (
+    <div style={{ minHeight: "100vh", background: APP_BACKGROUND, backgroundAttachment: "fixed", fontFamily: FONT_FAMILY }}>
+      <div style={{ maxWidth: 560, margin: "0 auto", padding: spacing[4], display: "flex", flexDirection: "column", gap: spacing[4] }}>
+        {children}
+      </div>
+    </div>
+  );
+}
+
+function HomeSkeleton() {
+  return (
+    <Shell>
+      <div className="flex items-center" style={{ gap: spacing[2] }}>
+        <Skeleton style={{ width: 52, height: 52, borderRadius: 999 }} />
+        <div style={{ flex: 1 }}>
+          <Skeleton style={{ width: 120, height: 12 }} />
+          <Skeleton style={{ width: 160, height: 20, marginTop: 8 }} />
+        </div>
+      </div>
+      <Skeleton style={{ height: 120, borderRadius: radii.lg }} />
+      <Skeleton style={{ height: 150, borderRadius: radii.lg }} />
+      <div className="grid" style={{ gridTemplateColumns: "1fr 1fr", gap: spacing[3] }}>
+        <Skeleton style={{ height: 110, borderRadius: radii.lg }} />
+        <Skeleton style={{ height: 110, borderRadius: radii.lg }} />
+      </div>
+      <Skeleton style={{ height: 220, borderRadius: radii.lg }} />
+    </Shell>
+  );
+}
+
+function HomeError() {
+  const router = useRouter();
+  return (
+    <Shell>
+      <EmptyStateFromPreset preset="offline" onPrimary={() => router.invalidate()} />
+    </Shell>
+  );
+}
