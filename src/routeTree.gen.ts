@@ -47,6 +47,7 @@ import { Route as AuthenticatedMatchesRouteImport } from './routes/_authenticate
 import { Route as AuthenticatedHomeRouteImport } from './routes/_authenticated/home'
 import { Route as AuthenticatedDiscoverRouteImport } from './routes/_authenticated/discover'
 import { Route as AuthenticatedChatRouteImport } from './routes/_authenticated/chat'
+import { Route as AuthenticatedSettingsIndexRouteImport } from './routes/_authenticated/settings.index'
 import { Route as AuthenticatedProfileIndexRouteImport } from './routes/_authenticated/profile.index'
 import { Route as AuthenticatedNotificationsIndexRouteImport } from './routes/_authenticated/notifications.index'
 import { Route as AuthenticatedMatchesIndexRouteImport } from './routes/_authenticated/matches.index'
@@ -54,6 +55,15 @@ import { Route as AuthenticatedHomeIndexRouteImport } from './routes/_authentica
 import { Route as AuthenticatedDiscoverIndexRouteImport } from './routes/_authenticated/discover.index'
 import { Route as AuthenticatedChatIndexRouteImport } from './routes/_authenticated/chat.index'
 import { Route as ApiPublicPushRouteImport } from './routes/api/public/push'
+import { Route as AuthenticatedSettingsSecurityRouteImport } from './routes/_authenticated/settings.security'
+import { Route as AuthenticatedSettingsPrivacyRouteImport } from './routes/_authenticated/settings.privacy'
+import { Route as AuthenticatedSettingsNotificationsRouteImport } from './routes/_authenticated/settings.notifications'
+import { Route as AuthenticatedSettingsLogoutRouteImport } from './routes/_authenticated/settings.logout'
+import { Route as AuthenticatedSettingsHelpRouteImport } from './routes/_authenticated/settings.help'
+import { Route as AuthenticatedSettingsDeleteAccountRouteImport } from './routes/_authenticated/settings.delete-account'
+import { Route as AuthenticatedSettingsBlockedUsersRouteImport } from './routes/_authenticated/settings.blocked-users'
+import { Route as AuthenticatedSettingsAccountRouteImport } from './routes/_authenticated/settings.account'
+import { Route as AuthenticatedSettingsAboutRouteImport } from './routes/_authenticated/settings.about'
 import { Route as AuthenticatedProfilePreviewRouteImport } from './routes/_authenticated/profile.preview'
 import { Route as AuthenticatedProfilePreferencesRouteImport } from './routes/_authenticated/profile.preferences'
 import { Route as AuthenticatedProfilePhotosRouteImport } from './routes/_authenticated/profile.photos'
@@ -77,6 +87,7 @@ import { Route as AuthenticatedDiscoverMatchMatchIdRouteImport } from './routes/
 import { Route as AuthenticatedChatChatIdReportRouteImport } from './routes/_authenticated/chat.$chatId.report'
 import { Route as AuthenticatedChatChatIdMediaRouteImport } from './routes/_authenticated/chat.$chatId.media'
 import { Route as AuthenticatedChatChatIdInfoRouteImport } from './routes/_authenticated/chat.$chatId.info'
+import { Route as AuthenticatedSettingsBlockedUsersUserIdUnblockRouteImport } from './routes/_authenticated/settings.blocked-users.$userId.unblock'
 
 const UiRoute = UiRouteImport.update({
   id: '/ui',
@@ -268,6 +279,12 @@ const AuthenticatedChatRoute = AuthenticatedChatRouteImport.update({
   path: '/chat',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedSettingsIndexRoute =
+  AuthenticatedSettingsIndexRouteImport.update({
+    id: '/settings/',
+    path: '/settings/',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const AuthenticatedProfileIndexRoute =
   AuthenticatedProfileIndexRouteImport.update({
     id: '/profile/',
@@ -307,6 +324,60 @@ const ApiPublicPushRoute = ApiPublicPushRouteImport.update({
   path: '/api/public/push',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AuthenticatedSettingsSecurityRoute =
+  AuthenticatedSettingsSecurityRouteImport.update({
+    id: '/settings/security',
+    path: '/settings/security',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedSettingsPrivacyRoute =
+  AuthenticatedSettingsPrivacyRouteImport.update({
+    id: '/settings/privacy',
+    path: '/settings/privacy',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedSettingsNotificationsRoute =
+  AuthenticatedSettingsNotificationsRouteImport.update({
+    id: '/settings/notifications',
+    path: '/settings/notifications',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedSettingsLogoutRoute =
+  AuthenticatedSettingsLogoutRouteImport.update({
+    id: '/settings/logout',
+    path: '/settings/logout',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedSettingsHelpRoute =
+  AuthenticatedSettingsHelpRouteImport.update({
+    id: '/settings/help',
+    path: '/settings/help',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedSettingsDeleteAccountRoute =
+  AuthenticatedSettingsDeleteAccountRouteImport.update({
+    id: '/settings/delete-account',
+    path: '/settings/delete-account',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedSettingsBlockedUsersRoute =
+  AuthenticatedSettingsBlockedUsersRouteImport.update({
+    id: '/settings/blocked-users',
+    path: '/settings/blocked-users',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedSettingsAccountRoute =
+  AuthenticatedSettingsAccountRouteImport.update({
+    id: '/settings/account',
+    path: '/settings/account',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedSettingsAboutRoute =
+  AuthenticatedSettingsAboutRouteImport.update({
+    id: '/settings/about',
+    path: '/settings/about',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const AuthenticatedProfilePreviewRoute =
   AuthenticatedProfilePreviewRouteImport.update({
     id: '/profile/preview',
@@ -443,6 +514,12 @@ const AuthenticatedChatChatIdInfoRoute =
     path: '/info',
     getParentRoute: () => AuthenticatedChatChatIdRoute,
   } as any)
+const AuthenticatedSettingsBlockedUsersUserIdUnblockRoute =
+  AuthenticatedSettingsBlockedUsersUserIdUnblockRouteImport.update({
+    id: '/$userId/unblock',
+    path: '/$userId/unblock',
+    getParentRoute: () => AuthenticatedSettingsBlockedUsersRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof PublicIndexRoute
@@ -492,6 +569,15 @@ export interface FileRoutesByFullPath {
   '/profile/photos': typeof AuthenticatedProfilePhotosRoute
   '/profile/preferences': typeof AuthenticatedProfilePreferencesRoute
   '/profile/preview': typeof AuthenticatedProfilePreviewRoute
+  '/settings/about': typeof AuthenticatedSettingsAboutRoute
+  '/settings/account': typeof AuthenticatedSettingsAccountRoute
+  '/settings/blocked-users': typeof AuthenticatedSettingsBlockedUsersRouteWithChildren
+  '/settings/delete-account': typeof AuthenticatedSettingsDeleteAccountRoute
+  '/settings/help': typeof AuthenticatedSettingsHelpRoute
+  '/settings/logout': typeof AuthenticatedSettingsLogoutRoute
+  '/settings/notifications': typeof AuthenticatedSettingsNotificationsRoute
+  '/settings/privacy': typeof AuthenticatedSettingsPrivacyRoute
+  '/settings/security': typeof AuthenticatedSettingsSecurityRoute
   '/api/public/push': typeof ApiPublicPushRoute
   '/chat/': typeof AuthenticatedChatIndexRoute
   '/discover/': typeof AuthenticatedDiscoverIndexRoute
@@ -499,6 +585,7 @@ export interface FileRoutesByFullPath {
   '/matches/': typeof AuthenticatedMatchesIndexRoute
   '/notifications/': typeof AuthenticatedNotificationsIndexRoute
   '/profile/': typeof AuthenticatedProfileIndexRoute
+  '/settings/': typeof AuthenticatedSettingsIndexRoute
   '/chat/$chatId/info': typeof AuthenticatedChatChatIdInfoRoute
   '/chat/$chatId/media': typeof AuthenticatedChatChatIdMediaRoute
   '/chat/$chatId/report': typeof AuthenticatedChatChatIdReportRoute
@@ -511,6 +598,7 @@ export interface FileRoutesByFullPath {
   '/matches/$matchId/report': typeof AuthenticatedMatchesMatchIdReportRoute
   '/matches/$matchId/unmatch': typeof AuthenticatedMatchesMatchIdUnmatchRoute
   '/notifications/$notificationId/delete': typeof AuthenticatedNotificationsNotificationIdDeleteRoute
+  '/settings/blocked-users/$userId/unblock': typeof AuthenticatedSettingsBlockedUsersUserIdUnblockRoute
 }
 export interface FileRoutesByTo {
   '/': typeof PublicIndexRoute
@@ -554,6 +642,15 @@ export interface FileRoutesByTo {
   '/profile/photos': typeof AuthenticatedProfilePhotosRoute
   '/profile/preferences': typeof AuthenticatedProfilePreferencesRoute
   '/profile/preview': typeof AuthenticatedProfilePreviewRoute
+  '/settings/about': typeof AuthenticatedSettingsAboutRoute
+  '/settings/account': typeof AuthenticatedSettingsAccountRoute
+  '/settings/blocked-users': typeof AuthenticatedSettingsBlockedUsersRouteWithChildren
+  '/settings/delete-account': typeof AuthenticatedSettingsDeleteAccountRoute
+  '/settings/help': typeof AuthenticatedSettingsHelpRoute
+  '/settings/logout': typeof AuthenticatedSettingsLogoutRoute
+  '/settings/notifications': typeof AuthenticatedSettingsNotificationsRoute
+  '/settings/privacy': typeof AuthenticatedSettingsPrivacyRoute
+  '/settings/security': typeof AuthenticatedSettingsSecurityRoute
   '/api/public/push': typeof ApiPublicPushRoute
   '/chat': typeof AuthenticatedChatIndexRoute
   '/discover': typeof AuthenticatedDiscoverIndexRoute
@@ -561,6 +658,7 @@ export interface FileRoutesByTo {
   '/matches': typeof AuthenticatedMatchesIndexRoute
   '/notifications': typeof AuthenticatedNotificationsIndexRoute
   '/profile': typeof AuthenticatedProfileIndexRoute
+  '/settings': typeof AuthenticatedSettingsIndexRoute
   '/chat/$chatId/info': typeof AuthenticatedChatChatIdInfoRoute
   '/chat/$chatId/media': typeof AuthenticatedChatChatIdMediaRoute
   '/chat/$chatId/report': typeof AuthenticatedChatChatIdReportRoute
@@ -573,6 +671,7 @@ export interface FileRoutesByTo {
   '/matches/$matchId/report': typeof AuthenticatedMatchesMatchIdReportRoute
   '/matches/$matchId/unmatch': typeof AuthenticatedMatchesMatchIdUnmatchRoute
   '/notifications/$notificationId/delete': typeof AuthenticatedNotificationsNotificationIdDeleteRoute
+  '/settings/blocked-users/$userId/unblock': typeof AuthenticatedSettingsBlockedUsersUserIdUnblockRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -625,6 +724,15 @@ export interface FileRoutesById {
   '/_authenticated/profile/photos': typeof AuthenticatedProfilePhotosRoute
   '/_authenticated/profile/preferences': typeof AuthenticatedProfilePreferencesRoute
   '/_authenticated/profile/preview': typeof AuthenticatedProfilePreviewRoute
+  '/_authenticated/settings/about': typeof AuthenticatedSettingsAboutRoute
+  '/_authenticated/settings/account': typeof AuthenticatedSettingsAccountRoute
+  '/_authenticated/settings/blocked-users': typeof AuthenticatedSettingsBlockedUsersRouteWithChildren
+  '/_authenticated/settings/delete-account': typeof AuthenticatedSettingsDeleteAccountRoute
+  '/_authenticated/settings/help': typeof AuthenticatedSettingsHelpRoute
+  '/_authenticated/settings/logout': typeof AuthenticatedSettingsLogoutRoute
+  '/_authenticated/settings/notifications': typeof AuthenticatedSettingsNotificationsRoute
+  '/_authenticated/settings/privacy': typeof AuthenticatedSettingsPrivacyRoute
+  '/_authenticated/settings/security': typeof AuthenticatedSettingsSecurityRoute
   '/api/public/push': typeof ApiPublicPushRoute
   '/_authenticated/chat/': typeof AuthenticatedChatIndexRoute
   '/_authenticated/discover/': typeof AuthenticatedDiscoverIndexRoute
@@ -632,6 +740,7 @@ export interface FileRoutesById {
   '/_authenticated/matches/': typeof AuthenticatedMatchesIndexRoute
   '/_authenticated/notifications/': typeof AuthenticatedNotificationsIndexRoute
   '/_authenticated/profile/': typeof AuthenticatedProfileIndexRoute
+  '/_authenticated/settings/': typeof AuthenticatedSettingsIndexRoute
   '/_authenticated/chat/$chatId/info': typeof AuthenticatedChatChatIdInfoRoute
   '/_authenticated/chat/$chatId/media': typeof AuthenticatedChatChatIdMediaRoute
   '/_authenticated/chat/$chatId/report': typeof AuthenticatedChatChatIdReportRoute
@@ -644,6 +753,7 @@ export interface FileRoutesById {
   '/_authenticated/matches/$matchId/report': typeof AuthenticatedMatchesMatchIdReportRoute
   '/_authenticated/matches/$matchId/unmatch': typeof AuthenticatedMatchesMatchIdUnmatchRoute
   '/_authenticated/notifications/$notificationId/delete': typeof AuthenticatedNotificationsNotificationIdDeleteRoute
+  '/_authenticated/settings/blocked-users/$userId/unblock': typeof AuthenticatedSettingsBlockedUsersUserIdUnblockRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -695,6 +805,15 @@ export interface FileRouteTypes {
     | '/profile/photos'
     | '/profile/preferences'
     | '/profile/preview'
+    | '/settings/about'
+    | '/settings/account'
+    | '/settings/blocked-users'
+    | '/settings/delete-account'
+    | '/settings/help'
+    | '/settings/logout'
+    | '/settings/notifications'
+    | '/settings/privacy'
+    | '/settings/security'
     | '/api/public/push'
     | '/chat/'
     | '/discover/'
@@ -702,6 +821,7 @@ export interface FileRouteTypes {
     | '/matches/'
     | '/notifications/'
     | '/profile/'
+    | '/settings/'
     | '/chat/$chatId/info'
     | '/chat/$chatId/media'
     | '/chat/$chatId/report'
@@ -714,6 +834,7 @@ export interface FileRouteTypes {
     | '/matches/$matchId/report'
     | '/matches/$matchId/unmatch'
     | '/notifications/$notificationId/delete'
+    | '/settings/blocked-users/$userId/unblock'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -757,6 +878,15 @@ export interface FileRouteTypes {
     | '/profile/photos'
     | '/profile/preferences'
     | '/profile/preview'
+    | '/settings/about'
+    | '/settings/account'
+    | '/settings/blocked-users'
+    | '/settings/delete-account'
+    | '/settings/help'
+    | '/settings/logout'
+    | '/settings/notifications'
+    | '/settings/privacy'
+    | '/settings/security'
     | '/api/public/push'
     | '/chat'
     | '/discover'
@@ -764,6 +894,7 @@ export interface FileRouteTypes {
     | '/matches'
     | '/notifications'
     | '/profile'
+    | '/settings'
     | '/chat/$chatId/info'
     | '/chat/$chatId/media'
     | '/chat/$chatId/report'
@@ -776,6 +907,7 @@ export interface FileRouteTypes {
     | '/matches/$matchId/report'
     | '/matches/$matchId/unmatch'
     | '/notifications/$notificationId/delete'
+    | '/settings/blocked-users/$userId/unblock'
   id:
     | '__root__'
     | '/_authenticated'
@@ -827,6 +959,15 @@ export interface FileRouteTypes {
     | '/_authenticated/profile/photos'
     | '/_authenticated/profile/preferences'
     | '/_authenticated/profile/preview'
+    | '/_authenticated/settings/about'
+    | '/_authenticated/settings/account'
+    | '/_authenticated/settings/blocked-users'
+    | '/_authenticated/settings/delete-account'
+    | '/_authenticated/settings/help'
+    | '/_authenticated/settings/logout'
+    | '/_authenticated/settings/notifications'
+    | '/_authenticated/settings/privacy'
+    | '/_authenticated/settings/security'
     | '/api/public/push'
     | '/_authenticated/chat/'
     | '/_authenticated/discover/'
@@ -834,6 +975,7 @@ export interface FileRouteTypes {
     | '/_authenticated/matches/'
     | '/_authenticated/notifications/'
     | '/_authenticated/profile/'
+    | '/_authenticated/settings/'
     | '/_authenticated/chat/$chatId/info'
     | '/_authenticated/chat/$chatId/media'
     | '/_authenticated/chat/$chatId/report'
@@ -846,6 +988,7 @@ export interface FileRouteTypes {
     | '/_authenticated/matches/$matchId/report'
     | '/_authenticated/matches/$matchId/unmatch'
     | '/_authenticated/notifications/$notificationId/delete'
+    | '/_authenticated/settings/blocked-users/$userId/unblock'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -1129,6 +1272,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedChatRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/settings/': {
+      id: '/_authenticated/settings/'
+      path: '/settings'
+      fullPath: '/settings/'
+      preLoaderRoute: typeof AuthenticatedSettingsIndexRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/profile/': {
       id: '/_authenticated/profile/'
       path: '/profile'
@@ -1177,6 +1327,69 @@ declare module '@tanstack/react-router' {
       fullPath: '/api/public/push'
       preLoaderRoute: typeof ApiPublicPushRouteImport
       parentRoute: typeof rootRouteImport
+    }
+    '/_authenticated/settings/security': {
+      id: '/_authenticated/settings/security'
+      path: '/settings/security'
+      fullPath: '/settings/security'
+      preLoaderRoute: typeof AuthenticatedSettingsSecurityRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/settings/privacy': {
+      id: '/_authenticated/settings/privacy'
+      path: '/settings/privacy'
+      fullPath: '/settings/privacy'
+      preLoaderRoute: typeof AuthenticatedSettingsPrivacyRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/settings/notifications': {
+      id: '/_authenticated/settings/notifications'
+      path: '/settings/notifications'
+      fullPath: '/settings/notifications'
+      preLoaderRoute: typeof AuthenticatedSettingsNotificationsRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/settings/logout': {
+      id: '/_authenticated/settings/logout'
+      path: '/settings/logout'
+      fullPath: '/settings/logout'
+      preLoaderRoute: typeof AuthenticatedSettingsLogoutRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/settings/help': {
+      id: '/_authenticated/settings/help'
+      path: '/settings/help'
+      fullPath: '/settings/help'
+      preLoaderRoute: typeof AuthenticatedSettingsHelpRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/settings/delete-account': {
+      id: '/_authenticated/settings/delete-account'
+      path: '/settings/delete-account'
+      fullPath: '/settings/delete-account'
+      preLoaderRoute: typeof AuthenticatedSettingsDeleteAccountRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/settings/blocked-users': {
+      id: '/_authenticated/settings/blocked-users'
+      path: '/settings/blocked-users'
+      fullPath: '/settings/blocked-users'
+      preLoaderRoute: typeof AuthenticatedSettingsBlockedUsersRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/settings/account': {
+      id: '/_authenticated/settings/account'
+      path: '/settings/account'
+      fullPath: '/settings/account'
+      preLoaderRoute: typeof AuthenticatedSettingsAccountRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/settings/about': {
+      id: '/_authenticated/settings/about'
+      path: '/settings/about'
+      fullPath: '/settings/about'
+      preLoaderRoute: typeof AuthenticatedSettingsAboutRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/profile/preview': {
       id: '/_authenticated/profile/preview'
@@ -1339,6 +1552,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedChatChatIdInfoRouteImport
       parentRoute: typeof AuthenticatedChatChatIdRoute
     }
+    '/_authenticated/settings/blocked-users/$userId/unblock': {
+      id: '/_authenticated/settings/blocked-users/$userId/unblock'
+      path: '/$userId/unblock'
+      fullPath: '/settings/blocked-users/$userId/unblock'
+      preLoaderRoute: typeof AuthenticatedSettingsBlockedUsersUserIdUnblockRouteImport
+      parentRoute: typeof AuthenticatedSettingsBlockedUsersRoute
+    }
   }
 }
 
@@ -1465,6 +1685,21 @@ const AuthenticatedNotificationsNotificationIdRouteWithChildren =
     AuthenticatedNotificationsNotificationIdRouteChildren,
   )
 
+interface AuthenticatedSettingsBlockedUsersRouteChildren {
+  AuthenticatedSettingsBlockedUsersUserIdUnblockRoute: typeof AuthenticatedSettingsBlockedUsersUserIdUnblockRoute
+}
+
+const AuthenticatedSettingsBlockedUsersRouteChildren: AuthenticatedSettingsBlockedUsersRouteChildren =
+  {
+    AuthenticatedSettingsBlockedUsersUserIdUnblockRoute:
+      AuthenticatedSettingsBlockedUsersUserIdUnblockRoute,
+  }
+
+const AuthenticatedSettingsBlockedUsersRouteWithChildren =
+  AuthenticatedSettingsBlockedUsersRoute._addFileChildren(
+    AuthenticatedSettingsBlockedUsersRouteChildren,
+  )
+
 interface AuthenticatedRouteRouteChildren {
   AuthenticatedChatRoute: typeof AuthenticatedChatRouteWithChildren
   AuthenticatedDiscoverRoute: typeof AuthenticatedDiscoverRouteWithChildren
@@ -1477,8 +1712,18 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedProfilePhotosRoute: typeof AuthenticatedProfilePhotosRoute
   AuthenticatedProfilePreferencesRoute: typeof AuthenticatedProfilePreferencesRoute
   AuthenticatedProfilePreviewRoute: typeof AuthenticatedProfilePreviewRoute
+  AuthenticatedSettingsAboutRoute: typeof AuthenticatedSettingsAboutRoute
+  AuthenticatedSettingsAccountRoute: typeof AuthenticatedSettingsAccountRoute
+  AuthenticatedSettingsBlockedUsersRoute: typeof AuthenticatedSettingsBlockedUsersRouteWithChildren
+  AuthenticatedSettingsDeleteAccountRoute: typeof AuthenticatedSettingsDeleteAccountRoute
+  AuthenticatedSettingsHelpRoute: typeof AuthenticatedSettingsHelpRoute
+  AuthenticatedSettingsLogoutRoute: typeof AuthenticatedSettingsLogoutRoute
+  AuthenticatedSettingsNotificationsRoute: typeof AuthenticatedSettingsNotificationsRoute
+  AuthenticatedSettingsPrivacyRoute: typeof AuthenticatedSettingsPrivacyRoute
+  AuthenticatedSettingsSecurityRoute: typeof AuthenticatedSettingsSecurityRoute
   AuthenticatedNotificationsIndexRoute: typeof AuthenticatedNotificationsIndexRoute
   AuthenticatedProfileIndexRoute: typeof AuthenticatedProfileIndexRoute
+  AuthenticatedSettingsIndexRoute: typeof AuthenticatedSettingsIndexRoute
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
@@ -1494,8 +1739,21 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedProfilePhotosRoute: AuthenticatedProfilePhotosRoute,
   AuthenticatedProfilePreferencesRoute: AuthenticatedProfilePreferencesRoute,
   AuthenticatedProfilePreviewRoute: AuthenticatedProfilePreviewRoute,
+  AuthenticatedSettingsAboutRoute: AuthenticatedSettingsAboutRoute,
+  AuthenticatedSettingsAccountRoute: AuthenticatedSettingsAccountRoute,
+  AuthenticatedSettingsBlockedUsersRoute:
+    AuthenticatedSettingsBlockedUsersRouteWithChildren,
+  AuthenticatedSettingsDeleteAccountRoute:
+    AuthenticatedSettingsDeleteAccountRoute,
+  AuthenticatedSettingsHelpRoute: AuthenticatedSettingsHelpRoute,
+  AuthenticatedSettingsLogoutRoute: AuthenticatedSettingsLogoutRoute,
+  AuthenticatedSettingsNotificationsRoute:
+    AuthenticatedSettingsNotificationsRoute,
+  AuthenticatedSettingsPrivacyRoute: AuthenticatedSettingsPrivacyRoute,
+  AuthenticatedSettingsSecurityRoute: AuthenticatedSettingsSecurityRoute,
   AuthenticatedNotificationsIndexRoute: AuthenticatedNotificationsIndexRoute,
   AuthenticatedProfileIndexRoute: AuthenticatedProfileIndexRoute,
+  AuthenticatedSettingsIndexRoute: AuthenticatedSettingsIndexRoute,
 }
 
 const AuthenticatedRouteRouteWithChildren =

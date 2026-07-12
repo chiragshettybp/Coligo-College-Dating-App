@@ -1,58 +1,79 @@
-# Profile Module — Implementation Plan
+# Coligo — Settings Module Plan
 
-## What already exists (reuse, don't rebuild)
-- **Design system**: `src/components/ds/*` (card, navigation, settings, image-viewer, swipe, empty-state, glass) + tokens in `src/lib/ds.ts`. The `/ui` route documents them.
-- **Bottom nav**: `src/components/discover/shell.tsx` already has a **Profile** tab — it currently fires a "coming soon" toast. It will be wired to `/profile`.
-- **Server functions** in `src/lib/onboarding.functions.ts`: `savePhoto`, `deletePhoto`, `reorderPhotos`, `setInterests`, `saveOnboardingStep`, plus public readers `listColleges/listDepartments/listInterests`. These already do RLS-scoped writes and Storage uploads to the `profile-photos` bucket — the Profile module reuses them.
-- **Profile card** used in Discovery (`discover.profile.$userId.tsx` / `discover.functions.ts`) — reused verbatim for `/profile/preview`.
-- **Tables**: `profiles` (full_name, gender, date_of_birth, college_id, graduation_year, semester, department_id, looking_for, bio, avatar_url...), `photos`, `user_interests`, `interests`, `colleges`, `departments`, `settings` (discovery_enabled, push_enabled...). All already have RLS. **No schema changes are required** for the specified fields.
+## What already exists (reused, not rebuilt)
 
-## Scope note
-Everything in the prompt maps to existing columns/tables. I will **not** add speculative columns (profile views, likes, distance, verification). Those are shown as "future-ready" read-only placeholders sourced from real data where it exists (matches/chats counts) and omitted otherwise — no fake numbers.
+- **Design system** (`/ui` = source of truth): `Switch`, `SettingsGroup`, `SettingsItem`, `RadioGroup`, `Checkbox`, `Dropdown`, `Slider`, `CollapsibleGroup`, `DangerZone` in `src/components/ds/settings.tsx`; plus `TopBar`, `EmptyState`, `Skeleton`, `Button`, `DiscoverShell` (bottom nav).
+- **Server fns**: `getPreferences/updatePreferences`, `getNotificationPreferences/updateNotificationPreference`, `getFullProfile`, `getAppConfig`, `getFaqs`, `getLegalDocument`, `getCompanyInfo`, `createSupportTicket`, `blockUser`, `registerDeviceSession`.
+- **Tables**: `settings` (discovery_enabled, push_enabled, email_enabled, match_sort/filters), `notification_preferences` (category/in_app/push/email), `blocks`, `profiles` (verification_status, account_status enum active|suspended|deleted), `device_sessions`, `faqs`, `legal_documents`, `company_information`, `app_versions`.
+- **Realtime** already wired for profile/blocks in Discovery; root handles auth state + sign-out redirect.
+
+Every screen is built by composing the above — no redesign.
+
+## Scope decision on "(future)" items
+
+The prompt marks many controls `(future)`. To honor "no placeholders/fake toggles", I will **build only the controls backed by real data now** and **omit** future-only ones (last active, read receipts, trusted devices, active sessions, 2FA, marketing, licenses). The data model is left extensible so they drop in later. I'll note this in each page's footnote where relevant.
 
 ---
 
-## Phase 1 — Server functions (`src/lib/profile-full.functions.ts`)
-New authenticated (`requireSupabaseAuth`) functions + `queryOptions`:
-- `getFullProfile` — profile row joined to college & department names, primary photo, computed `age`, `memberSince`.
-- `getProfileGallery` — signed URLs for all `photos` rows (reuses onboarding signing logic).
-- `getMyInterests` — user_interests joined to interests.
-- `getProfileStats` — real counts: total matches (`matches`), total chats (matches with messages), created_at. Future metrics omitted.
-- `getProfileCompletion` — server-computed % from photos/bio/interests/department/semester/graduation_year/looking_for.
-- `updateCoreProfile` — Zod-validated update of full_name, college_id, graduation_year, semester, department_id, date_of_birth, looking_for.
-- `updateBio` — trimmed, max-length validated.
-- `getSettings` / `updateSettings` — discovery_enabled + notification/visibility prefs from `settings`.
+## Phase 1 — Schema (one migration)
 
-Interests + photo mutations reuse the existing onboarding functions (already validated, min/max enforced).
+- `settings`: add `profile_visible boolean not null default true`, `show_online_status boolean not null default true`, `allow_profile_preview boolean not null default true`. (Privacy lives on the existing per-user `settings` row — no new table needed; `handle_new_user` already seeds `settings`.)
+- Enable realtime: `ALTER PUBLICATION supabase_realtime ADD TABLE public.settings, public.notification_preferences;` (blocks already streamed).
+- `blocks`: confirm/add RLS `DELETE` policy for `auth.uid() = blocker_id` (needed for unblock) + `SELECT own blocks`.
+- Verify existing GRANTs; add if missing for the new columns' table (already granted).
 
-## Phase 2 — Layout + Overview (`/profile`)
-- `_authenticated/profile.tsx` — layout `<Outlet/>` (shares bottom nav shell).
-- `_authenticated/profile.index.tsx` — header (primary photo, name, age, college, department, semester, grad year, completion ring), stats card, swipeable gallery (reuse `image-viewer`), Edit/Preview/Settings buttons. Skeleton loaders + empty states. Loaders use `ensureQueryData`; components use `useSuspenseQuery`.
+No changes to reserved schemas. Delete-account uses existing `account_status='deleted'` enum value.
 
-## Phase 3 — Edit sub-pages
-- `profile.edit.tsx` — core fields form (selectors for college/department, validated), save → invalidate queries → back.
-- `profile.bio.tsx` — multiline editor, live char counter, trim, validation.
-- `profile.interests.tsx` — searchable chips, min/max enforced, reuses `setInterests`.
-- `profile.preferences.tsx` — looking_for + discovery_enabled + visibility toggles via `settings`; changes affect Discovery eligibility immediately (Discovery already filters on `settings.discovery_enabled`).
+## Phase 2 — Server functions
 
-## Phase 4 — Manage Photos (`/profile/photos`)
-- Upload (client compression via existing `src/lib/image.ts` if present, else canvas), type/size validation, progress, reorder, set primary, delete — all through existing `savePhoto`/`deletePhoto`/`reorderPhotos`. Min/max photo rules enforced. Optimistic UI + rollback on error.
+New file `src/lib/settings.functions.ts` (all `requireSupabaseAuth`, Zod-validated, with `queryOptions`):
+- `getAccountInfo` → phone, verification_status, college name, created_at (member since), account id, last_login_at.
+- `getPrivacySettings` / `updatePrivacySetting` → the 4 privacy booleans (discovery_enabled + 3 new). Writing `profile_visible`/`discovery_enabled` immediately affects Discovery (RPCs already filter on `discovery_enabled`; add `profile_visible` to `discover_candidates`/`discover_profile`/`match_detail` visibility where profile is shown).
+- `getSecurityInfo` → last_login_at, current session (from `device_sessions`), verification_status.
+- `listBlockedUsers` → joined profile (avatar signed URL, full_name, college, blocked date).
+- `unblockUser({ userId })` → delete from `blocks` where blocker=me.
+- `getSettingsOverview` → lightweight aggregate for the dashboard (counts: blocked users, unread prefs summary).
 
-## Phase 5 — Preview (`/profile/preview`)
-- Renders the **exact Discovery profile card** with the current user's data (read-only), instantly reflecting edits via shared query cache.
+New file `src/lib/settings-account.functions.ts` (privileged): `deleteMyAccount` — `requireSupabaseAuth`, then inside handler `await import("@/integrations/supabase/client.server")`, set `account_status='deleted'`, purge photos from `profile-photos`, remove `device_sessions`/`device_tokens`, then `supabaseAdmin.auth.admin.deleteUser(userId)`. Returns ok; client signs out + navigates to `/`.
 
-## Phase 6 — Realtime + integration
-- `src/lib/use-profile-realtime.ts` — subscribe (in `useEffect`, cleanup on unmount) to `profiles`, `photos`, `user_interests`, `settings` changes for the current user; invalidate the relevant queries so Home/Discovery/Preview/Matches reflect changes without refresh.
-- Wire the bottom-nav **Profile** tab in `shell.tsx` to navigate to `/profile` (remove the "coming soon" toast for that tab).
+Reuse existing fns for notifications, FAQs, legal, company/app version, support tickets.
 
-## Phase 7 — Verify
-- `tsgo` typecheck, build check.
-- Playwright against localhost with the injected session: load `/profile`, edit bio, confirm persistence + preview reflects it, check gallery and completion ring, screenshot each page.
-- Confirm RLS (own-profile only) and no console/network errors.
+## Phase 3 — Routes (all under `_authenticated/`)
+
+1. `settings.index.tsx` — `/settings`: grouped `SettingsGroup`/`SettingsItem` list (Account, Privacy, Notifications, Security, Blocked Users, Help, About, then a DangerZone-style group for Logout + Delete Account). Loads overview; each row navigates (no popups).
+2. `settings.account.tsx` — read-only account card + "View Profile" (`/profile/preview`) and "Edit Profile" (`/profile/edit`) buttons; "Change Password" → `/auth/forgot-password`.
+3. `settings.privacy.tsx` — `Switch` rows for Profile Visibility, Discovery Visibility, Show Online Status, Allow Profile Preview. Optimistic update + rollback + toast, invalidate on success.
+4. `settings.notifications.tsx` — per-category `Switch` rows driven by `notification_preferences` (In-App / Match / Message / Announcement / Security). Reuses `updateNotificationPreference`.
+5. `settings.security.tsx` — current session + recent login info; "Reset Password" → auth reset flow; static Security Tips group.
+6. `settings.blocked-users.tsx` — list with avatar/name/college/blocked date; "View Profile" + "Unblock" (navigates to confirmation). Empty state via `EmptyState`.
+7. `settings.blocked-users.$userId.unblock.tsx` — dedicated confirmation page; calls `unblockUser`, invalidates blocks + discovery.
+8. `settings.help.tsx` — FAQ (from `getFaqs`, `CollapsibleGroup`), Contact Support (`/contact`), Privacy/Terms/Community links, Report Bug (`createSupportTicket`).
+9. `settings.about.tsx` — app name/version/build/release from `getAppConfig`; developer info from `getCompanyInfo`; Privacy/Terms links.
+10. `settings.logout.tsx` — confirmation page: cancelQueries → queryClient.clear → `supabase.auth.signOut()` → `navigate('/', replace)`.
+11. `settings.delete-account.tsx` — consequences + explicit typed confirmation + optional feedback; calls `deleteMyAccount`, then sign-out + redirect.
+
+Each route: `head()` with title + `robots noindex`, `loader` via `ensureQueryData`, `pendingComponent` (skeleton), `errorComponent`, `notFoundComponent` where dynamic.
+
+## Phase 4 — Realtime sync
+
+`src/lib/use-settings-realtime.ts`: subscribe (inside `useEffect`, cleanup with `removeChannel`) to `settings`, `notification_preferences`, `blocks` for `auth.uid()`; invalidate the matching queries so privacy/notification/block changes reflect instantly across tabs/devices and in Discovery/Matches/Chat.
+
+## Phase 5 — Navigation wiring
+
+- Profile gear icon (`profile.index.tsx`, currently → `/profile/preferences`) and the Settings button → `/settings`.
+- Keep `/profile/preferences` reachable from Privacy/Notifications where overlapping (or fold its controls into the new pages and redirect).
+- Ensure back navigation returns to `/settings` / `/profile` correctly.
+
+## Phase 6 — Verify
+
+- `tsgo` typecheck + build.
+- Confirm migration applied, realtime publication, RLS on `blocks` delete.
+- Manual review of redirect/guard flows (external Supabase → no signed-in browser E2E; verify via schema + types + route registration).
 
 ---
 
 ## Technical notes
-- New route strings must match filenames exactly (`/_authenticated/profile`, `/_authenticated/profile/edit`, etc.); `routeTree.gen.ts` is regenerated automatically.
-- All reads via TanStack Query (`ensureQueryData` + `useSuspenseQuery`); every route with a loader gets `errorComponent` + `notFoundComponent`.
-- No new secrets, no schema migration, no mock data.
+
+- Privacy stored on existing `settings` row; no `privacy_settings` table (avoids duplication). `profiles`/`users`/`sessions`/`system_configuration` from the prompt map to `profiles` + `device_sessions` + `application_settings`/`app_versions`.
+- Delete uses soft-delete flag + admin `deleteUser`; all writes RLS-scoped to `auth.uid()`.
+- No new secrets required (service role already present).

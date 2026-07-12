@@ -916,32 +916,41 @@ export type Database = {
       }
       settings: {
         Row: {
+          allow_profile_preview: boolean
           created_at: string
           discovery_enabled: boolean
           email_enabled: boolean
           match_filters: Json
           match_sort: string
+          profile_visible: boolean
           push_enabled: boolean
+          show_online_status: boolean
           updated_at: string
           user_id: string
         }
         Insert: {
+          allow_profile_preview?: boolean
           created_at?: string
           discovery_enabled?: boolean
           email_enabled?: boolean
           match_filters?: Json
           match_sort?: string
+          profile_visible?: boolean
           push_enabled?: boolean
+          show_online_status?: boolean
           updated_at?: string
           user_id: string
         }
         Update: {
+          allow_profile_preview?: boolean
           created_at?: string
           discovery_enabled?: boolean
           email_enabled?: boolean
           match_filters?: Json
           match_sort?: string
+          profile_visible?: boolean
           push_enabled?: boolean
+          show_online_status?: boolean
           updated_at?: string
           user_id?: string
         }

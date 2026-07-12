@@ -86,7 +86,7 @@ function ProfilePage() {
         trailing={
           <button
             aria-label="Settings"
-            onClick={() => navigate({ to: "/profile/preferences" })}
+            onClick={() => navigate({ to: "/settings" })}
             className="flex items-center justify-center rounded-full"
             style={{ width: 40, height: 40, color: colors.primary }}
           >
