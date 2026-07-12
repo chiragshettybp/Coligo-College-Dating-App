@@ -184,15 +184,44 @@ export function MatchCelebration({
     return () => window.clearTimeout(peak);
   }, [open]);
 
-  // Escape to dismiss.
+  // Escape to dismiss + focus trap — keep keyboard focus inside the moment.
   useEffect(() => {
     if (!open) return;
     const onKey = (e: KeyboardEvent) => {
-      if (e.key === "Escape") onClose();
+      if (e.key === "Escape") {
+        onClose();
+        return;
+      }
+      if (e.key !== "Tab") return;
+      const root = rootRef.current;
+      if (!root) return;
+      const focusable = root.querySelectorAll<HTMLElement>(
+        'button, [href], input, textarea, [tabindex]:not([tabindex="-1"])',
+      );
+      if (focusable.length === 0) return;
+      const first = focusable[0];
+      const last = focusable[focusable.length - 1];
+      if (e.shiftKey && document.activeElement === first) {
+        e.preventDefault();
+        last.focus();
+      } else if (!e.shiftKey && document.activeElement === last) {
+        e.preventDefault();
+        first.focus();
+      }
     };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
   }, [open, onClose]);
+
+  // Lock body scroll while the moment is on screen.
+  useEffect(() => {
+    if (!open) return;
+    const prev = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.body.style.overflow = prev;
+    };
+  }, [open]);
 
   // Continuation: entering chat gently focuses the composer.
   useEffect(() => {
@@ -224,7 +253,6 @@ export function MatchCelebration({
   const indicators = [
     { icon: <GraduationCap style={{ width: 15, height: 15 }} />, label: shared.college },
     { icon: <CalendarDays style={{ width: 15, height: 15 }} />, label: shared.semester },
-    { icon: <Sparkles style={{ width: 15, height: 15 }} />, label: `${shared.interests.length} shared interests` },
     { icon: <Heart style={{ width: 15, height: 15 }} />, label: `${shared.compatibility}% compatibility` },
   ];
 
@@ -317,7 +345,26 @@ export function MatchCelebration({
               <Avatar src={right.src} size="xl" ring />
             </div>
           </div>
+          {/* Elegant reflection — a soft mirrored sheen pooled beneath the pair. */}
+          <div
+            aria-hidden
+            className="absolute"
+            style={{
+              left: "50%",
+              bottom: 6,
+              width: 200,
+              height: 46,
+              transform: "translateX(-50%)",
+              background:
+                "radial-gradient(60% 100% at 50% 0%, rgba(180,205,255,0.28) 0%, rgba(180,205,255,0) 70%)",
+              filter: "blur(6px)",
+              opacity: chat ? 0 : 0.9,
+              transition: `opacity 0.5s ${EASE}`,
+              pointerEvents: "none",
+            }}
+          />
         </div>
+
 
         {/* ---- Celebration copy (fades out as chat continues) ---- */}
         {!chat && (
@@ -360,10 +407,36 @@ export function MatchCelebration({
               ))}
             </div>
 
+            {/* Shared interests — the real thing, each chip revealed in turn. */}
+            {shared.interests.length > 0 && (
+              <div style={{ ...reveal(3 + indicators.length), marginTop: spacing[3], width: "100%" }}>
+                <span style={{ ...type.caption, color: "rgba(255,255,255,0.55)" }}>You both like</span>
+                <div className="flex flex-wrap items-center justify-center" style={{ gap: spacing[1], marginTop: spacing[2] }}>
+                  {shared.interests.map((interest) => (
+                    <span
+                      key={interest}
+                      className="inline-flex items-center gap-1.5"
+                      style={{
+                        borderRadius: radii.pill,
+                        padding: "6px 12px",
+                        ...type.badgeLabel,
+                        color: "#dfe9ff",
+                        background: "rgba(120,150,255,0.16)",
+                        border: "1px solid rgba(150,175,255,0.28)",
+                      }}
+                    >
+                      <Sparkles style={{ width: 13, height: 13 }} />
+                      {interest}
+                    </span>
+                  ))}
+                </div>
+              </div>
+            )}
+
             {/* Conversation starter — a warm, specific opener. */}
             <div
               style={{
-                ...reveal(3 + indicators.length),
+                ...reveal(4 + indicators.length),
                 marginTop: spacing[5],
                 width: "100%",
               }}
@@ -389,7 +462,7 @@ export function MatchCelebration({
 
             {/* CTAs emerge with a small spring lift. */}
             <div className="w-full" style={{ marginTop: spacing[5] }}>
-              <div style={reveal(4 + indicators.length)}>
+              <div style={reveal(5 + indicators.length)}>
                 <Button
                   variant="primary"
                   size="lg"
@@ -401,7 +474,7 @@ export function MatchCelebration({
                   Send Message
                 </Button>
               </div>
-              <div style={{ ...reveal(5 + indicators.length), marginTop: spacing[2] }}>
+              <div style={{ ...reveal(6 + indicators.length), marginTop: spacing[2] }}>
                 <Button variant="glass" size="lg" pill fullWidth onClick={onClose}>
                   Keep Swiping
                 </Button>

@@ -755,7 +755,7 @@ function UIShowcase() {
               <SwipeControl label="Super" size={52} tint={colors.info} hapticToken="heavy">
                 <Star style={{ width: 22, height: 22 }} fill="currentColor" />
               </SwipeControl>
-              <SwipeControl label="Like" size={68} tint={colors.success} primary hapticToken="softSuccess">
+              <SwipeControl label="Like" size={68} tint={colors.success} primary hapticToken="softSuccess" onClick={() => setMatchOpen(true)}>
                 <Heart style={{ width: 30, height: 30 }} fill="#fff" />
               </SwipeControl>
               <SwipeControl label="Boost" size={52} tint={colors.accent} hapticToken="medium">
@@ -1839,6 +1839,7 @@ function SwipeControl({
   tint,
   primary = false,
   hapticToken,
+  onClick,
 }: {
   children: React.ReactNode;
   label?: string;
@@ -1846,6 +1847,7 @@ function SwipeControl({
   tint: string;
   primary?: boolean;
   hapticToken?: HapticToken;
+  onClick?: () => void;
 }) {
   // Layered depth: ceramic surface, soft inner highlight, hairline border,
   // soft ambient + contact shadow, tiny directional specular highlight.
@@ -1873,6 +1875,7 @@ function SwipeControl({
     <div className="flex flex-col items-center" style={{ gap: spacing[2] }}>
       <button
         aria-label={label}
+        onClick={onClick}
         onPointerDown={() => haptic(hapticToken ?? (primary ? "softSuccess" : "selection"))}
         className="ds-swipe-btn relative flex shrink-0 items-center justify-center rounded-full will-change-transform"
         style={{
