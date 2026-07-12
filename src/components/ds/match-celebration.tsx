@@ -319,9 +319,9 @@ export function MatchCelebration({
       </div>
 
       {/* Content */}
-      <div className="relative flex w-full flex-col items-center text-center" style={{ maxWidth: 380 }}>
+      <div className="relative flex w-full flex-col items-center text-center" style={{ maxWidth: 380, maxHeight: "100%" }}>
         {/* Shared avatar cluster — travels from centre into the chat header. */}
-        <div className="relative flex items-center justify-center" style={{ ...clusterStyle, height: 168 }}>
+        <div className="relative flex items-center justify-center" style={{ ...clusterStyle, height: "clamp(112px, 18vh, 168px)" }}>
           <div
             className="ds-match-halo absolute rounded-full"
             style={{
