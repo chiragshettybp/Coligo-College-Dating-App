@@ -16,6 +16,7 @@ import { Route as R404RouteImport } from './routes/404'
 import { Route as OnboardingRouteRouteImport } from './routes/onboarding/route'
 import { Route as PublicRouteRouteImport } from './routes/_public/route'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
+import { Route as OnboardingIndexRouteImport } from './routes/onboarding/index'
 import { Route as AuthIndexRouteImport } from './routes/auth.index'
 import { Route as PublicIndexRouteImport } from './routes/_public/index'
 import { Route as SystemSplashRouteImport } from './routes/system.splash'
@@ -64,6 +65,11 @@ const PublicRouteRoute = PublicRouteRouteImport.update({
 const AuthenticatedRouteRoute = AuthenticatedRouteRouteImport.update({
   id: '/_authenticated',
   getParentRoute: () => rootRouteImport,
+} as any)
+const OnboardingIndexRoute = OnboardingIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => OnboardingRouteRoute,
 } as any)
 const AuthIndexRoute = AuthIndexRouteImport.update({
   id: '/',
@@ -144,7 +150,7 @@ const AuthenticatedAppRoute = AuthenticatedAppRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof PublicIndexRoute
-  '/onboarding': typeof OnboardingRouteRoute
+  '/onboarding': typeof OnboardingRouteRouteWithChildren
   '/404': typeof R404Route
   '/500': typeof R500Route
   '/auth': typeof AuthRouteWithChildren
@@ -163,10 +169,10 @@ export interface FileRoutesByFullPath {
   '/system/maintenance': typeof SystemMaintenanceRoute
   '/system/splash': typeof SystemSplashRoute
   '/auth/': typeof AuthIndexRoute
+  '/onboarding/': typeof OnboardingIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof PublicIndexRoute
-  '/onboarding': typeof OnboardingRouteRoute
   '/404': typeof R404Route
   '/500': typeof R500Route
   '/ui': typeof UiRoute
@@ -184,12 +190,13 @@ export interface FileRoutesByTo {
   '/system/maintenance': typeof SystemMaintenanceRoute
   '/system/splash': typeof SystemSplashRoute
   '/auth': typeof AuthIndexRoute
+  '/onboarding': typeof OnboardingIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
   '/_public': typeof PublicRouteRouteWithChildren
-  '/onboarding': typeof OnboardingRouteRoute
+  '/onboarding': typeof OnboardingRouteRouteWithChildren
   '/404': typeof R404Route
   '/500': typeof R500Route
   '/auth': typeof AuthRouteWithChildren
@@ -209,6 +216,7 @@ export interface FileRoutesById {
   '/system/splash': typeof SystemSplashRoute
   '/_public/': typeof PublicIndexRoute
   '/auth/': typeof AuthIndexRoute
+  '/onboarding/': typeof OnboardingIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -233,10 +241,10 @@ export interface FileRouteTypes {
     | '/system/maintenance'
     | '/system/splash'
     | '/auth/'
+    | '/onboarding/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
-    | '/onboarding'
     | '/404'
     | '/500'
     | '/ui'
@@ -254,6 +262,7 @@ export interface FileRouteTypes {
     | '/system/maintenance'
     | '/system/splash'
     | '/auth'
+    | '/onboarding'
   id:
     | '__root__'
     | '/_authenticated'
@@ -278,12 +287,13 @@ export interface FileRouteTypes {
     | '/system/splash'
     | '/_public/'
     | '/auth/'
+    | '/onboarding/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
   PublicRouteRoute: typeof PublicRouteRouteWithChildren
-  OnboardingRouteRoute: typeof OnboardingRouteRoute
+  OnboardingRouteRoute: typeof OnboardingRouteRouteWithChildren
   R404Route: typeof R404Route
   R500Route: typeof R500Route
   AuthRoute: typeof AuthRouteWithChildren
@@ -342,6 +352,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/'
       preLoaderRoute: typeof AuthenticatedRouteRouteImport
       parentRoute: typeof rootRouteImport
+    }
+    '/onboarding/': {
+      id: '/onboarding/'
+      path: '/'
+      fullPath: '/onboarding/'
+      preLoaderRoute: typeof OnboardingIndexRouteImport
+      parentRoute: typeof OnboardingRouteRoute
     }
     '/auth/': {
       id: '/auth/'
@@ -484,6 +501,18 @@ const PublicRouteRouteWithChildren = PublicRouteRoute._addFileChildren(
   PublicRouteRouteChildren,
 )
 
+interface OnboardingRouteRouteChildren {
+  OnboardingIndexRoute: typeof OnboardingIndexRoute
+}
+
+const OnboardingRouteRouteChildren: OnboardingRouteRouteChildren = {
+  OnboardingIndexRoute: OnboardingIndexRoute,
+}
+
+const OnboardingRouteRouteWithChildren = OnboardingRouteRoute._addFileChildren(
+  OnboardingRouteRouteChildren,
+)
+
 interface AuthRouteChildren {
   AuthForgotPasswordRoute: typeof AuthForgotPasswordRoute
   AuthLoginRoute: typeof AuthLoginRoute
@@ -507,7 +536,7 @@ const AuthRouteWithChildren = AuthRoute._addFileChildren(AuthRouteChildren)
 const rootRouteChildren: RootRouteChildren = {
   AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
   PublicRouteRoute: PublicRouteRouteWithChildren,
-  OnboardingRouteRoute: OnboardingRouteRoute,
+  OnboardingRouteRoute: OnboardingRouteRouteWithChildren,
   R404Route: R404Route,
   R500Route: R500Route,
   AuthRoute: AuthRouteWithChildren,
