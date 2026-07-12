@@ -348,6 +348,31 @@ export const reorderPhotos = createServerFn({ method: "POST" })
     return { ok: true };
   });
 
+// ============================================================ Advance step
+// For non-form steps (e.g. photos) — move saved progress forward only.
+export const advanceOnboardingStep = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((input) =>
+    z.object({ step: z.enum(ONBOARDING_STEPS) }).parse(input),
+  )
+  .handler(async ({ data, context }): Promise<{ ok: true; onboardingStep: string }> => {
+    const { supabase, userId } = context;
+    const { data: current } = await supabase
+      .from("profiles")
+      .select("onboarding_step")
+      .eq("id", userId)
+      .maybeSingle();
+    const currentIdx = maxAllowedIndex(current?.onboarding_step ?? "name");
+    const targetIdx = stepIndex(data.step);
+    const newStep = ONBOARDING_STEPS[Math.max(currentIdx, targetIdx)];
+    const { error } = await supabase
+      .from("profiles")
+      .update({ onboarding_step: newStep })
+      .eq("id", userId);
+    if (error) throw new Error(error.message);
+    return { ok: true, onboardingStep: newStep };
+  });
+
 // ============================================================ Complete
 export const completeOnboarding = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
