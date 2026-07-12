@@ -95,6 +95,9 @@ import {
   NavFab,
   type BottomNavItem,
 } from "@/components/ds/navigation";
+import { EmptyStateFromPreset } from "@/components/ds/empty-state";
+
+
 
 import memoji1 from "@/assets/sample.png";
 import memoji2 from "@/assets/sample.png";
@@ -971,33 +974,34 @@ function UIShowcase() {
           </GlassPanel>
         </Section>
 
-        {/* Empty state */}
-        <Section title="Empty States" description="Friendly zero-data screens.">
-          <GlassPanel style={{ padding: spacing[7], textAlign: "center" }}>
-            <div
-              className="ds-float mx-auto flex items-center justify-center rounded-full"
-              style={{
-                width: 88,
-                height: 88,
-                background: surfaces.glassSoft,
-                border: `1px solid ${surfaces.border}`,
-              }}
-            >
-              <ImageOff style={{ width: 38, height: 38, color: colors.textMuted }} />
-            </div>
-            <div style={{ fontSize: 20, fontWeight: 800, color: "#fff", marginTop: 16 }}>
-              No matches yet
-            </div>
-            <p style={{ color: colors.textSecondary, fontSize: 14, marginTop: 4 }}>
-              Keep swiping — your people are out there.
-            </p>
-            <div className="mt-4 flex justify-center">
-              <Button variant="primary" leftIcon={<Flame style={{ width: 18, height: 18 }} />}>
-                Start swiping
-              </Button>
-            </div>
-          </GlassPanel>
+        {/* Empty states */}
+        <Section
+          title="Empty States"
+          description="Never missing content — every zero-data moment becomes guidance. One reusable system: bespoke breathing illustration, supportive copy, one clear next step. Soft colors, generous whitespace, progressive reveal."
+        >
+          <div className="space-y-4">
+            {(
+              [
+                "noMatches",
+                "noMessages",
+                "profileIncomplete",
+                "noPhotos",
+                "noSearchResults",
+                "offline",
+                "permission",
+                "welcome",
+              ] as const
+            ).map((key) => (
+              <EmptyStateFromPreset
+                key={key}
+                preset={key}
+                onPrimary={() => haptic("selection")}
+                onSecondary={() => haptic("light")}
+              />
+            ))}
+          </div>
         </Section>
+
 
         {/* Navigation */}
         <Section
