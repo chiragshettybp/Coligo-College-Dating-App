@@ -2,8 +2,7 @@ import { Link } from "@tanstack/react-router";
 import { ArrowLeft } from "lucide-react";
 
 import type { LegalDocument } from "@/lib/public-content.functions";
-import { Card, Text } from "@/components/ds/glass";
-import { GlassPanel } from "@/components/ds/glass";
+import { Text, GlassPanel, Skeleton } from "@/components/ds/glass";
 import { colors, spacing, radii, surfaces } from "@/lib/ds";
 import { SectionReveal } from "./SectionReveal";
 
