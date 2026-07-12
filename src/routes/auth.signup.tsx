@@ -91,7 +91,15 @@ function SignupPage() {
     setFieldErr({});
     setLoading(true);
     try {
-      await signUpWithPhone({ data: { phone: parsed.data.phone, password: parsed.data.password } });
+      const { data: signUpData, error: signUpErr } = await supabase.auth.signUp({
+        email: phoneToAlias(parsed.data.phone),
+        password: parsed.data.password,
+        options: {
+          data: { phone: toE164(parsed.data.phone) },
+          emailRedirectTo: typeof window !== "undefined" ? window.location.origin : undefined,
+        },
+      });
+      if (signUpErr) throw signUpErr;
 
       if (OTP_ENABLED) {
         navigate({ to: "/auth/verify-otp", search: { phone: parsed.data.phone } });
