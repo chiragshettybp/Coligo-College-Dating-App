@@ -73,10 +73,10 @@ function GlassPill({ children }: { children: React.ReactNode }) {
         fontSize: 12,
         fontWeight: 700,
         letterSpacing: "-0.005em",
-        color: "#fff",
-        background: "rgba(6,10,24,0.42)",
+        color: colors.textPrimary,
+        background: "rgba(255,255,255,0.72)",
         border: `1px solid ${surfaces.border}`,
-        boxShadow: "inset 0 1px 0 rgba(255,255,255,0.12)",
+        boxShadow: "0 1px 2px rgba(0,0,0,0.04), inset 0 1px 0 rgba(255,255,255,0.6)",
       }}
     >
       {children}
