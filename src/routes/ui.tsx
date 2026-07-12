@@ -1080,23 +1080,74 @@ function SwipeControl({
   tint: string;
   primary?: boolean;
 }) {
+  // Layered depth: ceramic surface, soft inner highlight, hairline border,
+  // soft ambient + contact shadow, tiny directional specular highlight.
+  const surface = primary
+    ? `radial-gradient(115% 115% at 50% 8%, rgba(255,255,255,0.4) 0%, rgba(255,255,255,0.06) 40%, rgba(255,255,255,0) 68%), linear-gradient(180deg, ${tint} 0%, ${tint}d0 100%)`
+    : `radial-gradient(120% 120% at 50% 12%, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0.02) 42%, rgba(255,255,255,0) 72%), linear-gradient(180deg, #20242f 0%, #14161e 100%)`;
+
+  const shadow = primary
+    ? [
+        "0 1px 1px rgba(0,0,0,0.35)",
+        "0 10px 26px rgba(0,0,0,0.34)",
+        `0 6px 20px ${tint}3a`,
+        "inset 0 1px 1px rgba(255,255,255,0.35)",
+        "inset 0 -2px 4px rgba(0,0,0,0.22)",
+      ].join(", ")
+    : [
+        "0 1px 2px rgba(0,0,0,0.4)",
+        "0 9px 22px rgba(0,0,0,0.32)",
+        "0 2px 5px rgba(0,0,0,0.28)",
+        "inset 0 1px 1px rgba(255,255,255,0.1)",
+        "inset 0 -2px 4px rgba(0,0,0,0.4)",
+      ].join(", ");
+
   return (
-    <div className="flex flex-col items-center" style={{ gap: spacing[1] }}>
-      <IconButton
-        size={size}
-        primary={primary}
+    <div className="flex flex-col items-center" style={{ gap: spacing[2] }}>
+      <button
         aria-label={label}
+        className="ds-swipe-btn relative flex shrink-0 items-center justify-center rounded-full will-change-transform"
         style={{
+          width: size,
+          height: size,
           color: primary ? "#fff" : tint,
-          background: primary
-            ? `linear-gradient(160deg, ${tint} 0%, ${tint}cc 100%)`
-            : gradients.glassButton,
-          border: `1px solid ${primary ? "rgba(255,255,255,0.28)" : surfaces.border}`,
-          boxShadow: `inset 0 1px 0 rgba(255,255,255,0.18), 0 10px 24px ${tint}55`,
+          background: surface,
+          border: `1px solid ${primary ? "rgba(255,255,255,0.24)" : "rgba(255,255,255,0.08)"}`,
+          boxShadow: shadow,
         }}
       >
-        {children}
-      </IconButton>
+        {/* Layer: soft contact shadow that tightens on press */}
+        <span
+          aria-hidden
+          className="ds-swipe-shadow absolute rounded-full"
+          style={{
+            inset: "auto 12% -8% 12%",
+            height: "40%",
+            background: primary
+              ? `radial-gradient(60% 100% at 50% 100%, ${tint}44, transparent 72%)`
+              : "radial-gradient(60% 100% at 50% 100%, rgba(0,0,0,0.5), transparent 72%)",
+            filter: "blur(6px)",
+            zIndex: -1,
+          }}
+        />
+        {/* Layer: tiny directional specular highlight near the top */}
+        <span
+          aria-hidden
+          className="absolute rounded-full"
+          style={{
+            top: "8%",
+            left: "24%",
+            right: "24%",
+            height: "28%",
+            background:
+              "linear-gradient(180deg, rgba(255,255,255,0.55) 0%, rgba(255,255,255,0) 100%)",
+            opacity: primary ? 0.6 : 0.4,
+            filter: "blur(1px)",
+            pointerEvents: "none",
+          }}
+        />
+        <span className="relative flex items-center justify-center">{children}</span>
+      </button>
       {label && (
         <span
           style={{
