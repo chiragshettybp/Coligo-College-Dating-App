@@ -17,9 +17,7 @@ import {
   Sparkles,
   GraduationCap,
   MapPin,
-  Send,
   Plus,
-  Camera,
   ImageOff,
   Flame,
 } from "lucide-react";
