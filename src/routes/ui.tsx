@@ -145,6 +145,9 @@ function UIShowcase() {
   const [interests, setInterests] = useState<string[]>(["Music", "Coffee"]);
   const [notif, setNotif] = useState(true);
   const [dark, setDark] = useState(false);
+  const [activeTab, setActiveTab] = useState(0);
+  const [segment, setSegment] = useState(0);
+  const [scrollTab, setScrollTab] = useState("For You");
 
   const toggleInterest = (i: string) =>
     setInterests((s) => (s.includes(i) ? s.filter((x) => x !== i) : [...s, i]));
