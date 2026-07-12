@@ -54,6 +54,7 @@ import { Route as AuthenticatedHomeIndexRouteImport } from './routes/_authentica
 import { Route as AuthenticatedDiscoverIndexRouteImport } from './routes/_authenticated/discover.index'
 import { Route as AuthenticatedChatIndexRouteImport } from './routes/_authenticated/chat.index'
 import { Route as ApiPublicPushRouteImport } from './routes/api/public/push'
+import { Route as AuthenticatedProfileInterestsRouteImport } from './routes/_authenticated/profile.interests'
 import { Route as AuthenticatedProfileEditRouteImport } from './routes/_authenticated/profile.edit'
 import { Route as AuthenticatedProfileBioRouteImport } from './routes/_authenticated/profile.bio'
 import { Route as AuthenticatedNotificationsNotificationIdRouteImport } from './routes/_authenticated/notifications.$notificationId'
@@ -303,6 +304,12 @@ const ApiPublicPushRoute = ApiPublicPushRouteImport.update({
   path: '/api/public/push',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AuthenticatedProfileInterestsRoute =
+  AuthenticatedProfileInterestsRouteImport.update({
+    id: '/profile/interests',
+    path: '/profile/interests',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const AuthenticatedProfileEditRoute =
   AuthenticatedProfileEditRouteImport.update({
     id: '/profile/edit',
@@ -460,6 +467,7 @@ export interface FileRoutesByFullPath {
   '/notifications/$notificationId': typeof AuthenticatedNotificationsNotificationIdRouteWithChildren
   '/profile/bio': typeof AuthenticatedProfileBioRoute
   '/profile/edit': typeof AuthenticatedProfileEditRoute
+  '/profile/interests': typeof AuthenticatedProfileInterestsRoute
   '/api/public/push': typeof ApiPublicPushRoute
   '/chat/': typeof AuthenticatedChatIndexRoute
   '/discover/': typeof AuthenticatedDiscoverIndexRoute
@@ -518,6 +526,7 @@ export interface FileRoutesByTo {
   '/notifications/$notificationId': typeof AuthenticatedNotificationsNotificationIdRouteWithChildren
   '/profile/bio': typeof AuthenticatedProfileBioRoute
   '/profile/edit': typeof AuthenticatedProfileEditRoute
+  '/profile/interests': typeof AuthenticatedProfileInterestsRoute
   '/api/public/push': typeof ApiPublicPushRoute
   '/chat': typeof AuthenticatedChatIndexRoute
   '/discover': typeof AuthenticatedDiscoverIndexRoute
@@ -585,6 +594,7 @@ export interface FileRoutesById {
   '/_authenticated/notifications/$notificationId': typeof AuthenticatedNotificationsNotificationIdRouteWithChildren
   '/_authenticated/profile/bio': typeof AuthenticatedProfileBioRoute
   '/_authenticated/profile/edit': typeof AuthenticatedProfileEditRoute
+  '/_authenticated/profile/interests': typeof AuthenticatedProfileInterestsRoute
   '/api/public/push': typeof ApiPublicPushRoute
   '/_authenticated/chat/': typeof AuthenticatedChatIndexRoute
   '/_authenticated/discover/': typeof AuthenticatedDiscoverIndexRoute
@@ -651,6 +661,7 @@ export interface FileRouteTypes {
     | '/notifications/$notificationId'
     | '/profile/bio'
     | '/profile/edit'
+    | '/profile/interests'
     | '/api/public/push'
     | '/chat/'
     | '/discover/'
@@ -709,6 +720,7 @@ export interface FileRouteTypes {
     | '/notifications/$notificationId'
     | '/profile/bio'
     | '/profile/edit'
+    | '/profile/interests'
     | '/api/public/push'
     | '/chat'
     | '/discover'
@@ -775,6 +787,7 @@ export interface FileRouteTypes {
     | '/_authenticated/notifications/$notificationId'
     | '/_authenticated/profile/bio'
     | '/_authenticated/profile/edit'
+    | '/_authenticated/profile/interests'
     | '/api/public/push'
     | '/_authenticated/chat/'
     | '/_authenticated/discover/'
@@ -1126,6 +1139,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiPublicPushRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/_authenticated/profile/interests': {
+      id: '/_authenticated/profile/interests'
+      path: '/profile/interests'
+      fullPath: '/profile/interests'
+      preLoaderRoute: typeof AuthenticatedProfileInterestsRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/profile/edit': {
       id: '/_authenticated/profile/edit'
       path: '/profile/edit'
@@ -1393,6 +1413,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedNotificationsNotificationIdRoute: typeof AuthenticatedNotificationsNotificationIdRouteWithChildren
   AuthenticatedProfileBioRoute: typeof AuthenticatedProfileBioRoute
   AuthenticatedProfileEditRoute: typeof AuthenticatedProfileEditRoute
+  AuthenticatedProfileInterestsRoute: typeof AuthenticatedProfileInterestsRoute
   AuthenticatedNotificationsIndexRoute: typeof AuthenticatedNotificationsIndexRoute
   AuthenticatedProfileIndexRoute: typeof AuthenticatedProfileIndexRoute
 }
@@ -1406,6 +1427,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
     AuthenticatedNotificationsNotificationIdRouteWithChildren,
   AuthenticatedProfileBioRoute: AuthenticatedProfileBioRoute,
   AuthenticatedProfileEditRoute: AuthenticatedProfileEditRoute,
+  AuthenticatedProfileInterestsRoute: AuthenticatedProfileInterestsRoute,
   AuthenticatedNotificationsIndexRoute: AuthenticatedNotificationsIndexRoute,
   AuthenticatedProfileIndexRoute: AuthenticatedProfileIndexRoute,
 }
