@@ -639,29 +639,50 @@ function UIShowcase() {
         </Section>
 
         {/* Chat */}
-        <Section title="Chat" description="Message bubbles, typing indicator and receipts.">
-          <GlassPanel style={{ padding: spacing[5] }}>
-            <div className="flex flex-col gap-3">
-              <Bubble mine={false}>Hey! Saw we're both in CS 👋</Bubble>
-              <Bubble mine>No way, what year are you?</Bubble>
-              <Bubble mine={false}>Second year. Coffee this week?</Bubble>
-              <div className="flex items-center gap-1.5" style={{ paddingLeft: 4 }}>
-                {[0, 1, 2].map((i) => (
-                  <span
-                    key={i}
-                    className="rounded-full"
-                    style={{
-                      width: 8,
-                      height: 8,
-                      background: colors.textMuted,
-                      animation: `ds-typing 1.2s ${i * 0.15}s ease-in-out infinite`,
-                    }}
-                  />
-                ))}
-              </div>
+        <Section
+          title="Chat"
+          description="A native messaging surface — grouped bubbles, receipts, reactions, voice, media and composer."
+        >
+          <GlassPanel style={{ padding: 0, overflow: "hidden" }}>
+            <ChatHeader />
+            <div
+              className="flex flex-col"
+              style={{ padding: `${spacing[4]}px ${spacing[4]}px ${spacing[3]}px`, gap: 2 }}
+            >
+              <DayDivider label="Today" />
+
+              <Bubble mine={false} entrance groupPos="single" tail>
+                Hey! Saw we're both in CS 👋
+              </Bubble>
+
+              <Bubble mine entrance groupPos="first">
+                No way, what year are you?
+              </Bubble>
+              <Bubble mine entrance groupPos="last" tail state="read" time="9:41">
+                We should study together sometime
+              </Bubble>
+
+              <Bubble
+                mine={false}
+                entrance
+                groupPos="single"
+                tail
+                time="9:42"
+                reactions={["❤️", "🔥"]}
+              >
+                Second year. Coffee this week? ☕️
+              </Bubble>
+
+              <VoiceMessage mine={false} />
+
+              <ImageMessage mine time="9:44" state="delivered" />
+
+              <TypingBubble />
             </div>
+            <Composer />
           </GlassPanel>
         </Section>
+
 
         {/* Toggles & settings */}
         <Section title="Settings Controls" description="Toggles and switches for preferences.">
