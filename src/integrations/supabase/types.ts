@@ -697,32 +697,106 @@ export type Database = {
         }
         Relationships: []
       }
-      matches: {
+      match_admin_actions: {
         Row: {
+          action: string
+          admin_id: string
           created_at: string
           id: string
+          match_id: string | null
+          metadata: Json
+          new_state: Json
+          previous_state: Json
+          reason: string | null
+        }
+        Insert: {
+          action: string
+          admin_id: string
+          created_at?: string
+          id?: string
+          match_id?: string | null
+          metadata?: Json
+          new_state?: Json
+          previous_state?: Json
+          reason?: string | null
+        }
+        Update: {
+          action?: string
+          admin_id?: string
+          created_at?: string
+          id?: string
+          match_id?: string | null
+          metadata?: Json
+          new_state?: Json
+          previous_state?: Json
+          reason?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "match_admin_actions_match_id_fkey"
+            columns: ["match_id"]
+            isOneToOne: false
+            referencedRelation: "matches"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      matches: {
+        Row: {
+          admin_note: string | null
+          archived_at: string | null
+          archived_by: string | null
+          conversation_disabled: boolean
+          created_at: string
+          deleted_at: string | null
+          deleted_by: string | null
+          flagged: boolean
+          id: string
+          investigation_status: string
           last_message_at: string | null
+          match_source: string
           status: string
+          suspicious: boolean
           unmatched_at: string | null
           unmatched_by: string | null
           user_a: string
           user_b: string
         }
         Insert: {
+          admin_note?: string | null
+          archived_at?: string | null
+          archived_by?: string | null
+          conversation_disabled?: boolean
           created_at?: string
+          deleted_at?: string | null
+          deleted_by?: string | null
+          flagged?: boolean
           id?: string
+          investigation_status?: string
           last_message_at?: string | null
+          match_source?: string
           status?: string
+          suspicious?: boolean
           unmatched_at?: string | null
           unmatched_by?: string | null
           user_a: string
           user_b: string
         }
         Update: {
+          admin_note?: string | null
+          archived_at?: string | null
+          archived_by?: string | null
+          conversation_disabled?: boolean
           created_at?: string
+          deleted_at?: string | null
+          deleted_by?: string | null
+          flagged?: boolean
           id?: string
+          investigation_status?: string
           last_message_at?: string | null
+          match_source?: string
           status?: string
+          suspicious?: boolean
           unmatched_at?: string | null
           unmatched_by?: string | null
           user_a?: string
@@ -1311,6 +1385,10 @@ export type Database = {
         Args: { _body: string; _report_id: string }
         Returns: Json
       }
+      admin_archive_match: {
+        Args: { _match_id: string; _reason?: string }
+        Returns: Json
+      }
       admin_assign_report: {
         Args: { _moderator_id: string; _report_id: string }
         Returns: Json
@@ -1347,8 +1425,20 @@ export type Database = {
       }
       admin_dashboard_stats: { Args: never; Returns: Json }
       admin_delete_college: { Args: { _id: string }; Returns: Json }
+      admin_delete_match: {
+        Args: { _match_id: string; _reason?: string }
+        Returns: Json
+      }
       admin_distribution: { Args: never; Returns: Json }
+      admin_flag_match: {
+        Args: { _flagged: boolean; _match_id: string; _reason?: string }
+        Returns: Json
+      }
       admin_force_logout: { Args: { _user_id: string }; Returns: Json }
+      admin_force_unmatch: {
+        Args: { _match_id: string; _reason?: string }
+        Returns: Json
+      }
       admin_list_colleges: {
         Args: {
           _filters?: Json
@@ -1393,6 +1483,41 @@ export type Database = {
           is_active: boolean
           member_count: number
           name: string
+        }[]
+      }
+      admin_list_matches: {
+        Args: {
+          _filters?: Json
+          _limit?: number
+          _offset?: number
+          _search?: string
+          _sort?: string
+        }
+        Returns: {
+          college_a: string
+          college_b: string
+          conversation_status: string
+          created_at: string
+          dept_a: string
+          dept_b: string
+          first_message_at: string
+          flagged: boolean
+          id: string
+          investigation_status: string
+          last_activity: string
+          match_duration_secs: number
+          media_count: number
+          reports_count: number
+          status: string
+          suspicious: boolean
+          total_count: number
+          total_messages: number
+          user_a: string
+          user_a_avatar: string
+          user_a_name: string
+          user_b: string
+          user_b_avatar: string
+          user_b_name: string
         }[]
       }
       admin_list_reports: {
@@ -1469,6 +1594,25 @@ export type Database = {
         }
         Returns: string
       }
+      admin_log_match_action: {
+        Args: {
+          _action: string
+          _match_id: string
+          _new: Json
+          _previous: Json
+          _reason: string
+        }
+        Returns: undefined
+      }
+      admin_mark_suspicious: {
+        Args: { _match_id: string; _reason?: string; _suspicious: boolean }
+        Returns: Json
+      }
+      admin_match_actions: { Args: { _match_id: string }; Returns: Json }
+      admin_match_analytics: { Args: never; Returns: Json }
+      admin_match_detail: { Args: { _match_id: string }; Returns: Json }
+      admin_match_participant: { Args: { _uid: string }; Returns: Json }
+      admin_match_stats: { Args: never; Returns: Json }
       admin_recent_activity: { Args: { _limit?: number }; Returns: Json }
       admin_report_actions: { Args: { _report_id: string }; Returns: Json }
       admin_report_analytics: { Args: never; Returns: Json }
@@ -1485,6 +1629,10 @@ export type Database = {
         }
         Returns: Json
       }
+      admin_restore_match: {
+        Args: { _match_id: string; _reason?: string }
+        Returns: Json
+      }
       admin_search: { Args: { _q: string }; Returns: Json }
       admin_set_account_status: {
         Args: { _reason?: string; _status: string; _user_id: string }
@@ -1496,6 +1644,10 @@ export type Database = {
       }
       admin_set_college_status: {
         Args: { _id: string; _reason?: string; _status: string }
+        Returns: Json
+      }
+      admin_set_conversation: {
+        Args: { _disabled: boolean; _match_id: string; _reason?: string }
         Returns: Json
       }
       admin_set_department_status: {
