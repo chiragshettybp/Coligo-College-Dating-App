@@ -22,6 +22,7 @@ import { Route as PublicIndexRouteImport } from './routes/_public/index'
 import { Route as SystemSplashRouteImport } from './routes/system.splash'
 import { Route as SystemMaintenanceRouteImport } from './routes/system.maintenance'
 import { Route as OnboardingSemesterRouteImport } from './routes/onboarding/semester'
+import { Route as OnboardingPhotosRouteImport } from './routes/onboarding/photos'
 import { Route as OnboardingNameRouteImport } from './routes/onboarding/name'
 import { Route as OnboardingLookingForRouteImport } from './routes/onboarding/looking-for'
 import { Route as OnboardingInterestsRouteImport } from './routes/onboarding/interests'
@@ -104,6 +105,11 @@ const SystemMaintenanceRoute = SystemMaintenanceRouteImport.update({
 const OnboardingSemesterRoute = OnboardingSemesterRouteImport.update({
   id: '/semester',
   path: '/semester',
+  getParentRoute: () => OnboardingRouteRoute,
+} as any)
+const OnboardingPhotosRoute = OnboardingPhotosRouteImport.update({
+  id: '/photos',
+  path: '/photos',
   getParentRoute: () => OnboardingRouteRoute,
 } as any)
 const OnboardingNameRoute = OnboardingNameRouteImport.update({
@@ -236,6 +242,7 @@ export interface FileRoutesByFullPath {
   '/onboarding/interests': typeof OnboardingInterestsRoute
   '/onboarding/looking-for': typeof OnboardingLookingForRoute
   '/onboarding/name': typeof OnboardingNameRoute
+  '/onboarding/photos': typeof OnboardingPhotosRoute
   '/onboarding/semester': typeof OnboardingSemesterRoute
   '/system/maintenance': typeof SystemMaintenanceRoute
   '/system/splash': typeof SystemSplashRoute
@@ -267,6 +274,7 @@ export interface FileRoutesByTo {
   '/onboarding/interests': typeof OnboardingInterestsRoute
   '/onboarding/looking-for': typeof OnboardingLookingForRoute
   '/onboarding/name': typeof OnboardingNameRoute
+  '/onboarding/photos': typeof OnboardingPhotosRoute
   '/onboarding/semester': typeof OnboardingSemesterRoute
   '/system/maintenance': typeof SystemMaintenanceRoute
   '/system/splash': typeof SystemSplashRoute
@@ -302,6 +310,7 @@ export interface FileRoutesById {
   '/onboarding/interests': typeof OnboardingInterestsRoute
   '/onboarding/looking-for': typeof OnboardingLookingForRoute
   '/onboarding/name': typeof OnboardingNameRoute
+  '/onboarding/photos': typeof OnboardingPhotosRoute
   '/onboarding/semester': typeof OnboardingSemesterRoute
   '/system/maintenance': typeof SystemMaintenanceRoute
   '/system/splash': typeof SystemSplashRoute
@@ -338,6 +347,7 @@ export interface FileRouteTypes {
     | '/onboarding/interests'
     | '/onboarding/looking-for'
     | '/onboarding/name'
+    | '/onboarding/photos'
     | '/onboarding/semester'
     | '/system/maintenance'
     | '/system/splash'
@@ -369,6 +379,7 @@ export interface FileRouteTypes {
     | '/onboarding/interests'
     | '/onboarding/looking-for'
     | '/onboarding/name'
+    | '/onboarding/photos'
     | '/onboarding/semester'
     | '/system/maintenance'
     | '/system/splash'
@@ -403,6 +414,7 @@ export interface FileRouteTypes {
     | '/onboarding/interests'
     | '/onboarding/looking-for'
     | '/onboarding/name'
+    | '/onboarding/photos'
     | '/onboarding/semester'
     | '/system/maintenance'
     | '/system/splash'
@@ -514,6 +526,13 @@ declare module '@tanstack/react-router' {
       path: '/semester'
       fullPath: '/onboarding/semester'
       preLoaderRoute: typeof OnboardingSemesterRouteImport
+      parentRoute: typeof OnboardingRouteRoute
+    }
+    '/onboarding/photos': {
+      id: '/onboarding/photos'
+      path: '/photos'
+      fullPath: '/onboarding/photos'
+      preLoaderRoute: typeof OnboardingPhotosRouteImport
       parentRoute: typeof OnboardingRouteRoute
     }
     '/onboarding/name': {
@@ -702,6 +721,7 @@ interface OnboardingRouteRouteChildren {
   OnboardingInterestsRoute: typeof OnboardingInterestsRoute
   OnboardingLookingForRoute: typeof OnboardingLookingForRoute
   OnboardingNameRoute: typeof OnboardingNameRoute
+  OnboardingPhotosRoute: typeof OnboardingPhotosRoute
   OnboardingSemesterRoute: typeof OnboardingSemesterRoute
   OnboardingIndexRoute: typeof OnboardingIndexRoute
 }
@@ -716,6 +736,7 @@ const OnboardingRouteRouteChildren: OnboardingRouteRouteChildren = {
   OnboardingInterestsRoute: OnboardingInterestsRoute,
   OnboardingLookingForRoute: OnboardingLookingForRoute,
   OnboardingNameRoute: OnboardingNameRoute,
+  OnboardingPhotosRoute: OnboardingPhotosRoute,
   OnboardingSemesterRoute: OnboardingSemesterRoute,
   OnboardingIndexRoute: OnboardingIndexRoute,
 }
