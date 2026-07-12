@@ -280,16 +280,16 @@ export function MatchCelebration({
       className="fixed inset-0 flex items-center justify-center"
       style={{ zIndex: 80, padding: spacing[5] }}
     >
-      {/* Backdrop — deep navy depth + gentle warm bloom, softly blurred. */}
+      {/* Backdrop — bright frosted light + gentle warm bloom, softly blurred. */}
       <div
         onClick={onClose}
         className="absolute inset-0 backdrop-blur-2xl"
         style={{
           background:
-            "radial-gradient(70% 50% at 50% 32%, rgba(120,150,255,0.16) 0%, rgba(10,16,38,0) 60%)," +
-            "radial-gradient(90% 60% at 50% 30%, rgba(255,236,210,0.10) 0%, rgba(10,16,38,0) 58%)," +
-            "radial-gradient(120% 90% at 50% 120%, rgba(46,70,200,0.12) 0%, rgba(6,10,24,0) 62%)," +
-            "linear-gradient(180deg, rgba(4,7,16,0.88) 0%, rgba(6,9,22,0.94) 100%)",
+            "radial-gradient(70% 50% at 50% 30%, rgba(120,150,255,0.20) 0%, rgba(255,255,255,0) 60%)," +
+            "radial-gradient(90% 60% at 50% 28%, rgba(255,214,170,0.20) 0%, rgba(255,255,255,0) 58%)," +
+            "radial-gradient(120% 90% at 50% 120%, rgba(10,132,255,0.10) 0%, rgba(255,255,255,0) 62%)," +
+            "linear-gradient(180deg, rgba(255,255,255,0.86) 0%, rgba(244,246,250,0.92) 100%)",
         }}
       />
 
