@@ -673,7 +673,7 @@ function MessageActionSheet({
           borderRadius: radii.xl,
           background: "rgba(255,255,255,0.98)",
           border: `1px solid ${surfaces.borderSoft}`,
-          boxShadow: shadows.floating,
+          boxShadow: shadows.large,
           overflow: "hidden",
         }}
       >
