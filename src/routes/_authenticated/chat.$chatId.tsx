@@ -1,9 +1,10 @@
 // ============================================================================
 // /chat/:chatId — the conversation. Real messages persisted to public.messages
 // (RLS-scoped to the two participants), streamed via Supabase realtime, marked
-// read on view. Grouped bubbles, day + unread separators, read receipts,
-// optimistic + retryable sends, image sharing (signed upload → chat-media),
-// replies, typing indicator, live presence and infinite upward scroll.
+// delivered + read on view. Grouped bubbles, day + unread separators, read
+// receipts (sent → delivered → read), optimistic + retryable sends, image
+// sharing, voice notes (record → signed upload → chat-media), emoji reactions,
+// an emoji picker, replies, typing, live presence and infinite upward scroll.
 // Every visual is composed from the shared /ui chat components.
 // ============================================================================
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
@@ -20,14 +21,19 @@ import {
   getConversation,
   sendMessage,
   markConversationRead,
+  markConversationDelivered,
+  toggleReaction,
   createChatImageUpload,
+  createChatAudioUpload,
   MESSAGE_MAX,
   type ChatMessage,
 } from "@/lib/chat.functions";
 import { myProfileQuery } from "@/lib/profile.functions";
 import { useOnlineUserIds } from "@/lib/use-presence-set";
 import { useChatTyping } from "@/lib/use-chat-channel";
-import { colors, spacing } from "@/lib/ds";
+import { useVoiceRecorder, voiceSupported } from "@/lib/use-voice-recorder";
+import { haptic } from "@/lib/haptics";
+import { colors, radii, shadows, spacing, surfaces, type, weights } from "@/lib/ds";
 import { Skeleton, Button } from "@/components/ds/glass";
 import { EmptyState } from "@/components/ds/empty-state";
 import { DiscoverShell } from "@/components/discover/shell";
@@ -39,9 +45,13 @@ import {
   TypingBubble,
   ImageMessage,
   Composer,
+  ReactionsRow,
   type GroupPos,
   type MsgState,
+  type ReactionGroup,
 } from "@/components/ds/chat";
+import { VoiceMessage, VoiceRecordingBar } from "@/components/ds/voice-message";
+import { EmojiPicker, QUICK_REACTIONS } from "@/components/ds/emoji-picker";
 import { ImageViewer } from "@/components/ds/image-viewer";
 
 const CHAT_BUCKET = "chat-media";
@@ -73,6 +83,16 @@ function timeLabel(iso: string): string {
   return new Date(iso).toLocaleTimeString(undefined, { hour: "numeric", minute: "2-digit" });
 }
 
+function groupReactions(
+  reactions: Record<string, string[]> | undefined,
+  viewerId: string,
+): ReactionGroup[] {
+  if (!reactions) return [];
+  return Object.entries(reactions)
+    .filter(([, users]) => users.length > 0)
+    .map(([emoji, users]) => ({ emoji, count: users.length, mine: users.includes(viewerId) }));
+}
+
 type PendingMessage = ChatMessage & { pending: true; failed?: boolean; localId: string };
 
 function ext(mime: string): string {
@@ -93,7 +113,10 @@ function ChatThread() {
 
   const send = useServerFn(sendMessage);
   const markRead = useServerFn(markConversationRead);
+  const markDelivered = useServerFn(markConversationDelivered);
+  const react = useServerFn(toggleReaction);
   const prepareUpload = useServerFn(createChatImageUpload);
+  const prepareAudio = useServerFn(createChatAudioUpload);
   const loadMore = useServerFn(getConversation);
 
   const viewerId = convo?.viewerId ?? profile?.id ?? "";
@@ -108,6 +131,12 @@ function ChatThread() {
   const [viewerSrc, setViewerSrc] = useState<string | null>(null);
   const [loadingOlder, setLoadingOlder] = useState(false);
   const [hasMore, setHasMore] = useState(convo?.hasMore ?? false);
+  const [showEmoji, setShowEmoji] = useState(false);
+  const [menuMsg, setMenuMsg] = useState<ChatMessage | null>(null);
+  const [reactionOverrides, setReactionOverrides] = useState<Record<string, Record<string, string[]>>>({});
+
+  const voice = useVoiceRecorder();
+  const canRecordVoice = useMemo(() => voiceSupported(), []);
 
   const bottomRef = useRef<HTMLDivElement>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
@@ -125,8 +154,7 @@ function ChatThread() {
     else localStorage.removeItem(draftKey);
   }, [draft, draftKey]);
 
-  // Merge server messages with any successfully-sent-but-not-yet-refetched
-  // pending items removed. De-dupe older + current by id.
+  // Merge server messages, de-duped by id.
   const serverMessages = useMemo<ChatMessage[]>(() => {
     const byId = new Map<string, ChatMessage>();
     for (const m of older) byId.set(m.id, m);
@@ -136,12 +164,16 @@ function ChatThread() {
     );
   }, [older, convo?.messages]);
 
+  // Fresh server data is authoritative — drop stale optimistic reaction overrides.
+  useEffect(() => {
+    setReactionOverrides({});
+  }, [convo?.messages]);
+
   const messages = useMemo<(ChatMessage | PendingMessage)[]>(
     () => [...serverMessages, ...pending],
     [serverMessages, pending],
   );
 
-  // First unread (from the other participant) index, for the unread divider.
   const firstUnreadId = useMemo(() => {
     const m = serverMessages.find((x) => x.senderId !== viewerId && !x.readAt);
     return m?.id ?? null;
@@ -158,7 +190,10 @@ function ChatThread() {
       .on(
         "postgres_changes",
         { event: "INSERT", schema: "public", table: "messages", filter: `match_id=eq.${chatId}` },
-        refresh,
+        () => {
+          markDelivered({ data: { chatId } }).catch(() => {});
+          refresh();
+        },
       )
       .on(
         "postgres_changes",
@@ -169,7 +204,13 @@ function ChatThread() {
     return () => {
       supabase.removeChannel(channel);
     };
-  }, [chatId, qc]);
+  }, [chatId, qc, markDelivered]);
+
+  // Mark the other side's messages delivered as soon as they're received here.
+  useEffect(() => {
+    const undelivered = serverMessages.some((m) => m.senderId !== viewerId && !m.deliveredAt);
+    if (undelivered) markDelivered({ data: { chatId } }).catch(() => {});
+  }, [serverMessages, viewerId, chatId, markDelivered]);
 
   // Mark the other side's messages read whenever the thread changes.
   useEffect(() => {
@@ -180,7 +221,7 @@ function ChatThread() {
       .catch(() => {});
   }, [serverMessages, viewerId, chatId, markRead, qc]);
 
-  // Auto-scroll to newest on new content (unless the user is reading history).
+  // Auto-scroll to newest on new content.
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ block: "end" });
   }, [messages.length, otherTyping]);
@@ -196,7 +237,6 @@ function ChatThread() {
       const res = await loadMore({ data: { chatId, before: earliest.createdAt } });
       setOlder((prev) => [...res.messages, ...prev]);
       setHasMore(res.hasMore);
-      // Preserve scroll position after prepending older messages.
       requestAnimationFrame(() => {
         if (el) el.scrollTop = el.scrollHeight - prevHeight;
       });
@@ -212,8 +252,15 @@ function ChatThread() {
     if (el && el.scrollTop < 60) void onLoadOlder();
   };
 
-  const doSend = async (opts: { body?: string; imagePath?: string; replyTo?: ChatMessage | null }) => {
+  const doSend = async (opts: {
+    body?: string;
+    imagePath?: string;
+    audioPath?: string;
+    audioDurationMs?: number;
+    replyTo?: ChatMessage | null;
+  }) => {
     const localId = `tmp-${Date.now()}-${Math.random().toString(36).slice(2)}`;
+    const kind = opts.audioPath ? "voice" : opts.imagePath ? "image" : "text";
     const optimistic: PendingMessage = {
       id: localId,
       localId,
@@ -222,8 +269,12 @@ function ChatThread() {
       senderId: viewerId,
       createdAt: new Date().toISOString(),
       readAt: null,
-      kind: opts.imagePath ? "image" : "text",
+      deliveredAt: null,
+      kind,
       imageUrl: null,
+      audioUrl: null,
+      audioDurationMs: opts.audioDurationMs ?? null,
+      reactions: {},
       replyTo: opts.replyTo
         ? { id: opts.replyTo.id, body: opts.replyTo.body, senderId: opts.replyTo.senderId, kind: opts.replyTo.kind }
         : null,
@@ -235,6 +286,8 @@ function ChatThread() {
           chatId,
           body: opts.body,
           imagePath: opts.imagePath,
+          audioPath: opts.audioPath,
+          audioDurationMs: opts.audioDurationMs,
           replyTo: opts.replyTo?.id,
         },
       });
@@ -255,6 +308,7 @@ function ChatThread() {
     const reply = replyingTo;
     setDraft("");
     setReplyingTo(null);
+    setShowEmoji(false);
     stopTyping();
     void doSend({ body, replyTo: reply });
   };
@@ -285,11 +339,66 @@ function ChatThread() {
     }
   };
 
+  // --- Voice notes -----------------------------------------------------------
+  const onStartVoice = async () => {
+    setShowEmoji(false);
+    const ok = await voice.start();
+    if (!ok && voice.error) toast.error(voice.error);
+  };
+
+  const onCancelVoice = () => voice.cancel();
+
+  const onSendVoice = async () => {
+    const reply = replyingTo;
+    const result = await voice.stop();
+    if (!result) return;
+    setReplyingTo(null);
+    try {
+      const { path, token } = await prepareAudio({ data: { chatId, ext: result.ext } });
+      const { error } = await supabase.storage
+        .from(CHAT_BUCKET)
+        .uploadToSignedUrl(path, token, result.blob, { contentType: result.mime });
+      if (error) throw new Error(error.message);
+      await doSend({ audioPath: path, audioDurationMs: result.durationMs, replyTo: reply });
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Voice message failed to send.");
+    }
+  };
+
+  // --- Reactions -------------------------------------------------------------
+  const getReactions = useCallback(
+    (m: ChatMessage): Record<string, string[]> => reactionOverrides[m.id] ?? m.reactions ?? {},
+    [reactionOverrides],
+  );
+
+  const onReact = useCallback(
+    (messageId: string, emoji: string, current: Record<string, string[]>) => {
+      haptic("light");
+      const users = current[emoji] ?? [];
+      const mine = users.includes(viewerId);
+      const next: Record<string, string[]> = { ...current };
+      if (mine) {
+        const filtered = users.filter((u) => u !== viewerId);
+        if (filtered.length) next[emoji] = filtered;
+        else delete next[emoji];
+      } else {
+        next[emoji] = [...users, viewerId];
+      }
+      setReactionOverrides((o) => ({ ...o, [messageId]: next }));
+      react({ data: { messageId, emoji } })
+        .then((res) => setReactionOverrides((o) => ({ ...o, [messageId]: res })))
+        .catch(() => {
+          setReactionOverrides((o) => ({ ...o, [messageId]: current }));
+          toast.error("Couldn't react.");
+        });
+    },
+    [react, viewerId],
+  );
+
   const retry = (m: PendingMessage) => {
     setPending((p) => p.filter((x) => x.localId !== m.localId));
     void doSend({
       body: m.kind === "text" ? m.body : undefined,
-      imagePath: undefined,
       replyTo: m.replyTo ? (serverMessages.find((s) => s.id === m.replyTo?.id) ?? null) : null,
     });
   };
@@ -297,6 +406,8 @@ function ChatThread() {
   if (!other) return <ChatUnavailable />;
   const name = other.fullName ?? "your match";
   const firstName = name.split(/\s+/)[0];
+
+  const insertEmoji = (e: string) => setDraft((d) => d + e);
 
   return (
     <div
@@ -366,28 +477,58 @@ function ChatThread() {
             let state: MsgState | undefined;
             if (mine) {
               if (isPending) state = (m as PendingMessage).failed ? "failed" : "sending";
-              else state = m.readAt ? "read" : "delivered";
+              else if (m.readAt) state = "read";
+              else if (m.deliveredAt) state = "delivered";
+              else state = "sent";
             }
 
             const reply = m.replyTo
               ? {
                   author: m.replyTo.senderId === viewerId ? "You" : firstName,
-                  text: m.replyTo.kind === "image" ? "📷 Photo" : m.replyTo.body,
+                  text:
+                    m.replyTo.kind === "image"
+                      ? "📷 Photo"
+                      : m.replyTo.kind === "voice"
+                        ? "🎤 Voice message"
+                        : m.replyTo.body,
                 }
               : null;
+
+            const reactionMap = isPending ? {} : getReactions(m as ChatMessage);
+            const reactionGroups = groupReactions(reactionMap, viewerId);
+            const openMenu = () => !isPending && setMenuMsg(m as ChatMessage);
 
             return (
               <div key={m.id}>
                 {showDay && <DayDivider label={dayLabel(m.createdAt)} />}
                 {showUnread && <UnreadDivider />}
-                {m.kind === "image" && m.imageUrl ? (
-                  <ImageMessage
-                    mine={mine}
-                    src={m.imageUrl}
-                    time={tail ? timeLabel(m.createdAt) : undefined}
-                    state={state}
-                    onOpen={() => setViewerSrc(m.imageUrl)}
-                  />
+                {m.kind === "voice" && (m.audioUrl || isPending) ? (
+                  <>
+                    <div onContextMenu={(e) => { e.preventDefault(); openMenu(); }}>
+                      <VoiceMessage
+                        id={m.id}
+                        mine={mine}
+                        src={m.audioUrl}
+                        durationMs={m.audioDurationMs}
+                        time={tail ? timeLabel(m.createdAt) : undefined}
+                        state={state}
+                      />
+                    </div>
+                    <ReactionsRow reactions={reactionGroups} mine={mine} onTap={(e) => onReact(m.id, e, reactionMap)} />
+                  </>
+                ) : m.kind === "image" && m.imageUrl ? (
+                  <>
+                    <div onContextMenu={(e) => { e.preventDefault(); openMenu(); }}>
+                      <ImageMessage
+                        mine={mine}
+                        src={m.imageUrl}
+                        time={tail ? timeLabel(m.createdAt) : undefined}
+                        state={state}
+                        onOpen={() => setViewerSrc(m.imageUrl)}
+                      />
+                    </div>
+                    <ReactionsRow reactions={reactionGroups} mine={mine} onTap={(e) => onReact(m.id, e, reactionMap)} />
+                  </>
                 ) : m.kind === "image" && isPending ? (
                   <ImageMessage mine={mine} uploading state={state} />
                 ) : (
@@ -403,17 +544,15 @@ function ChatThread() {
                       time={tail ? timeLabel(m.createdAt) : undefined}
                       state={state}
                       reply={reply}
-                      onLongPress={() =>
-                        !isPending && setReplyingTo(m as ChatMessage)
-                      }
+                      reactions={reactionGroups}
+                      onReactionTap={(e) => onReact(m.id, e, reactionMap)}
+                      onLongPress={openMenu}
                     >
                       {m.body}
                     </Bubble>
                   </div>
-                )}
-              </div>
-            );
-          })
+                );
+              })
         )}
 
         {otherTyping && <TypingBubble />}
@@ -428,30 +567,173 @@ function ChatThread() {
         style={{ display: "none" }}
       />
 
-      <Composer
-        value={draft}
-        onChange={(v) => {
-          setDraft(v);
-          if (v) sendTyping();
-        }}
-        onSend={onSendText}
-        onAttach={onPickImage}
-        onCamera={onPickImage}
-        placeholder={`Message ${firstName}…`}
-        canSend={draft.trim().length > 0 && draft.length <= MESSAGE_MAX}
-        replyingTo={
-          replyingTo
-            ? {
-                author: replyingTo.senderId === viewerId ? "You" : firstName,
-                text: replyingTo.kind === "image" ? "📷 Photo" : replyingTo.body,
-              }
-            : null
-        }
-        onCancelReply={() => setReplyingTo(null)}
-      />
+      {showEmoji && !voice.recording && (
+        <EmojiPicker onPick={insertEmoji} onClose={() => setShowEmoji(false)} />
+      )}
+
+      {voice.recording ? (
+        <VoiceRecordingBar durationMs={voice.durationMs} onCancel={onCancelVoice} onSend={onSendVoice} />
+      ) : (
+        <Composer
+          value={draft}
+          onChange={(v) => {
+            setDraft(v);
+            if (v) sendTyping();
+          }}
+          onSend={onSendText}
+          onAttach={onPickImage}
+          onCamera={onPickImage}
+          onEmoji={() => setShowEmoji((s) => !s)}
+          onVoice={canRecordVoice ? onStartVoice : undefined}
+          emojiActive={showEmoji}
+          placeholder={`Message ${firstName}…`}
+          canSend={draft.trim().length > 0 && draft.length <= MESSAGE_MAX}
+          replyingTo={
+            replyingTo
+              ? {
+                  author: replyingTo.senderId === viewerId ? "You" : firstName,
+                  text:
+                    replyingTo.kind === "image"
+                      ? "📷 Photo"
+                      : replyingTo.kind === "voice"
+                        ? "🎤 Voice message"
+                        : replyingTo.body,
+                }
+              : null
+          }
+          onCancelReply={() => setReplyingTo(null)}
+        />
+      )}
+
+      {menuMsg && (
+        <MessageActionSheet
+          message={menuMsg}
+          viewerId={viewerId}
+          reactions={getReactions(menuMsg)}
+          onReact={(emoji) => {
+            onReact(menuMsg.id, emoji, getReactions(menuMsg));
+            setMenuMsg(null);
+          }}
+          onReply={() => {
+            setReplyingTo(menuMsg);
+            setMenuMsg(null);
+          }}
+          onClose={() => setMenuMsg(null)}
+        />
+      )}
 
       {viewerSrc && <ImageViewer src={viewerSrc} onClose={() => setViewerSrc(null)} />}
     </div>
+  );
+}
+
+/* ------------------------------------------------------- action sheet ----- */
+
+function MessageActionSheet({
+  message,
+  viewerId,
+  reactions,
+  onReact,
+  onReply,
+  onClose,
+}: {
+  message: ChatMessage;
+  viewerId: string;
+  reactions: Record<string, string[]>;
+  onReact: (emoji: string) => void;
+  onReply: () => void;
+  onClose: () => void;
+}) {
+  const canCopy = message.kind === "text" && !!message.body;
+  return (
+    <div
+      role="dialog"
+      aria-label="Message actions"
+      onClick={onClose}
+      style={{
+        position: "fixed",
+        inset: 0,
+        zIndex: 50,
+        display: "flex",
+        alignItems: "flex-end",
+        justifyContent: "center",
+        background: "rgba(15,18,24,0.34)",
+        backdropFilter: "blur(2px)",
+      }}
+    >
+      <div
+        onClick={(e) => e.stopPropagation()}
+        className="ds-sheet-up"
+        style={{
+          width: "100%",
+          maxWidth: 520,
+          margin: spacing[3],
+          borderRadius: radii.xl,
+          background: "rgba(255,255,255,0.98)",
+          border: `1px solid ${surfaces.borderSoft}`,
+          boxShadow: shadows.floating,
+          overflow: "hidden",
+        }}
+      >
+        <div
+          className="flex items-center justify-between"
+          style={{ padding: `${spacing[3]}px ${spacing[3]}px ${spacing[2]}px` }}
+        >
+          {QUICK_REACTIONS.map((e) => {
+            const mine = (reactions[e] ?? []).includes(viewerId);
+            return (
+              <button
+                key={e}
+                aria-label={`React ${e}`}
+                onClick={() => onReact(e)}
+                className="flex items-center justify-center rounded-full"
+                style={{
+                  width: 42,
+                  height: 42,
+                  fontSize: 24,
+                  background: mine ? "rgba(255,73,105,0.14)" : "transparent",
+                  border: `1px solid ${mine ? colors.primary : "transparent"}`,
+                }}
+              >
+                {e}
+              </button>
+            );
+          })}
+        </div>
+        <div style={{ height: 1, background: surfaces.borderSoft }} />
+        <SheetAction label="Reply" onClick={onReply} />
+        {canCopy && (
+          <SheetAction
+            label="Copy text"
+            onClick={() => {
+              navigator.clipboard?.writeText(message.body).catch(() => {});
+              toast.success("Copied");
+              onClose();
+            }}
+          />
+        )}
+        <SheetAction label="Cancel" muted onClick={onClose} />
+      </div>
+    </div>
+  );
+}
+
+function SheetAction({ label, onClick, muted }: { label: string; onClick: () => void; muted?: boolean }) {
+  return (
+    <button
+      onClick={onClick}
+      className="w-full text-left"
+      style={{
+        padding: `${spacing[3]}px ${spacing[4]}px`,
+        borderTop: `1px solid ${surfaces.borderSoft}`,
+        ...type.bodyLg,
+        fontSize: 15,
+        fontWeight: weights.medium,
+        color: muted ? colors.textMuted : colors.textPrimary,
+      }}
+    >
+      {label}
+    </button>
   );
 }
 
