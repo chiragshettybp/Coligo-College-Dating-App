@@ -104,18 +104,18 @@ export const spacing = [4, 8, 12, 16, 20, 24, 32, 40, 48, 64, 80, 96] as const;
  */
 export const shadows = {
   soft:
-    "0 1px 2px rgba(0,0,0,0.30), 0 4px 10px rgba(0,0,0,0.24), inset 0 1px 0 rgba(255,255,255,0.05)",
+    "0 1px 1px rgba(0,0,0,0.04), 0 2px 6px rgba(0,0,0,0.05)",
   medium:
-    "0 1px 2px rgba(0,0,0,0.34), 0 8px 20px rgba(0,0,0,0.30), inset 0 1px 0 rgba(255,255,255,0.06)",
+    "0 1px 2px rgba(0,0,0,0.05), 0 6px 16px rgba(0,0,0,0.07)",
   large:
-    "0 2px 4px rgba(0,0,0,0.34), 0 16px 32px rgba(0,0,0,0.34), 0 32px 64px rgba(0,0,0,0.28), inset 0 1px 0 rgba(255,255,255,0.06)",
+    "0 2px 4px rgba(0,0,0,0.06), 0 12px 32px rgba(0,0,0,0.09)",
   glass:
-    "0 2px 4px rgba(0,0,0,0.30), 0 20px 44px rgba(0,0,0,0.36), inset 0 1px 0 rgba(255,255,255,0.07)",
+    "0 1px 2px rgba(0,0,0,0.05), 0 8px 24px rgba(0,0,0,0.08)",
   button:
-    "0 1px 2px rgba(0,0,0,0.30), 0 3px 8px rgba(0,0,0,0.24), inset 0 1px 0 rgba(255,255,255,0.14)",
+    "0 1px 1px rgba(0,0,0,0.05), 0 2px 6px rgba(0,0,0,0.08)",
   primaryGlow:
-    "0 1px 2px rgba(0,0,0,0.28), 0 6px 16px rgba(45,120,230,0.34), inset 0 1px 0 rgba(255,255,255,0.24)",
-  glow: "0 0 32px rgba(62,160,242,0.36)",
+    "0 1px 2px rgba(0,0,0,0.06), 0 6px 16px rgba(10,132,255,0.18)",
+  glow: "0 4px 16px rgba(10,132,255,0.14)",
 } as const;
 
 /**
