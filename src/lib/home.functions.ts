@@ -175,7 +175,7 @@ export const getHomeDashboard = createServerFn({ method: "GET" })
         .limit(10),
     ]);
 
-    const members = (membersRes.data ?? []) as NewMember[] extends never ? never : {
+    const members = (membersRes.data ?? []) as {
       id: string; full_name: string | null; avatar_url: string | null; college_name: string | null;
     }[];
 
