@@ -297,14 +297,29 @@ export function Badge({
 
 /* ------------------------------------------------------------------ Avatar */
 
-type AvatarSize = "xs" | "sm" | "md" | "lg" | "xl";
-const avatarSizes: Record<AvatarSize, number> = { xs: 28, sm: 40, md: 52, lg: 68, xl: 92 };
-type AvatarStatus = "online" | "offline" | "away";
+type AvatarSize = "xs" | "sm" | "md" | "lg" | "xl" | "hero";
+const avatarSizes: Record<AvatarSize, number> = {
+  xs: 28,
+  sm: 40,
+  md: 52,
+  lg: 68,
+  xl: 92,
+  hero: 124,
+};
+type AvatarStatus = "online" | "offline" | "away" | "busy";
 const statusColor: Record<AvatarStatus, string> = {
   online: colors.success,
   offline: "#6b7590",
   away: colors.warning,
+  busy: colors.danger,
 };
+
+/** Dark gap tone that matches the app background behind avatars. */
+const AVATAR_GAP = "#0a1120";
+
+/** Original premium story ring — a warm-to-cool sweep, not Instagram's. */
+const STORY_RING =
+  "conic-gradient(from 210deg, #57b0f6 0deg, #8b7cf6 110deg, #ea6fa6 210deg, #43d9a3 320deg, #57b0f6 360deg)";
 
 export function Avatar({
   src,
@@ -312,50 +327,112 @@ export function Avatar({
   size = "md",
   status,
   ring = false,
+  verified = false,
+  initials,
 }: {
-  src: string;
+  src?: string;
   alt?: string;
   size?: AvatarSize;
   status?: AvatarStatus;
   ring?: boolean;
+  verified?: boolean;
+  initials?: string;
 }) {
   const px = avatarSizes[size];
-  return (
-    <div className="relative inline-block" style={{ width: px, height: px }}>
-      <div
-        className="h-full w-full overflow-hidden rounded-full"
-        style={{
-          border: ring ? "2px solid transparent" : `2px solid rgba(255,255,255,0.92)`,
-          backgroundImage: ring
-            ? `${gradients.pink} border-box`
-            : undefined,
-          padding: ring ? 2 : 0,
-          boxShadow: shadows.soft,
-        }}
-      >
+  const ringW = Math.max(2, Math.round(px * 0.05));
+  const gapW = Math.max(1.5, Math.round(px * 0.028));
+  const dot = Math.max(9, Math.round(px * 0.3));
+  const cutout = Math.max(2, Math.round(px * 0.055));
+  const badge = Math.max(14, Math.round(px * 0.34));
+
+  // When both status + verified are present, status floats top-right.
+  const statusTop = verified && !!status;
+
+  const disc = (
+    <div
+      className="h-full w-full overflow-hidden rounded-full"
+      style={{
+        boxShadow:
+          "inset 0 0 0 1px rgba(255,255,255,0.16), inset 0 2px 3px rgba(255,255,255,0.22), inset 0 -3px 6px rgba(0,0,0,0.3)",
+      }}
+    >
+      {src ? (
         <img
           src={src}
           alt={alt}
           className="h-full w-full rounded-full object-cover"
           loading="lazy"
         />
+      ) : (
+        <div
+          className="flex h-full w-full items-center justify-center rounded-full font-bold text-white"
+          style={{
+            background: gradients.blueGloss,
+            fontSize: px * 0.4,
+            letterSpacing: "-0.02em",
+          }}
+        >
+          {initials ?? "?"}
+        </div>
+      )}
+    </div>
+  );
+
+  return (
+    <div className="relative inline-block" style={{ width: px, height: px }}>
+      <div
+        className="h-full w-full rounded-full"
+        style={{
+          padding: ring ? ringW : 0,
+          background: ring ? STORY_RING : "transparent",
+          boxShadow: `${shadows.soft}, 0 8px 20px rgba(0,0,0,0.4)`,
+        }}
+      >
+        <div
+          className="h-full w-full rounded-full"
+          style={{ padding: ring ? gapW : 0, background: ring ? AVATAR_GAP : "transparent" }}
+        >
+          {disc}
+        </div>
       </div>
+
       {status && (
         <span
           className="absolute rounded-full"
           style={{
-            right: 0,
-            bottom: 0,
-            width: px * 0.28,
-            height: px * 0.28,
+            right: statusTop ? 0 : "6%",
+            [statusTop ? "top" : "bottom"]: statusTop ? 0 : "6%",
+            width: dot,
+            height: dot,
             background: statusColor[status],
-            border: "2px solid #0c2270",
-          }}
+            border: `${cutout}px solid ${AVATAR_GAP}`,
+            boxShadow:
+              status === "online" ? `0 0 8px ${colors.success}` : "none",
+          } as React.CSSProperties}
         />
+      )}
+
+      {verified && (
+        <span
+          className="absolute flex items-center justify-center rounded-full"
+          style={{
+            right: "-4%",
+            bottom: "-4%",
+            width: badge,
+            height: badge,
+            background: gradients.primaryButton,
+            border: `${Math.max(1.5, cutout - 1)}px solid ${AVATAR_GAP}`,
+            boxShadow: shadows.primaryGlow,
+            color: "#fff",
+          }}
+        >
+          <Check style={{ width: badge * 0.56, height: badge * 0.56 }} strokeWidth={3.2} />
+        </span>
       )}
     </div>
   );
 }
+
 
 /* ------------------------------------------------------------------ Toggle */
 
