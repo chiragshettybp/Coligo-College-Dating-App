@@ -65,7 +65,12 @@ function ResetPasswordPage() {
         const { error: uErr } = await supabase.auth.updateUser({ password });
         if (uErr) throw uErr;
       } else {
-        await resetPasswordByPhone({ data: { phone, password } });
+        const { data: ok, error: rErr } = await supabase.rpc("dev_reset_password", {
+          _e164: toE164(phone),
+          _password: password,
+        });
+        if (rErr) throw rErr;
+        if (!ok) throw new Error("No account found for this mobile number.");
         const { error: sErr } = await supabase.auth.signInWithPassword({
           email: phoneToAlias(phone),
           password,
