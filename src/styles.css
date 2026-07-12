@@ -292,6 +292,21 @@
   .ds-feedback:hover { transform: translateY(-1px); filter: brightness(1.04); }
 }
 
+@keyframes ds-scrim-in { from { opacity: 0; } to { opacity: 1; } }
+.ds-scrim-in { animation: ds-scrim-in 0.24s ease-out both; }
+
+@keyframes ds-dialog-in {
+  from { opacity: 0; transform: translateY(10px) scale(0.96); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+.ds-dialog-in { animation: ds-dialog-in 0.32s cubic-bezier(0.34, 1.4, 0.64, 1) both; }
+
+@keyframes ds-actionbar-in {
+  from { opacity: 0; transform: translateY(100%); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.ds-actionbar-in { animation: ds-actionbar-in 0.4s cubic-bezier(0.32, 0.72, 0, 1) both; }
+
 @media (prefers-reduced-motion: reduce) {
   .ds-badge-pulse { animation: none; }
   .ds-toast-in { animation: none; }
