@@ -220,7 +220,9 @@ export function IconButton({
         color: "#e7ecff",
         ...style,
       }}
+      onPointerDown={() => haptic("selection")}
       {...rest}
+
     >
       {children}
     </button>
