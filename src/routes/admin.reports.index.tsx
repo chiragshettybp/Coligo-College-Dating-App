@@ -281,14 +281,15 @@ function AdminReports() {
 
       {/* Category analytics */}
       {analytics.data && analytics.data.byCategory.length > 0 && (
-        <Card padding={spacing[4]} style={{ marginTop: spacing[3] }}>
-          <Text variant="overline" tone="muted">Reports by category</Text>
-          <div style={{ marginTop: spacing[3] }}>
-            <BarSeries
-              data={analytics.data.byCategory.slice(0, 8).map((c) => ({ label: c.name.replace(/_/g, " "), value: c.count }))}
-            />
-          </div>
-        </Card>
+        <div style={{ marginTop: spacing[3] }}>
+          <BarSeries
+            title="Reports by category"
+            subtitle="Distribution across all report categories"
+            xKey="label"
+            dataKey="value"
+            data={analytics.data.byCategory.slice(0, 8).map((c) => ({ label: c.name.replace(/_/g, " "), value: c.count }))}
+          />
+        </div>
       )}
 
       {/* Search */}
