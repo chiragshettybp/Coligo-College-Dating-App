@@ -23,7 +23,7 @@ export function ServerErrorView({
   reset?: () => void;
 }) {
   const router = useRouter();
-  const [homeTo, setHomeTo] = useState<"/" | "/app">("/");
+  const [homeTo, setHomeTo] = useState<"/" | "/home">("/");
   const [errorId, setErrorId] = useState<string | null>(null);
   const [ticketSent, setTicketSent] = useState(false);
   const [reporting, setReporting] = useState(false);
@@ -33,7 +33,7 @@ export function ServerErrorView({
     if (typeof window === "undefined") return;
 
     supabase.auth.getUser().then(({ data }) => {
-      if (data.user) setHomeTo("/app");
+      if (data.user) setHomeTo("/home");
     });
 
     if (reported.current) return;

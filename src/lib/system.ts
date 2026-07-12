@@ -91,7 +91,7 @@ export type Destination =
   | { to: "/system/maintenance"; reason: "maintenance" }
   | { to: "/"; reason: "suspended" | "deleted"; signOut: true }
   | { to: "/onboarding"; reason: "onboarding" }
-  | { to: "/app"; reason: "home" };
+  | { to: "/home"; reason: "home" };
 
 /**
  * Pure routing engine used by the splash screen. Order matters: maintenance
@@ -118,7 +118,7 @@ export function resolveDestination(state: SplashState): Destination {
   if (!state.onboardingCompleted) {
     return { to: "/onboarding", reason: "onboarding" };
   }
-  return { to: "/app", reason: "home" };
+  return { to: "/home", reason: "home" };
 }
 
 // ---------------------------------------------------------------- Init steps

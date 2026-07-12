@@ -44,7 +44,7 @@ function CompleteStep() {
   // Auto-advance to the app shortly after success.
   useEffect(() => {
     if (status !== "done") return;
-    const t = setTimeout(() => navigate({ to: "/app", replace: true }), 1800);
+    const t = setTimeout(() => navigate({ to: "/home", replace: true }), 1800);
     return () => clearTimeout(t);
   }, [status, navigate]);
 
@@ -96,7 +96,7 @@ function CompleteStep() {
                 fullWidth
                 loading={status === "working"}
                 disabled={status === "working"}
-                onClick={() => navigate({ to: "/app", replace: true })}
+                onClick={() => navigate({ to: "/home", replace: true })}
               >
                 Start exploring
               </Button>

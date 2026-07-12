@@ -62,7 +62,7 @@ function OnboardingLayout() {
   // Redirect completed users out of onboarding.
   useEffect(() => {
     if (state.onboardingCompleted) {
-      navigate({ to: "/app", replace: true });
+      navigate({ to: "/home", replace: true });
     }
   }, [state.onboardingCompleted, navigate]);
 

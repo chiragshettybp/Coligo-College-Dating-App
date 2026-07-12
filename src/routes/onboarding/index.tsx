@@ -11,7 +11,7 @@ export const Route = createFileRoute("/onboarding/")({
 
 function OnboardingResume() {
   const state = useOnboardingState();
-  if (state.onboardingCompleted) return <Navigate to="/app" replace />;
+  if (state.onboardingCompleted) return <Navigate to="/home" replace />;
   const target = ONBOARDING_STEPS[maxAllowedIndex(state.onboardingStep)];
   return <Navigate to={`/onboarding/${target}`} replace />;
 }

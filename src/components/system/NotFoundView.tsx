@@ -14,14 +14,14 @@ import { Button, Text, GlassPanel } from "@/components/ds/glass";
 import { APP_BACKGROUND, FONT_FAMILY, colors, spacing, radii, gradients } from "@/lib/ds";
 
 export function NotFoundView() {
-  const [homeTo, setHomeTo] = useState<"/" | "/app">("/");
+  const [homeTo, setHomeTo] = useState<"/" | "/home">("/");
   const logged = useRef(false);
 
   useEffect(() => {
     if (typeof window === "undefined") return;
 
     supabase.auth.getUser().then(({ data }) => {
-      if (data.user) setHomeTo("/app");
+      if (data.user) setHomeTo("/home");
     });
 
     if (!logged.current) {

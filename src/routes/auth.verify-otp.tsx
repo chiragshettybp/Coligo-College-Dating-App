@@ -54,7 +54,7 @@ function VerifyOtpPage() {
       });
       if (vErr) throw vErr;
       haptic("softSuccess");
-      navigate({ to: "/app", replace: true });
+      navigate({ to: "/home", replace: true });
     } catch (err) {
       haptic("medium");
       setError(friendlyAuthError(err instanceof Error ? err.message : undefined));
