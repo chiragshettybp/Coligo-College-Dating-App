@@ -598,19 +598,19 @@ function UIShowcase() {
         {/* Navigation */}
         <Section title="Navigation" description="Bottom tab bar and top bar patterns.">
           <div className="space-y-4">
-            <GlassPanel style={{ padding: "14px 20px" }}>
+            <GlassPanel style={{ padding: `${spacing[2]}px ${spacing[4]}px` }}>
               <div className="flex items-center justify-between">
-                <div className="flex items-center gap-3">
+                <div className="flex items-center" style={{ gap: spacing[2] }}>
                   <Avatar src={ana} size="sm" />
                   <span style={{ color: "#fff", fontWeight: 700 }}>Discover</span>
                 </div>
-                <div className="flex items-center gap-2">
-                  <IconButton size={40}><Search style={{ width: 18, height: 18 }} /></IconButton>
-                  <IconButton size={40}><Bell style={{ width: 18, height: 18 }} /></IconButton>
+                <div className="flex items-center" style={{ gap: spacing[1] }}>
+                  <IconButton size={44}><Search style={{ width: 18, height: 18 }} /></IconButton>
+                  <IconButton size={44}><Bell style={{ width: 18, height: 18 }} /></IconButton>
                 </div>
               </div>
             </GlassPanel>
-            <GlassPanel style={{ padding: "10px 8px" }}>
+            <GlassPanel style={{ padding: `${spacing[1]}px ${spacing[1]}px` }}>
               <div className="flex items-center justify-around">
                 <TabIcon icon={<Home style={{ width: 22, height: 22 }} />} active />
                 <TabIcon icon={<Search style={{ width: 22, height: 22 }} />} />
