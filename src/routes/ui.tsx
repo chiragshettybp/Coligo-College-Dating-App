@@ -54,6 +54,9 @@ import { haptic, type HapticToken } from "@/lib/haptics";
 import {
   Avatar,
   Badge,
+  IdentityBadge,
+  PresenceBadge,
+  CompatibilityBadge,
   Button,
   Chip,
   GlassPanel,
