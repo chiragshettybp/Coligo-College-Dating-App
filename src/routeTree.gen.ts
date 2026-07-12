@@ -14,6 +14,7 @@ import { Route as PublicRouteRouteImport } from './routes/_public/route'
 import { Route as PublicIndexRouteImport } from './routes/_public/index'
 import { Route as PublicTermsRouteImport } from './routes/_public/terms'
 import { Route as PublicPrivacyRouteImport } from './routes/_public/privacy'
+import { Route as PublicCommunityGuidelinesRouteImport } from './routes/_public/community-guidelines'
 
 const UiRoute = UiRouteImport.update({
   id: '/ui',
@@ -39,15 +40,23 @@ const PublicPrivacyRoute = PublicPrivacyRouteImport.update({
   path: '/privacy',
   getParentRoute: () => PublicRouteRoute,
 } as any)
+const PublicCommunityGuidelinesRoute =
+  PublicCommunityGuidelinesRouteImport.update({
+    id: '/community-guidelines',
+    path: '/community-guidelines',
+    getParentRoute: () => PublicRouteRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof PublicIndexRoute
   '/ui': typeof UiRoute
+  '/community-guidelines': typeof PublicCommunityGuidelinesRoute
   '/privacy': typeof PublicPrivacyRoute
   '/terms': typeof PublicTermsRoute
 }
 export interface FileRoutesByTo {
   '/ui': typeof UiRoute
+  '/community-guidelines': typeof PublicCommunityGuidelinesRoute
   '/privacy': typeof PublicPrivacyRoute
   '/terms': typeof PublicTermsRoute
   '/': typeof PublicIndexRoute
@@ -56,19 +65,21 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/_public': typeof PublicRouteRouteWithChildren
   '/ui': typeof UiRoute
+  '/_public/community-guidelines': typeof PublicCommunityGuidelinesRoute
   '/_public/privacy': typeof PublicPrivacyRoute
   '/_public/terms': typeof PublicTermsRoute
   '/_public/': typeof PublicIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/ui' | '/privacy' | '/terms'
+  fullPaths: '/' | '/ui' | '/community-guidelines' | '/privacy' | '/terms'
   fileRoutesByTo: FileRoutesByTo
-  to: '/ui' | '/privacy' | '/terms' | '/'
+  to: '/ui' | '/community-guidelines' | '/privacy' | '/terms' | '/'
   id:
     | '__root__'
     | '/_public'
     | '/ui'
+    | '/_public/community-guidelines'
     | '/_public/privacy'
     | '/_public/terms'
     | '/_public/'
@@ -116,16 +127,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PublicPrivacyRouteImport
       parentRoute: typeof PublicRouteRoute
     }
+    '/_public/community-guidelines': {
+      id: '/_public/community-guidelines'
+      path: '/community-guidelines'
+      fullPath: '/community-guidelines'
+      preLoaderRoute: typeof PublicCommunityGuidelinesRouteImport
+      parentRoute: typeof PublicRouteRoute
+    }
   }
 }
 
 interface PublicRouteRouteChildren {
+  PublicCommunityGuidelinesRoute: typeof PublicCommunityGuidelinesRoute
   PublicPrivacyRoute: typeof PublicPrivacyRoute
   PublicTermsRoute: typeof PublicTermsRoute
   PublicIndexRoute: typeof PublicIndexRoute
 }
 
 const PublicRouteRouteChildren: PublicRouteRouteChildren = {
+  PublicCommunityGuidelinesRoute: PublicCommunityGuidelinesRoute,
   PublicPrivacyRoute: PublicPrivacyRoute,
   PublicTermsRoute: PublicTermsRoute,
   PublicIndexRoute: PublicIndexRoute,
