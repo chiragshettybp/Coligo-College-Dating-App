@@ -180,7 +180,7 @@ function DiscoverFeedPage() {
           />
 
           <Text
-            variant="footnote"
+            variant="caption"
             tone="muted"
             style={{ textAlign: "center", color: colors.textMuted }}
           >
