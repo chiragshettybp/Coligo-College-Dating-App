@@ -558,6 +558,15 @@ function UIShowcase() {
           </div>
         </Section>
 
+        <Section
+          title="Shared element transitions"
+          description="Continuity, not page swaps. Tap a photo — the same element physically expands from its exact position into the viewer with a spring, then reverses on dismiss. The building block for swipe→profile, profile→chat and gallery flows."
+        >
+          <SharedGallery images={avatars} />
+        </Section>
+
+
+
         {/* Swipe system */}
         <Section
           title="Swipe System"
