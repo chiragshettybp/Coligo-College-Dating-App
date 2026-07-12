@@ -85,6 +85,7 @@ export function DiscoverShell({
               if (tab === "home") navigate({ to: "/home" });
               else if (tab === "discover") navigate({ to: "/discover" });
               else if (tab === "matches") navigate({ to: "/matches" });
+              else if (tab === "chat") navigate({ to: "/chat" });
               else setComingSoon("Profile");
             }}
           />
