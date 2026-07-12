@@ -26,7 +26,9 @@ import { Route as OnboardingNameRouteImport } from './routes/onboarding/name'
 import { Route as OnboardingLookingForRouteImport } from './routes/onboarding/looking-for'
 import { Route as OnboardingGraduationYearRouteImport } from './routes/onboarding/graduation-year'
 import { Route as OnboardingGenderRouteImport } from './routes/onboarding/gender'
+import { Route as OnboardingDepartmentRouteImport } from './routes/onboarding/department'
 import { Route as OnboardingDateOfBirthRouteImport } from './routes/onboarding/date-of-birth'
+import { Route as OnboardingCollegeRouteImport } from './routes/onboarding/college'
 import { Route as OnboardingBioRouteImport } from './routes/onboarding/bio'
 import { Route as AuthVerifyOtpRouteImport } from './routes/auth.verify-otp'
 import { Route as AuthSignupRouteImport } from './routes/auth.signup'
@@ -124,9 +126,19 @@ const OnboardingGenderRoute = OnboardingGenderRouteImport.update({
   path: '/gender',
   getParentRoute: () => OnboardingRouteRoute,
 } as any)
+const OnboardingDepartmentRoute = OnboardingDepartmentRouteImport.update({
+  id: '/department',
+  path: '/department',
+  getParentRoute: () => OnboardingRouteRoute,
+} as any)
 const OnboardingDateOfBirthRoute = OnboardingDateOfBirthRouteImport.update({
   id: '/date-of-birth',
   path: '/date-of-birth',
+  getParentRoute: () => OnboardingRouteRoute,
+} as any)
+const OnboardingCollegeRoute = OnboardingCollegeRouteImport.update({
+  id: '/college',
+  path: '/college',
   getParentRoute: () => OnboardingRouteRoute,
 } as any)
 const OnboardingBioRoute = OnboardingBioRouteImport.update({
@@ -210,7 +222,9 @@ export interface FileRoutesByFullPath {
   '/auth/signup': typeof AuthSignupRoute
   '/auth/verify-otp': typeof AuthVerifyOtpRoute
   '/onboarding/bio': typeof OnboardingBioRoute
+  '/onboarding/college': typeof OnboardingCollegeRoute
   '/onboarding/date-of-birth': typeof OnboardingDateOfBirthRoute
+  '/onboarding/department': typeof OnboardingDepartmentRoute
   '/onboarding/gender': typeof OnboardingGenderRoute
   '/onboarding/graduation-year': typeof OnboardingGraduationYearRoute
   '/onboarding/looking-for': typeof OnboardingLookingForRoute
@@ -238,7 +252,9 @@ export interface FileRoutesByTo {
   '/auth/signup': typeof AuthSignupRoute
   '/auth/verify-otp': typeof AuthVerifyOtpRoute
   '/onboarding/bio': typeof OnboardingBioRoute
+  '/onboarding/college': typeof OnboardingCollegeRoute
   '/onboarding/date-of-birth': typeof OnboardingDateOfBirthRoute
+  '/onboarding/department': typeof OnboardingDepartmentRoute
   '/onboarding/gender': typeof OnboardingGenderRoute
   '/onboarding/graduation-year': typeof OnboardingGraduationYearRoute
   '/onboarding/looking-for': typeof OnboardingLookingForRoute
@@ -270,7 +286,9 @@ export interface FileRoutesById {
   '/auth/signup': typeof AuthSignupRoute
   '/auth/verify-otp': typeof AuthVerifyOtpRoute
   '/onboarding/bio': typeof OnboardingBioRoute
+  '/onboarding/college': typeof OnboardingCollegeRoute
   '/onboarding/date-of-birth': typeof OnboardingDateOfBirthRoute
+  '/onboarding/department': typeof OnboardingDepartmentRoute
   '/onboarding/gender': typeof OnboardingGenderRoute
   '/onboarding/graduation-year': typeof OnboardingGraduationYearRoute
   '/onboarding/looking-for': typeof OnboardingLookingForRoute
@@ -303,7 +321,9 @@ export interface FileRouteTypes {
     | '/auth/signup'
     | '/auth/verify-otp'
     | '/onboarding/bio'
+    | '/onboarding/college'
     | '/onboarding/date-of-birth'
+    | '/onboarding/department'
     | '/onboarding/gender'
     | '/onboarding/graduation-year'
     | '/onboarding/looking-for'
@@ -331,7 +351,9 @@ export interface FileRouteTypes {
     | '/auth/signup'
     | '/auth/verify-otp'
     | '/onboarding/bio'
+    | '/onboarding/college'
     | '/onboarding/date-of-birth'
+    | '/onboarding/department'
     | '/onboarding/gender'
     | '/onboarding/graduation-year'
     | '/onboarding/looking-for'
@@ -362,7 +384,9 @@ export interface FileRouteTypes {
     | '/auth/signup'
     | '/auth/verify-otp'
     | '/onboarding/bio'
+    | '/onboarding/college'
     | '/onboarding/date-of-birth'
+    | '/onboarding/department'
     | '/onboarding/gender'
     | '/onboarding/graduation-year'
     | '/onboarding/looking-for'
@@ -508,11 +532,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof OnboardingGenderRouteImport
       parentRoute: typeof OnboardingRouteRoute
     }
+    '/onboarding/department': {
+      id: '/onboarding/department'
+      path: '/department'
+      fullPath: '/onboarding/department'
+      preLoaderRoute: typeof OnboardingDepartmentRouteImport
+      parentRoute: typeof OnboardingRouteRoute
+    }
     '/onboarding/date-of-birth': {
       id: '/onboarding/date-of-birth'
       path: '/date-of-birth'
       fullPath: '/onboarding/date-of-birth'
       preLoaderRoute: typeof OnboardingDateOfBirthRouteImport
+      parentRoute: typeof OnboardingRouteRoute
+    }
+    '/onboarding/college': {
+      id: '/onboarding/college'
+      path: '/college'
+      fullPath: '/onboarding/college'
+      preLoaderRoute: typeof OnboardingCollegeRouteImport
       parentRoute: typeof OnboardingRouteRoute
     }
     '/onboarding/bio': {
@@ -637,7 +675,9 @@ const PublicRouteRouteWithChildren = PublicRouteRoute._addFileChildren(
 
 interface OnboardingRouteRouteChildren {
   OnboardingBioRoute: typeof OnboardingBioRoute
+  OnboardingCollegeRoute: typeof OnboardingCollegeRoute
   OnboardingDateOfBirthRoute: typeof OnboardingDateOfBirthRoute
+  OnboardingDepartmentRoute: typeof OnboardingDepartmentRoute
   OnboardingGenderRoute: typeof OnboardingGenderRoute
   OnboardingGraduationYearRoute: typeof OnboardingGraduationYearRoute
   OnboardingLookingForRoute: typeof OnboardingLookingForRoute
@@ -648,7 +688,9 @@ interface OnboardingRouteRouteChildren {
 
 const OnboardingRouteRouteChildren: OnboardingRouteRouteChildren = {
   OnboardingBioRoute: OnboardingBioRoute,
+  OnboardingCollegeRoute: OnboardingCollegeRoute,
   OnboardingDateOfBirthRoute: OnboardingDateOfBirthRoute,
+  OnboardingDepartmentRoute: OnboardingDepartmentRoute,
   OnboardingGenderRoute: OnboardingGenderRoute,
   OnboardingGraduationYearRoute: OnboardingGraduationYearRoute,
   OnboardingLookingForRoute: OnboardingLookingForRoute,
