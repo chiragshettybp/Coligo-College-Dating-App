@@ -98,24 +98,39 @@ export const radii = {
 /** Spacing scale (px). */
 export const spacing = [4, 8, 12, 16, 20, 24, 32, 40, 48, 64, 80, 96] as const;
 
-/** Shadows. */
+/**
+ * Elevation — realistic multi-layer depth. Each level stacks a tight contact
+ * shadow, a soft ambient shadow and a top inner highlight (directional light
+ * from above) rather than one heavy blurred drop. Calmer, more physical.
+ */
 export const shadows = {
-  soft: "0 4px 10px rgba(0,0,0,0.35)",
-  medium: "0 6px 14px rgba(0,0,0,0.35)",
-  large: "0 40px 70px rgba(0,0,0,0.55)",
+  soft:
+    "0 1px 2px rgba(0,0,0,0.30), 0 4px 10px rgba(0,0,0,0.24), inset 0 1px 0 rgba(255,255,255,0.05)",
+  medium:
+    "0 1px 2px rgba(0,0,0,0.34), 0 8px 20px rgba(0,0,0,0.30), inset 0 1px 0 rgba(255,255,255,0.06)",
+  large:
+    "0 2px 4px rgba(0,0,0,0.34), 0 16px 32px rgba(0,0,0,0.34), 0 32px 64px rgba(0,0,0,0.28), inset 0 1px 0 rgba(255,255,255,0.06)",
   glass:
-    "0 2px 0 rgba(255,255,255,0.06) inset, 0 40px 70px rgba(0,0,0,0.55)",
+    "0 2px 4px rgba(0,0,0,0.30), 0 20px 44px rgba(0,0,0,0.36), inset 0 1px 0 rgba(255,255,255,0.07)",
   button:
-    "0 1px 0 rgba(255,255,255,0.15) inset, 0 6px 14px rgba(0,0,0,0.35)",
+    "0 1px 2px rgba(0,0,0,0.30), 0 3px 8px rgba(0,0,0,0.24), inset 0 1px 0 rgba(255,255,255,0.14)",
   primaryGlow:
-    "0 1px 0 rgba(255,255,255,0.25) inset, 0 8px 18px rgba(45,120,230,0.45)",
-  glow: "0 0 40px rgba(62,160,242,0.5)",
+    "0 1px 2px rgba(0,0,0,0.28), 0 6px 16px rgba(45,120,230,0.34), inset 0 1px 0 rgba(255,255,255,0.24)",
+  glow: "0 0 32px rgba(62,160,242,0.36)",
 } as const;
 
-/** Motion. */
+/**
+ * Motion — one unified language. `easing` is the standard ease-out for
+ * transitions; `spring` settles interactive/enter states with a soft
+ * overshoot; `standard`/`snappy` are the shared cubic-beziers for CSS.
+ */
 export const motion = {
   easing: "cubic-bezier(0.22, 1, 0.36, 1)",
-  fast: "0.18s",
+  spring: "cubic-bezier(0.34, 1.56, 0.64, 1)",
+  standard: "cubic-bezier(0.4, 0, 0.2, 1)",
+  snappy: "cubic-bezier(0.22, 1, 0.36, 1)",
+  fast: "0.16s",
   base: "0.24s",
   slow: "0.4s",
 } as const;
+
