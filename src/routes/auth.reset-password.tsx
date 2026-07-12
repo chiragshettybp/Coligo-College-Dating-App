@@ -10,7 +10,7 @@ import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 
 import { supabase } from "@/integrations/supabase/client";
-import { resetPasswordByPhone } from "@/lib/auth.functions";
+import { touchLastLogin } from "@/lib/profile.functions";
 import { touchLastLogin } from "@/lib/profile.functions";
 import { Button, Text, GlassPanel } from "@/components/ds/glass";
 import { AuthHeader } from "@/components/auth/AuthHeader";
