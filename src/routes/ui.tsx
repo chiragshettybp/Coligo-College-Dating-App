@@ -1737,6 +1737,7 @@ function Composer() {
       </div>
       <button
         aria-label="Send"
+        onPointerDown={() => haptic("messageSent")}
         className="flex shrink-0 items-center justify-center rounded-full"
         style={{
           width: 42,
