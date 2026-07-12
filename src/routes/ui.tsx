@@ -2076,9 +2076,9 @@ function Alert({
         position: "relative",
         borderRadius: radii.lg,
         padding: hasActions ? "16px 16px 14px" : "14px 16px",
-        background: surfaces.glass,
-        border: `1px solid ${surfaces.border}`,
-        boxShadow: shadows.glass,
+        background: surfaces.glassSoft,
+        border: `1px solid ${surfaces.borderSoft}`,
+        boxShadow: shadows.soft,
         overflow: "hidden",
       }}
     >
