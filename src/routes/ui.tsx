@@ -1041,7 +1041,7 @@ function UIShowcase() {
               </div>
               <SettingsItem
                 icon={<Sparkles style={{ width: 17, height: 17 }} />}
-                iconTint={colors.violet ?? colors.primary}
+                iconTint="#7a6bff"
                 title="Age range"
                 trailing={
                   <Dropdown
