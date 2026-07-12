@@ -1315,7 +1315,7 @@ function ChatHeader() {
       >
         <ChevronLeft style={{ width: 24, height: 24 }} />
       </button>
-      <Avatar src={ana} size={40} />
+      <Avatar src={ana} size="sm" status="online" />
       <div className="min-w-0 flex-1">
         <div style={{ ...type.titleMd, color: "#fff" }} className="truncate">
           Ana Rivera
