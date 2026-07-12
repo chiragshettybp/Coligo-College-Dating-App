@@ -61,24 +61,8 @@ export function PublicFooter() {
         >
           {/* Brand + contact */}
           <div>
-            <div className="inline-flex items-center" style={{ gap: spacing[1] }}>
-              <span
-                aria-hidden
-                className="inline-flex items-center justify-center"
-                style={{
-                  width: 30,
-                  height: 30,
-                  borderRadius: radii.sm,
-                  background: gradients.primaryButton,
-                  color: "#fff",
-                }}
-              >
-                <Heart style={{ width: 16, height: 16, fill: "currentColor" }} />
-              </span>
-              <Text variant="title" color={colors.textPrimary}>
-                Coligo
-              </Text>
-            </div>
+            <BrandLogo size={30} wordmarkVariant="title" eager />
+
             <Text variant="bodySm" tone="secondary" style={{ marginTop: spacing[2], maxWidth: 260 }}>
               The verified dating community made exclusively for college students in India.
             </Text>
