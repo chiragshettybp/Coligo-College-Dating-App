@@ -9,6 +9,7 @@ import { queryOptions } from "@tanstack/react-query";
 import { z } from "zod";
 
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
+import { signAdminPaths, resolveAdminUrl } from "@/lib/admin-users.server";
 
 // ------------------------------------------------------------------- types
 export type AdminUserRow = {
