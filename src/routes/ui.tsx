@@ -75,6 +75,7 @@ import {
   Chip,
   GlassPanel,
   IconButton,
+  Fab,
   ProgressBar,
   Skeleton,
   Text,
