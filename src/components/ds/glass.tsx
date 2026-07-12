@@ -187,62 +187,67 @@ type ButtonVariant =
 type ButtonSize = "sm" | "md" | "lg";
 
 const sizeMap: Record<ButtonSize, React.CSSProperties> = {
-  sm: { height: 38, padding: "0 16px", fontSize: 14 },
-  md: { height: 48, padding: "0 22px", fontSize: 16 },
-  lg: { height: 58, padding: "0 28px", fontSize: 18 },
+  sm: { height: 40, padding: "0 16px", fontSize: 14, borderRadius: radii.sm },
+  md: { height: 50, padding: "0 22px", fontSize: 16, borderRadius: radii.md },
+  lg: { height: 56, padding: "0 26px", fontSize: 17, borderRadius: radii.md },
 };
 
+/**
+ * Light, tactile iOS-first buttons. Solid restrained surfaces, hairline
+ * borders, dark text on light fills — never white-on-glass. Elevation is
+ * subtle; the pressed state does the talking.
+ */
 function variantStyle(variant: ButtonVariant): React.CSSProperties {
   switch (variant) {
     case "primary":
       return {
         background: gradients.primaryButton,
-        color: "#fff",
-        border: `1px solid ${surfaces.borderStrong}`,
+        color: "#ffffff",
+        border: "1px solid transparent",
         boxShadow: shadows.primaryGlow,
       };
     case "success":
       return {
-        background:
-          "linear-gradient(160deg, rgba(67,217,163,0.92), rgba(31,174,126,0.92))",
-        color: "#fff",
-        border: `1px solid ${surfaces.borderStrong}`,
+        background: gradients.success,
+        color: "#ffffff",
+        border: "1px solid transparent",
         boxShadow: shadows.button,
       };
     case "danger":
       return {
-        background:
-          "linear-gradient(160deg, rgba(242,87,107,0.92), rgba(200,50,70,0.92))",
-        color: "#fff",
-        border: `1px solid ${surfaces.borderStrong}`,
+        background: `linear-gradient(180deg, ${colors.danger} 0%, #e0301f 100%)`,
+        color: "#ffffff",
+        border: "1px solid transparent",
         boxShadow: shadows.button,
       };
     case "secondary":
       return {
-        background: surfaces.glassSoft,
-        color: "#fff",
-        border: `1px solid ${surfaces.border}`,
-        boxShadow: shadows.button,
+        background: "rgba(120,120,128,0.12)",
+        color: colors.textPrimary,
+        border: `1px solid ${surfaces.borderSoft}`,
+        boxShadow: "none",
       };
     case "outline":
       return {
         background: "transparent",
-        color: "#e7ecff",
-        border: `1px solid ${surfaces.borderStrong}`,
+        color: colors.textPrimary,
+        border: `1px solid ${surfaces.border}`,
+        boxShadow: "none",
       };
     case "ghost":
       return {
         background: "transparent",
-        color: "#e7ecff",
+        color: colors.primary,
         border: "1px solid transparent",
+        boxShadow: "none",
       };
     case "glass":
     default:
       return {
-        background: gradients.glassButton,
-        color: "#e7ecff",
+        background: surfaces.glassSoft,
+        color: colors.textPrimary,
         border: `1px solid ${surfaces.border}`,
-        boxShadow: shadows.button,
+        boxShadow: shadows.soft,
       };
   }
 }
@@ -281,17 +286,20 @@ export function Button({
     <button
       disabled={isDisabled}
       className={cn(
-        "inline-flex items-center justify-center gap-2 font-semibold backdrop-blur-xl will-change-transform",
-        "hover:-translate-y-[1px] hover:brightness-110 active:scale-[0.97]",
-        isDisabled && "pointer-events-none opacity-50",
+        "inline-flex select-none items-center justify-center gap-2 font-semibold will-change-transform",
+        "outline-none transition-[transform,filter,box-shadow] duration-200 ease-out",
+        "hover:brightness-[1.03] active:scale-[0.97] active:brightness-95",
+        "focus-visible:ring-2 focus-visible:ring-[color:var(--ds-focus,rgba(10,132,255,0.5))] focus-visible:ring-offset-2 focus-visible:ring-offset-transparent",
+        isDisabled && "pointer-events-none opacity-40",
         className,
       )}
       style={{
-        borderRadius: pill ? radii.pill : radii.md,
+        borderRadius: pill ? radii.pill : sizeMap[size].borderRadius,
         width: fullWidth ? "100%" : undefined,
-        transition,
+        letterSpacing: "-0.01em",
         ...sizeMap[size],
         ...variantStyle(variant),
+        ...(pill ? { borderRadius: radii.pill } : {}),
         ...style,
       }}
       onPointerDown={() => {
@@ -299,7 +307,6 @@ export function Button({
       }}
       {...rest}
     >
-
       {loading ? (
         <Loader2 className="animate-spin" style={{ width: 18, height: 18 }} />
       ) : (
@@ -327,28 +334,72 @@ export function IconButton({
   return (
     <button
       className={cn(
-        "flex shrink-0 items-center justify-center rounded-full backdrop-blur-xl will-change-transform",
-        "hover:-translate-y-[2px] hover:brightness-110 active:scale-95",
+        "flex shrink-0 items-center justify-center rounded-full outline-none will-change-transform",
+        "transition-[transform,filter] duration-200 ease-out hover:brightness-[1.04] active:scale-90",
+        "focus-visible:ring-2 focus-visible:ring-[color:var(--ds-focus,rgba(10,132,255,0.5))] focus-visible:ring-offset-2 focus-visible:ring-offset-transparent",
         className,
       )}
       style={{
         width: size,
         height: size,
-        transition,
-        background: primary ? gradients.primaryButton : gradients.glassButton,
-        border: `1px solid ${primary ? surfaces.borderStrong : surfaces.border}`,
-        boxShadow: primary ? shadows.primaryGlow : shadows.button,
-        color: "#e7ecff",
+        background: primary ? gradients.primaryButton : surfaces.glassSoft,
+        border: `1px solid ${primary ? "transparent" : surfaces.border}`,
+        boxShadow: primary ? shadows.primaryGlow : shadows.soft,
+        color: primary ? "#ffffff" : colors.textPrimary,
         ...style,
       }}
       onPointerDown={() => haptic("selection")}
       {...rest}
-
     >
       {children}
     </button>
   );
 }
+
+/* ------------------------------------------------------------------- Fab */
+
+/** Floating action button — anchored, high elevation, thumb-reachable. */
+export function Fab({
+  children,
+  label,
+  className,
+  style,
+  ...rest
+}: React.ButtonHTMLAttributes<HTMLButtonElement> & {
+  /** Optional text — turns the FAB into an extended pill. */
+  label?: string;
+}) {
+  const extended = label != null;
+  return (
+    <button
+      className={cn(
+        "inline-flex items-center justify-center gap-2 font-semibold outline-none will-change-transform",
+        "transition-[transform,filter] duration-200 ease-out hover:brightness-[1.04] hover:-translate-y-0.5 active:scale-95",
+        "focus-visible:ring-2 focus-visible:ring-[color:var(--ds-focus,rgba(10,132,255,0.5))] focus-visible:ring-offset-2 focus-visible:ring-offset-transparent",
+        className,
+      )}
+      style={{
+        height: 56,
+        width: extended ? undefined : 56,
+        padding: extended ? "0 22px 0 20px" : 0,
+        borderRadius: radii.pill,
+        background: gradients.primaryButton,
+        color: "#ffffff",
+        border: "1px solid transparent",
+        boxShadow: `${shadows.large}, ${shadows.glow}`,
+        fontSize: 16,
+        letterSpacing: "-0.01em",
+        ...style,
+      }}
+      onPointerDown={() => haptic("light")}
+      {...rest}
+    >
+      {children}
+      {label}
+    </button>
+  );
+}
+
 
 /* -------------------------------------------------------------------- Chip */
 
