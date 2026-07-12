@@ -2098,7 +2098,7 @@ function Alert({
       <div className="flex items-start gap-3">
         <FeedbackIcon tone={tone} icon={icon} />
         <div className="min-w-0 flex-1">
-          <div style={{ color: "#fff", fontWeight: 700, fontSize: 15, letterSpacing: "-0.01em" }}>
+          <div style={{ color: colors.textPrimary, fontWeight: 700, fontSize: 15, letterSpacing: "-0.01em" }}>
             {title}
           </div>
           <div style={{ color: colors.textSecondary, fontSize: 13.5, lineHeight: 1.45, marginTop: 3 }}>
