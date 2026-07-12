@@ -22,7 +22,6 @@ import {
   Flame,
   RotateCcw,
   Zap,
-  GraduationCap as Cap,
 } from "lucide-react";
 
 import {
