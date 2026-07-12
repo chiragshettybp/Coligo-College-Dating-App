@@ -47,12 +47,19 @@ import { Route as AuthenticatedMatchesRouteImport } from './routes/_authenticate
 import { Route as AuthenticatedHomeRouteImport } from './routes/_authenticated/home'
 import { Route as AuthenticatedDiscoverRouteImport } from './routes/_authenticated/discover'
 import { Route as AuthenticatedChatRouteImport } from './routes/_authenticated/chat'
+import { Route as AuthenticatedProfileIndexRouteImport } from './routes/_authenticated/profile.index'
 import { Route as AuthenticatedNotificationsIndexRouteImport } from './routes/_authenticated/notifications.index'
 import { Route as AuthenticatedMatchesIndexRouteImport } from './routes/_authenticated/matches.index'
 import { Route as AuthenticatedHomeIndexRouteImport } from './routes/_authenticated/home.index'
 import { Route as AuthenticatedDiscoverIndexRouteImport } from './routes/_authenticated/discover.index'
 import { Route as AuthenticatedChatIndexRouteImport } from './routes/_authenticated/chat.index'
 import { Route as ApiPublicPushRouteImport } from './routes/api/public/push'
+import { Route as AuthenticatedProfilePreviewRouteImport } from './routes/_authenticated/profile.preview'
+import { Route as AuthenticatedProfilePreferencesRouteImport } from './routes/_authenticated/profile.preferences'
+import { Route as AuthenticatedProfilePhotosRouteImport } from './routes/_authenticated/profile.photos'
+import { Route as AuthenticatedProfileInterestsRouteImport } from './routes/_authenticated/profile.interests'
+import { Route as AuthenticatedProfileEditRouteImport } from './routes/_authenticated/profile.edit'
+import { Route as AuthenticatedProfileBioRouteImport } from './routes/_authenticated/profile.bio'
 import { Route as AuthenticatedNotificationsNotificationIdRouteImport } from './routes/_authenticated/notifications.$notificationId'
 import { Route as AuthenticatedMatchesMatchIdRouteImport } from './routes/_authenticated/matches.$matchId'
 import { Route as AuthenticatedHomeCollegeRankingsRouteImport } from './routes/_authenticated/home.college-rankings'
@@ -261,6 +268,12 @@ const AuthenticatedChatRoute = AuthenticatedChatRouteImport.update({
   path: '/chat',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedProfileIndexRoute =
+  AuthenticatedProfileIndexRouteImport.update({
+    id: '/profile/',
+    path: '/profile/',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const AuthenticatedNotificationsIndexRoute =
   AuthenticatedNotificationsIndexRouteImport.update({
     id: '/notifications/',
@@ -293,6 +306,41 @@ const ApiPublicPushRoute = ApiPublicPushRouteImport.update({
   id: '/api/public/push',
   path: '/api/public/push',
   getParentRoute: () => rootRouteImport,
+} as any)
+const AuthenticatedProfilePreviewRoute =
+  AuthenticatedProfilePreviewRouteImport.update({
+    id: '/profile/preview',
+    path: '/profile/preview',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedProfilePreferencesRoute =
+  AuthenticatedProfilePreferencesRouteImport.update({
+    id: '/profile/preferences',
+    path: '/profile/preferences',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedProfilePhotosRoute =
+  AuthenticatedProfilePhotosRouteImport.update({
+    id: '/profile/photos',
+    path: '/profile/photos',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedProfileInterestsRoute =
+  AuthenticatedProfileInterestsRouteImport.update({
+    id: '/profile/interests',
+    path: '/profile/interests',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedProfileEditRoute =
+  AuthenticatedProfileEditRouteImport.update({
+    id: '/profile/edit',
+    path: '/profile/edit',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedProfileBioRoute = AuthenticatedProfileBioRouteImport.update({
+  id: '/profile/bio',
+  path: '/profile/bio',
+  getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
 const AuthenticatedNotificationsNotificationIdRoute =
   AuthenticatedNotificationsNotificationIdRouteImport.update({
@@ -438,12 +486,19 @@ export interface FileRoutesByFullPath {
   '/home/college-rankings': typeof AuthenticatedHomeCollegeRankingsRoute
   '/matches/$matchId': typeof AuthenticatedMatchesMatchIdRouteWithChildren
   '/notifications/$notificationId': typeof AuthenticatedNotificationsNotificationIdRouteWithChildren
+  '/profile/bio': typeof AuthenticatedProfileBioRoute
+  '/profile/edit': typeof AuthenticatedProfileEditRoute
+  '/profile/interests': typeof AuthenticatedProfileInterestsRoute
+  '/profile/photos': typeof AuthenticatedProfilePhotosRoute
+  '/profile/preferences': typeof AuthenticatedProfilePreferencesRoute
+  '/profile/preview': typeof AuthenticatedProfilePreviewRoute
   '/api/public/push': typeof ApiPublicPushRoute
   '/chat/': typeof AuthenticatedChatIndexRoute
   '/discover/': typeof AuthenticatedDiscoverIndexRoute
   '/home/': typeof AuthenticatedHomeIndexRoute
   '/matches/': typeof AuthenticatedMatchesIndexRoute
   '/notifications/': typeof AuthenticatedNotificationsIndexRoute
+  '/profile/': typeof AuthenticatedProfileIndexRoute
   '/chat/$chatId/info': typeof AuthenticatedChatChatIdInfoRoute
   '/chat/$chatId/media': typeof AuthenticatedChatChatIdMediaRoute
   '/chat/$chatId/report': typeof AuthenticatedChatChatIdReportRoute
@@ -493,12 +548,19 @@ export interface FileRoutesByTo {
   '/home/college-rankings': typeof AuthenticatedHomeCollegeRankingsRoute
   '/matches/$matchId': typeof AuthenticatedMatchesMatchIdRouteWithChildren
   '/notifications/$notificationId': typeof AuthenticatedNotificationsNotificationIdRouteWithChildren
+  '/profile/bio': typeof AuthenticatedProfileBioRoute
+  '/profile/edit': typeof AuthenticatedProfileEditRoute
+  '/profile/interests': typeof AuthenticatedProfileInterestsRoute
+  '/profile/photos': typeof AuthenticatedProfilePhotosRoute
+  '/profile/preferences': typeof AuthenticatedProfilePreferencesRoute
+  '/profile/preview': typeof AuthenticatedProfilePreviewRoute
   '/api/public/push': typeof ApiPublicPushRoute
   '/chat': typeof AuthenticatedChatIndexRoute
   '/discover': typeof AuthenticatedDiscoverIndexRoute
   '/home': typeof AuthenticatedHomeIndexRoute
   '/matches': typeof AuthenticatedMatchesIndexRoute
   '/notifications': typeof AuthenticatedNotificationsIndexRoute
+  '/profile': typeof AuthenticatedProfileIndexRoute
   '/chat/$chatId/info': typeof AuthenticatedChatChatIdInfoRoute
   '/chat/$chatId/media': typeof AuthenticatedChatChatIdMediaRoute
   '/chat/$chatId/report': typeof AuthenticatedChatChatIdReportRoute
@@ -557,12 +619,19 @@ export interface FileRoutesById {
   '/_authenticated/home/college-rankings': typeof AuthenticatedHomeCollegeRankingsRoute
   '/_authenticated/matches/$matchId': typeof AuthenticatedMatchesMatchIdRouteWithChildren
   '/_authenticated/notifications/$notificationId': typeof AuthenticatedNotificationsNotificationIdRouteWithChildren
+  '/_authenticated/profile/bio': typeof AuthenticatedProfileBioRoute
+  '/_authenticated/profile/edit': typeof AuthenticatedProfileEditRoute
+  '/_authenticated/profile/interests': typeof AuthenticatedProfileInterestsRoute
+  '/_authenticated/profile/photos': typeof AuthenticatedProfilePhotosRoute
+  '/_authenticated/profile/preferences': typeof AuthenticatedProfilePreferencesRoute
+  '/_authenticated/profile/preview': typeof AuthenticatedProfilePreviewRoute
   '/api/public/push': typeof ApiPublicPushRoute
   '/_authenticated/chat/': typeof AuthenticatedChatIndexRoute
   '/_authenticated/discover/': typeof AuthenticatedDiscoverIndexRoute
   '/_authenticated/home/': typeof AuthenticatedHomeIndexRoute
   '/_authenticated/matches/': typeof AuthenticatedMatchesIndexRoute
   '/_authenticated/notifications/': typeof AuthenticatedNotificationsIndexRoute
+  '/_authenticated/profile/': typeof AuthenticatedProfileIndexRoute
   '/_authenticated/chat/$chatId/info': typeof AuthenticatedChatChatIdInfoRoute
   '/_authenticated/chat/$chatId/media': typeof AuthenticatedChatChatIdMediaRoute
   '/_authenticated/chat/$chatId/report': typeof AuthenticatedChatChatIdReportRoute
@@ -620,12 +689,19 @@ export interface FileRouteTypes {
     | '/home/college-rankings'
     | '/matches/$matchId'
     | '/notifications/$notificationId'
+    | '/profile/bio'
+    | '/profile/edit'
+    | '/profile/interests'
+    | '/profile/photos'
+    | '/profile/preferences'
+    | '/profile/preview'
     | '/api/public/push'
     | '/chat/'
     | '/discover/'
     | '/home/'
     | '/matches/'
     | '/notifications/'
+    | '/profile/'
     | '/chat/$chatId/info'
     | '/chat/$chatId/media'
     | '/chat/$chatId/report'
@@ -675,12 +751,19 @@ export interface FileRouteTypes {
     | '/home/college-rankings'
     | '/matches/$matchId'
     | '/notifications/$notificationId'
+    | '/profile/bio'
+    | '/profile/edit'
+    | '/profile/interests'
+    | '/profile/photos'
+    | '/profile/preferences'
+    | '/profile/preview'
     | '/api/public/push'
     | '/chat'
     | '/discover'
     | '/home'
     | '/matches'
     | '/notifications'
+    | '/profile'
     | '/chat/$chatId/info'
     | '/chat/$chatId/media'
     | '/chat/$chatId/report'
@@ -738,12 +821,19 @@ export interface FileRouteTypes {
     | '/_authenticated/home/college-rankings'
     | '/_authenticated/matches/$matchId'
     | '/_authenticated/notifications/$notificationId'
+    | '/_authenticated/profile/bio'
+    | '/_authenticated/profile/edit'
+    | '/_authenticated/profile/interests'
+    | '/_authenticated/profile/photos'
+    | '/_authenticated/profile/preferences'
+    | '/_authenticated/profile/preview'
     | '/api/public/push'
     | '/_authenticated/chat/'
     | '/_authenticated/discover/'
     | '/_authenticated/home/'
     | '/_authenticated/matches/'
     | '/_authenticated/notifications/'
+    | '/_authenticated/profile/'
     | '/_authenticated/chat/$chatId/info'
     | '/_authenticated/chat/$chatId/media'
     | '/_authenticated/chat/$chatId/report'
@@ -1039,6 +1129,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedChatRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/profile/': {
+      id: '/_authenticated/profile/'
+      path: '/profile'
+      fullPath: '/profile/'
+      preLoaderRoute: typeof AuthenticatedProfileIndexRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/notifications/': {
       id: '/_authenticated/notifications/'
       path: '/notifications'
@@ -1080,6 +1177,48 @@ declare module '@tanstack/react-router' {
       fullPath: '/api/public/push'
       preLoaderRoute: typeof ApiPublicPushRouteImport
       parentRoute: typeof rootRouteImport
+    }
+    '/_authenticated/profile/preview': {
+      id: '/_authenticated/profile/preview'
+      path: '/profile/preview'
+      fullPath: '/profile/preview'
+      preLoaderRoute: typeof AuthenticatedProfilePreviewRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/profile/preferences': {
+      id: '/_authenticated/profile/preferences'
+      path: '/profile/preferences'
+      fullPath: '/profile/preferences'
+      preLoaderRoute: typeof AuthenticatedProfilePreferencesRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/profile/photos': {
+      id: '/_authenticated/profile/photos'
+      path: '/profile/photos'
+      fullPath: '/profile/photos'
+      preLoaderRoute: typeof AuthenticatedProfilePhotosRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/profile/interests': {
+      id: '/_authenticated/profile/interests'
+      path: '/profile/interests'
+      fullPath: '/profile/interests'
+      preLoaderRoute: typeof AuthenticatedProfileInterestsRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/profile/edit': {
+      id: '/_authenticated/profile/edit'
+      path: '/profile/edit'
+      fullPath: '/profile/edit'
+      preLoaderRoute: typeof AuthenticatedProfileEditRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/profile/bio': {
+      id: '/_authenticated/profile/bio'
+      path: '/profile/bio'
+      fullPath: '/profile/bio'
+      preLoaderRoute: typeof AuthenticatedProfileBioRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/notifications/$notificationId': {
       id: '/_authenticated/notifications/$notificationId'
@@ -1332,7 +1471,14 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedHomeRoute: typeof AuthenticatedHomeRouteWithChildren
   AuthenticatedMatchesRoute: typeof AuthenticatedMatchesRouteWithChildren
   AuthenticatedNotificationsNotificationIdRoute: typeof AuthenticatedNotificationsNotificationIdRouteWithChildren
+  AuthenticatedProfileBioRoute: typeof AuthenticatedProfileBioRoute
+  AuthenticatedProfileEditRoute: typeof AuthenticatedProfileEditRoute
+  AuthenticatedProfileInterestsRoute: typeof AuthenticatedProfileInterestsRoute
+  AuthenticatedProfilePhotosRoute: typeof AuthenticatedProfilePhotosRoute
+  AuthenticatedProfilePreferencesRoute: typeof AuthenticatedProfilePreferencesRoute
+  AuthenticatedProfilePreviewRoute: typeof AuthenticatedProfilePreviewRoute
   AuthenticatedNotificationsIndexRoute: typeof AuthenticatedNotificationsIndexRoute
+  AuthenticatedProfileIndexRoute: typeof AuthenticatedProfileIndexRoute
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
@@ -1342,7 +1488,14 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedMatchesRoute: AuthenticatedMatchesRouteWithChildren,
   AuthenticatedNotificationsNotificationIdRoute:
     AuthenticatedNotificationsNotificationIdRouteWithChildren,
+  AuthenticatedProfileBioRoute: AuthenticatedProfileBioRoute,
+  AuthenticatedProfileEditRoute: AuthenticatedProfileEditRoute,
+  AuthenticatedProfileInterestsRoute: AuthenticatedProfileInterestsRoute,
+  AuthenticatedProfilePhotosRoute: AuthenticatedProfilePhotosRoute,
+  AuthenticatedProfilePreferencesRoute: AuthenticatedProfilePreferencesRoute,
+  AuthenticatedProfilePreviewRoute: AuthenticatedProfilePreviewRoute,
   AuthenticatedNotificationsIndexRoute: AuthenticatedNotificationsIndexRoute,
+  AuthenticatedProfileIndexRoute: AuthenticatedProfileIndexRoute,
 }
 
 const AuthenticatedRouteRouteWithChildren =

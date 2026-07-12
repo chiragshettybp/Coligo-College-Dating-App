@@ -1,73 +1,58 @@
-# Notifications Module — Implementation Plan
+# Profile Module — Implementation Plan
 
-## Current state (verified against the live project)
+## What already exists (reuse, don't rebuild)
+- **Design system**: `src/components/ds/*` (card, navigation, settings, image-viewer, swipe, empty-state, glass) + tokens in `src/lib/ds.ts`. The `/ui` route documents them.
+- **Bottom nav**: `src/components/discover/shell.tsx` already has a **Profile** tab — it currently fires a "coming soon" toast. It will be wired to `/profile`.
+- **Server functions** in `src/lib/onboarding.functions.ts`: `savePhoto`, `deletePhoto`, `reorderPhotos`, `setInterests`, `saveOnboardingStep`, plus public readers `listColleges/listDepartments/listInterests`. These already do RLS-scoped writes and Storage uploads to the `profile-photos` bucket — the Profile module reuses them.
+- **Profile card** used in Discovery (`discover.profile.$userId.tsx` / `discover.functions.ts`) — reused verbatim for `/profile/preview`.
+- **Tables**: `profiles` (full_name, gender, date_of_birth, college_id, graduation_year, semester, department_id, looking_for, bio, avatar_url...), `photos`, `user_interests`, `interests`, `colleges`, `departments`, `settings` (discovery_enabled, push_enabled...). All already have RLS. **No schema changes are required** for the specified fields.
 
-- `public.notifications` already exists: `id, user_id, type, title, body, data(jsonb), read_at, created_at`. RLS = SELECT own + UPDATE own. **No DELETE policy.** Realtime **is** enabled.
-- Triggers already insert rows: `notify_on_match` (type `match`), `notify_on_message` (types `note`/`message`). `notify_push` fires web push via `/api/public/push` on every insert.
-- Gaps: no `/notifications` routes, no notifications server functions, no unread badge, no DELETE policy, no priority field, no per-type preference respect (push fires regardless of `settings.push_enabled`), and no `notification_preferences` table.
-- Entry point already exists: the **Bell** button in the home header (`home.index.tsx`, currently shows a "coming soon" sheet).
-- Design system source of truth: `/ui` (`src/routes/ui.tsx`) + `src/components/ds/*` (Card, Badge, Skeleton, EmptyState, navigation). These get reused, nothing redesigned.
+## Scope note
+Everything in the prompt maps to existing columns/tables. I will **not** add speculative columns (profile views, likes, distance, verification). Those are shown as "future-ready" read-only placeholders sourced from real data where it exists (matches/chats counts) and omitted otherwise — no fake numbers.
 
 ---
 
-## Phase 1 — Database & backend foundation (one migration)
+## Phase 1 — Server functions (`src/lib/profile-full.functions.ts`)
+New authenticated (`requireSupabaseAuth`) functions + `queryOptions`:
+- `getFullProfile` — profile row joined to college & department names, primary photo, computed `age`, `memberSince`.
+- `getProfileGallery` — signed URLs for all `photos` rows (reuses onboarding signing logic).
+- `getMyInterests` — user_interests joined to interests.
+- `getProfileStats` — real counts: total matches (`matches`), total chats (matches with messages), created_at. Future metrics omitted.
+- `getProfileCompletion` — server-computed % from photos/bio/interests/department/semester/graduation_year/looking_for.
+- `updateCoreProfile` — Zod-validated update of full_name, college_id, graduation_year, semester, department_id, date_of_birth, looking_for.
+- `updateBio` — trimmed, max-length validated.
+- `getSettings` / `updateSettings` — discovery_enabled + notification/visibility prefs from `settings`.
 
-1. Add columns to `notifications`:
-   - `priority text not null default 'normal'` (values `low|normal|high|urgent`).
-   - `deleted_at timestamptz` (soft delete, so realtime DELETE-style updates + "already deleted" handling are clean and reversible).
-2. Add missing RLS: keep SELECT/UPDATE own; **no hard DELETE** — deletion is a soft-delete UPDATE (`deleted_at = now()`), already covered by the UPDATE-own policy. All reads filter `deleted_at is null`.
-3. Create `notification_preferences` table (per-user, per-category toggles) — future-proof so new types don't need schema changes:
-   - `user_id uuid`, `category text`, `in_app boolean default true`, `push boolean default true`, `email boolean default false`, unique(`user_id`,`category`). Full GRANTs + RLS (own-row manage) + `service_role` grant.
-4. RPCs (SECURITY DEFINER, `search_path=public`):
-   - `unread_notifications_count()` → int.
-   - `mark_notification_read(_id)` / `mark_all_notifications_read()` → single-transaction bulk update, returns count.
-   - `soft_delete_notification(_id)` → sets `deleted_at`, idempotent.
-5. Normalize/extend `type` vocabulary to the spec set (`MATCH_CREATED, NEW_MESSAGE, FIRST_NOTE, SYSTEM_ANNOUNCEMENT, ACCOUNT_NOTICE, COLLEGE_ANNOUNCEMENT, PROFILE_UPDATE, SECURITY_ALERT, ADMIN_MESSAGE, WELCOME`). Keep existing lowercase rows working via a mapping layer in code (no destructive data change). Update `notify_on_match`/`notify_on_message` to emit the new type codes + a `route`/`data` payload for navigation.
-6. Preference-aware generation: update `notify_push` (and the insert triggers) to **check `notification_preferences`/`settings` before inserting an in-app row or firing push**, so disabled categories generate nothing.
+Interests + photo mutations reuse the existing onboarding functions (already validated, min/max enforced).
 
-*(Migration surfaced via the migration tool for your approval before any code.)*
+## Phase 2 — Layout + Overview (`/profile`)
+- `_authenticated/profile.tsx` — layout `<Outlet/>` (shares bottom nav shell).
+- `_authenticated/profile.index.tsx` — header (primary photo, name, age, college, department, semester, grad year, completion ring), stats card, swipeable gallery (reuse `image-viewer`), Edit/Preview/Settings buttons. Skeleton loaders + empty states. Loaders use `ensureQueryData`; components use `useSuspenseQuery`.
 
-## Phase 2 — Server functions (`src/lib/notifications.functions.ts`)
+## Phase 3 — Edit sub-pages
+- `profile.edit.tsx` — core fields form (selectors for college/department, validated), save → invalidate queries → back.
+- `profile.bio.tsx` — multiline editor, live char counter, trim, validation.
+- `profile.interests.tsx` — searchable chips, min/max enforced, reuses `setInterests`.
+- `profile.preferences.tsx` — looking_for + discovery_enabled + visibility toggles via `settings`; changes affect Discovery eligibility immediately (Discovery already filters on `settings.discovery_enabled`).
 
-All via `createServerFn` + `requireSupabaseAuth` (RLS-scoped to the user):
-- `listNotifications({ cursor, limit })` — paginated, newest first, joins related profile/match/message metadata for the card (avatar, name) with graceful nulls for deleted references.
-- `getNotification({ id })` — full detail + resolved related content; returns a `missing` flag when the target no longer exists.
-- `markRead`, `markAllRead`, `deleteNotification`, `unreadCount` — thin wrappers over the RPCs.
-- `getNotificationPreferences` / `updateNotificationPreference`.
+## Phase 4 — Manage Photos (`/profile/photos`)
+- Upload (client compression via existing `src/lib/image.ts` if present, else canvas), type/size validation, progress, reorder, set primary, delete — all through existing `savePhoto`/`deletePhoto`/`reorderPhotos`. Min/max photo rules enforced. Optimistic UI + rollback on error.
 
-## Phase 3 — Realtime + shared hook
+## Phase 5 — Preview (`/profile/preview`)
+- Renders the **exact Discovery profile card** with the current user's data (read-only), instantly reflecting edits via shared query cache.
 
-- `src/lib/use-notifications.ts`: subscribes (inside `useEffect`, cleanup with `removeChannel`) to `postgres_changes` on `notifications` filtered to the current user; keeps a TanStack Query cache of the list + unread count in sync on INSERT/UPDATE, and drives the header badge. Reconnect handling for pull-to-refresh.
+## Phase 6 — Realtime + integration
+- `src/lib/use-profile-realtime.ts` — subscribe (in `useEffect`, cleanup on unmount) to `profiles`, `photos`, `user_interests`, `settings` changes for the current user; invalidate the relevant queries so Home/Discovery/Preview/Matches reflect changes without refresh.
+- Wire the bottom-nav **Profile** tab in `shell.tsx` to navigate to `/profile` (remove the "coming soon" toast for that tab).
 
-## Phase 4 — `/notifications` dashboard route
-
-`src/routes/_authenticated/notifications.index.tsx` inside the existing app shell:
-- Notification cards reusing `Card`, type icon, title, body, relative timestamp, unread dot, `Badge` for priority, related avatar.
-- Skeleton list on load (reuse `Skeleton`), `EmptyStateFromPreset` "notifications" empty state, `Mark all as read` action.
-- Mobile-first: pull-to-refresh, thumb-friendly targets, optimistic mark-read on tap then contextual navigation (match→match page, message/note→chat, announcement/alert→detail).
-- `errorComponent` + `notFoundComponent` with retry.
-
-## Phase 5 — `/notifications/$notificationId` detail + delete confirmation
-
-- `notifications.$notificationId.tsx`: full detail, category, related user/content, contextual action buttons (Open Chat / View Match / View Profile / Go Home / Delete). Marks read on open. Handles missing target gracefully.
-- `notifications.$notificationId.delete.tsx`: **dedicated confirmation page** (no popup, per spec) → soft-delete → back to list, realtime-synced.
-
-## Phase 6 — Integration & entry points
-
-- Wire the home-header **Bell** to `/notifications` and show a live unread badge on it (replace the "coming soon" sheet).
-- Surface unread count wherever the header/badge appears; keep `matchesBadge` behavior intact.
-- Add a `/notifications` demo block to `/ui` so the module stays documented in the design source of truth.
-
-## Phase 7 — Verification
-
-- `tsgo` typecheck, RLS/ownership checks, realtime insert→badge→list live test, mark-all transaction, soft-delete idempotency, missing-reference fallback, empty state, and preference-respecting generation (disabled category creates nothing).
+## Phase 7 — Verify
+- `tsgo` typecheck, build check.
+- Playwright against localhost with the injected session: load `/profile`, edit bio, confirm persistence + preview reflects it, check gallery and completion ring, screenshot each page.
+- Confirm RLS (own-profile only) and no console/network errors.
 
 ---
 
 ## Technical notes
-- No mock data — every card is a real `notifications` row; badges/counts come from RPCs.
-- Soft-delete (not hard delete) keeps realtime + "already deleted" handling simple and matches the "prevent duplicate deletion" requirement.
-- Type vocabulary handled through a code-side map so legacy rows and new codes coexist without a destructive migration.
-- Everything composes existing `ds/*` components; no visual redesign.
-
-Approve and I'll start with the Phase 1 migration.
+- New route strings must match filenames exactly (`/_authenticated/profile`, `/_authenticated/profile/edit`, etc.); `routeTree.gen.ts` is regenerated automatically.
+- All reads via TanStack Query (`ensureQueryData` + `useSuspenseQuery`); every route with a loader gets `errorComponent` + `notFoundComponent`.
+- No new secrets, no schema migration, no mock data.

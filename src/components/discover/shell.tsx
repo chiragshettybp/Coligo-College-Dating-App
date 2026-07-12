@@ -4,15 +4,12 @@
 // real routes. Tabs whose modules aren't built yet open a lightweight sheet
 // instead of navigating nowhere.
 // ============================================================================
-import { useState } from "react";
 import { useNavigate } from "@tanstack/react-router";
 import { Heart, Flame, Sparkles, MessageCircle, UserRound } from "lucide-react";
 
 import { APP_BACKGROUND, FONT_FAMILY, spacing } from "@/lib/ds";
-import { Text } from "@/components/ds/glass";
 import {
   BottomNav,
-  BottomSheet,
   type BottomNavItem,
 } from "@/components/ds/navigation";
 
@@ -32,7 +29,6 @@ export function DiscoverShell({
   maxWidth?: number;
 }) {
   const navigate = useNavigate();
-  const [comingSoon, setComingSoon] = useState<string | null>(null);
 
   const navItems: BottomNavItem[] = [
     { icon: (p) => <Heart {...p} fill="currentColor" />, label: "Home" },
@@ -86,18 +82,11 @@ export function DiscoverShell({
               else if (tab === "discover") navigate({ to: "/discover" });
               else if (tab === "matches") navigate({ to: "/matches" });
               else if (tab === "chat") navigate({ to: "/chat" });
-              else setComingSoon("Profile");
+              else navigate({ to: "/profile" });
             }}
           />
         </div>
       </div>
-
-      <BottomSheet open={comingSoon != null} onClose={() => setComingSoon(null)} title={`${comingSoon} — coming soon`}>
-        <Text variant="body" tone="secondary" style={{ marginTop: spacing[2] }}>
-          The {comingSoon} experience is on its way. Keep discovering — your new
-          connections will be waiting here.
-        </Text>
-      </BottomSheet>
     </div>
   );
 }
