@@ -183,7 +183,7 @@ export const bootstrapAdmin = createServerFn({ method: "POST" })
       .eq("role", "admin");
     if ((count ?? 0) > 0) throw new Error("Admin already configured");
 
-    const alias = `91${data.phone}@coligo.phone`;
+    const alias = phoneToAlias(data.phone);
     const { data: created, error: createErr } = await supabaseAdmin.auth.admin.createUser({
       email: alias,
       password: data.pin,
