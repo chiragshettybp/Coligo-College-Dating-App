@@ -44,6 +44,7 @@ import {
   surfaces,
   type,
   weights,
+  motion,
 } from "@/lib/ds";
 import {
   Avatar,
@@ -145,6 +146,9 @@ function UIShowcase() {
   const [interests, setInterests] = useState<string[]>(["Music", "Coffee"]);
   const [notif, setNotif] = useState(true);
   const [dark, setDark] = useState(false);
+  const [activeTab, setActiveTab] = useState(0);
+  const [segment, setSegment] = useState(0);
+  const [scrollTab, setScrollTab] = useState("For You");
 
   const toggleInterest = (i: string) =>
     setInterests((s) => (s.includes(i) ? s.filter((x) => x !== i) : [...s, i]));
@@ -736,31 +740,60 @@ function UIShowcase() {
         </Section>
 
         {/* Navigation */}
-        <Section title="Navigation" description="Bottom tab bar and top bar patterns.">
+        <Section
+          title="Navigation"
+          description="A complete navigation system — large title, glass top bar, segmented + scrollable tabs, floating tab bar and FAB."
+        >
           <div className="space-y-4">
-            <GlassPanel style={{ padding: `${spacing[2]}px ${spacing[4]}px` }}>
+            {/* Large-title top bar */}
+            <GlassPanel style={{ padding: `${spacing[3]}px ${spacing[4]}px ${spacing[4]}px` }}>
+              <div className="flex items-start justify-between">
+                <div className="min-w-0">
+                  <div style={{ ...type.caption, color: colors.primary }}>Sunday, July 12</div>
+                  <h3 style={{ ...type.displaySm, color: "#fff", marginTop: 2 }}>Discover</h3>
+                </div>
+                <div className="flex shrink-0 items-center" style={{ gap: spacing[1] }}>
+                  <NavAction label="Search"><Search style={{ width: 19, height: 19 }} /></NavAction>
+                  <NavAction label="Notifications" badge={3}>
+                    <Bell style={{ width: 19, height: 19 }} />
+                  </NavAction>
+                  <button aria-label="Profile" className="rounded-full" style={{ marginLeft: 2 }}>
+                    <Avatar src={ana} size="sm" status="online" />
+                  </button>
+                </div>
+              </div>
+            </GlassPanel>
+
+            {/* Compact glass top bar with back + centered title */}
+            <GlassPanel style={{ padding: `${spacing[2]}px ${spacing[3]}px` }}>
               <div className="flex items-center justify-between">
-                <div className="flex items-center" style={{ gap: spacing[2] }}>
-                  <Avatar src={ana} size="sm" />
-                  <span style={{ color: "#fff", fontWeight: 700 }}>Discover</span>
-                </div>
-                <div className="flex items-center" style={{ gap: spacing[1] }}>
-                  <IconButton size={44}><Search style={{ width: 18, height: 18 }} /></IconButton>
-                  <IconButton size={44}><Bell style={{ width: 18, height: 18 }} /></IconButton>
-                </div>
+                <NavAction label="Back"><ChevronLeft style={{ width: 22, height: 22 }} /></NavAction>
+                <span style={{ ...type.titleMd, color: "#fff" }}>Profile</span>
+                <NavAction label="More"><Plus style={{ width: 20, height: 20 }} /></NavAction>
               </div>
             </GlassPanel>
-            <GlassPanel style={{ padding: `${spacing[1]}px ${spacing[1]}px` }}>
-              <div className="flex items-center justify-around">
-                <TabIcon icon={<Home style={{ width: 22, height: 22 }} />} active />
-                <TabIcon icon={<Search style={{ width: 22, height: 22 }} />} />
-                <TabIcon icon={<Heart style={{ width: 22, height: 22 }} />} />
-                <TabIcon icon={<MessageCircle style={{ width: 22, height: 22 }} />} />
-                <TabIcon icon={<User style={{ width: 22, height: 22 }} />} />
-              </div>
-            </GlassPanel>
+
+            {/* Segmented control */}
+            <Segmented
+              options={["Nearby", "Popular", "New"]}
+              value={segment}
+              onChange={setSegment}
+            />
+
+            {/* Scrollable tabs */}
+            <ScrollTabs
+              options={["For You", "Trending", "Music", "Sports", "Art", "Travel", "Food"]}
+              value={scrollTab}
+              onChange={setScrollTab}
+            />
+
+            {/* Floating bottom tab bar */}
+            <div style={{ position: "relative", paddingTop: spacing[2] }}>
+              <FloatingTabBar active={activeTab} onChange={setActiveTab} />
+            </div>
           </div>
         </Section>
+
 
         <footer
           className="flex items-center gap-2"
@@ -1535,19 +1568,243 @@ function SettingRow({
   );
 }
 
-function TabIcon({ icon, active }: { icon: React.ReactNode; active?: boolean }) {
+// ---------------------------------------------------------------------------
+// Navigation design system
+// ---------------------------------------------------------------------------
+
+function NavBadge({ count }: { count: number }) {
   return (
-    <button
-      className="flex items-center justify-center rounded-full"
+    <span
+      className="ds-react-pop flex items-center justify-center rounded-full"
       style={{
-        width: 48,
-        height: 48,
-        color: active ? "#fff" : colors.textMuted,
-        background: active ? gradients.primaryButton : "transparent",
-        boxShadow: active ? shadows.primaryGlow : "none",
+        position: "absolute",
+        top: -2,
+        right: -2,
+        minWidth: 17,
+        height: 17,
+        padding: "0 5px",
+        background: colors.danger,
+        color: "#fff",
+        fontSize: 10,
+        fontWeight: weights.bold,
+        lineHeight: 1,
+        border: `2px solid rgba(8,12,26,0.95)`,
+        boxShadow: "0 0 10px rgba(242,87,107,0.6)",
       }}
     >
-      {icon}
+      {count > 9 ? "9+" : count}
+    </span>
+  );
+}
+
+function NavAction({
+  children,
+  label,
+  badge,
+}: {
+  children: React.ReactNode;
+  label: string;
+  badge?: number;
+}) {
+  return (
+    <button
+      aria-label={label}
+      className="ds-press flex items-center justify-center rounded-full"
+      style={{
+        position: "relative",
+        width: 44,
+        height: 44,
+        color: "#fff",
+      }}
+    >
+      {children}
+      {badge ? <NavBadge count={badge} /> : null}
     </button>
   );
 }
+
+function Segmented({
+  options,
+  value,
+  onChange,
+}: {
+  options: string[];
+  value: number;
+  onChange: (i: number) => void;
+}) {
+  return (
+    <div
+      role="tablist"
+      aria-label="Segmented control"
+      style={{
+        position: "relative",
+        display: "grid",
+        gridTemplateColumns: `repeat(${options.length}, 1fr)`,
+        padding: 4,
+        borderRadius: radii.md,
+        background: "rgba(8,12,26,0.5)",
+        border: `1px solid ${surfaces.borderSoft}`,
+      }}
+    >
+      <div
+        aria-hidden
+        style={{
+          position: "absolute",
+          top: 4,
+          bottom: 4,
+          left: `calc(${(value * 100) / options.length}% + 4px)`,
+          width: `calc(${100 / options.length}% - 8px)`,
+          borderRadius: radii.sm,
+          background: gradients.primaryButton,
+          boxShadow: shadows.primaryGlow,
+          transition: `left ${motion.base} ${motion.easing}`,
+        }}
+      />
+      {options.map((opt, i) => (
+        <button
+          key={opt}
+          role="tab"
+          aria-selected={value === i}
+          onClick={() => onChange(i)}
+          style={{
+            position: "relative",
+            zIndex: 1,
+            padding: "9px 4px",
+            ...type.label,
+            fontSize: 13,
+            color: value === i ? "#fff" : colors.textSecondary,
+            transition: `color ${motion.fast} ${motion.easing}`,
+          }}
+        >
+          {opt}
+        </button>
+      ))}
+    </div>
+  );
+}
+
+function ScrollTabs({
+  options,
+  value,
+  onChange,
+}: {
+  options: string[];
+  value: string;
+  onChange: (v: string) => void;
+}) {
+  return (
+    <div
+      role="tablist"
+      aria-label="Scrollable tabs"
+      className="flex items-center gap-2 overflow-x-auto"
+      style={{ scrollbarWidth: "none", margin: "0 -2px", padding: "2px" }}
+    >
+      {options.map((opt) => {
+        const active = value === opt;
+        return (
+          <button
+            key={opt}
+            role="tab"
+            aria-selected={active}
+            onClick={() => onChange(opt)}
+            className="ds-press shrink-0"
+            style={{
+              position: "relative",
+              padding: "8px 4px",
+              ...type.label,
+              fontSize: 15,
+              color: active ? "#fff" : colors.textMuted,
+              transition: `color ${motion.fast} ${motion.easing}`,
+            }}
+          >
+            {opt}
+            <span
+              aria-hidden
+              style={{
+                position: "absolute",
+                left: 4,
+                right: 4,
+                bottom: 0,
+                height: 3,
+                borderRadius: 3,
+                background: active ? gradients.primaryButton : "transparent",
+                boxShadow: active ? shadows.primaryGlow : "none",
+                transition: `background ${motion.fast} ${motion.easing}`,
+              }}
+            />
+          </button>
+        );
+      })}
+    </div>
+  );
+}
+
+const TABS = [
+  { icon: Home, label: "Home" },
+  { icon: Search, label: "Search" },
+  { icon: Heart, label: "Likes", badge: 5 },
+  { icon: MessageCircle, label: "Chats", badge: 2 },
+  { icon: User, label: "Profile" },
+];
+
+function FloatingTabBar({
+  active,
+  onChange,
+}: {
+  active: number;
+  onChange: (i: number) => void;
+}) {
+  return (
+    <nav
+      aria-label="Primary"
+      className="flex items-center"
+      style={{
+        justifyContent: "space-between",
+        padding: 8,
+        borderRadius: radii.xl,
+        background: "rgba(10,14,28,0.72)",
+        backdropFilter: "blur(24px) saturate(150%)",
+        border: `1px solid ${surfaces.border}`,
+        boxShadow: shadows.glass,
+      }}
+    >
+      {TABS.map((tab, i) => {
+        const isActive = active === i;
+        const Icon = tab.icon;
+        return (
+          <button
+            key={tab.label}
+            aria-label={tab.label}
+            aria-current={isActive ? "page" : undefined}
+            onClick={() => onChange(i)}
+            className="ds-press flex items-center justify-center"
+            style={{
+              position: "relative",
+              gap: 8,
+              height: 48,
+              flex: isActive ? "1 1 auto" : "0 0 auto",
+              minWidth: 48,
+              padding: isActive ? "0 18px" : "0 12px",
+              borderRadius: radii.pill,
+              color: isActive ? "#fff" : colors.textMuted,
+              background: isActive ? gradients.primaryButton : "transparent",
+              boxShadow: isActive ? shadows.primaryGlow : "none",
+              transition: `flex ${motion.base} ${motion.easing}, background ${motion.base} ${motion.easing}, color ${motion.fast} ${motion.easing}, padding ${motion.base} ${motion.easing}`,
+            }}
+          >
+            <span style={{ position: "relative", display: "flex" }}>
+              <Icon style={{ width: 22, height: 22 }} strokeWidth={isActive ? 2.4 : 2} />
+              {tab.badge && !isActive ? <NavBadge count={tab.badge} /> : null}
+            </span>
+            {isActive && (
+              <span style={{ ...type.label, fontSize: 14, whiteSpace: "nowrap" }}>
+                {tab.label}
+              </span>
+            )}
+          </button>
+        );
+      })}
+    </nav>
+  );
+}
+
