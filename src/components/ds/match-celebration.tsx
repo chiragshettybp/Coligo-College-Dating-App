@@ -370,7 +370,7 @@ export function MatchCelebration({
         {!chat && (
           <>
             <div style={reveal(0)}>
-              <span style={{ ...type.overline, color: "#a9c6ff" }}>You connected</span>
+              <span style={{ ...type.overline, color: colors.primary }}>You connected</span>
             </div>
             <h2
               style={{
@@ -380,7 +380,7 @@ export function MatchCelebration({
                 lineHeight: 1.02,
                 letterSpacing: "-0.03em",
                 marginTop: 6,
-                background: "linear-gradient(120deg,#ffffff 0%,#bcd4ff 100%)",
+                background: "linear-gradient(120deg,#1c1c1e 0%,#0a84ff 100%)",
                 WebkitBackgroundClip: "text",
                 backgroundClip: "text",
                 color: "transparent",
@@ -388,8 +388,8 @@ export function MatchCelebration({
             >
               It’s a match
             </h2>
-            <p style={{ ...reveal(2), ...type.bodyLg, color: "rgba(255,255,255,0.72)", marginTop: 8 }}>
-              You and <span style={{ color: "#fff", fontWeight: 600 }}>{right.name}</span> liked each other
+            <p style={{ ...reveal(2), ...type.bodyLg, color: colors.textSecondary, marginTop: 8 }}>
+              You and <span style={{ color: colors.textPrimary, fontWeight: 600 }}>{right.name}</span> liked each other
             </p>
 
             {/* Connection indicators — reveal progressively, never all at once. */}
@@ -400,7 +400,7 @@ export function MatchCelebration({
               {indicators.map((it, i) => (
                 <div key={it.label} style={reveal(3 + i)}>
                   <GlassPill>
-                    <span style={{ color: "#a9c6ff", display: "inline-flex" }}>{it.icon}</span>
+                    <span style={{ color: colors.primary, display: "inline-flex" }}>{it.icon}</span>
                     {it.label}
                   </GlassPill>
                 </div>
