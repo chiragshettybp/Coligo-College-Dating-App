@@ -226,3 +226,24 @@
   .ds-press { transition: none; }
   .ds-press:active { transform: none; }
 }
+
+/* Premium luminous avatar halo — slow specular light sweep around the ring. */
+@keyframes ds-halo-sweep {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+.ds-halo-sweep { animation: ds-halo-sweep 8s linear infinite; }
+
+/* Signature glass avatar — subtle lift + brighter halo on tap. */
+.ds-halo {
+  transition: transform 0.32s cubic-bezier(0.34, 1.56, 0.64, 1), filter 0.32s ease;
+}
+.ds-halo:active {
+  transform: translateY(-1px) scale(1.03);
+  filter: brightness(1.12);
+}
+@media (prefers-reduced-motion: reduce) {
+  .ds-halo-sweep { animation: none; }
+  .ds-halo { transition: none; }
+  .ds-halo:active { transform: none; filter: none; }
+}
