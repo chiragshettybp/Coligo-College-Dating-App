@@ -16,6 +16,7 @@ import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/
 import { Route as AuthIndexRouteImport } from './routes/auth.index'
 import { Route as PublicIndexRouteImport } from './routes/_public/index'
 import { Route as SystemSplashRouteImport } from './routes/system.splash'
+import { Route as SystemMaintenanceRouteImport } from './routes/system.maintenance'
 import { Route as AuthVerifyOtpRouteImport } from './routes/auth.verify-otp'
 import { Route as AuthSignupRouteImport } from './routes/auth.signup'
 import { Route as AuthResetPasswordRouteImport } from './routes/auth.reset-password'
@@ -59,6 +60,11 @@ const PublicIndexRoute = PublicIndexRouteImport.update({
 const SystemSplashRoute = SystemSplashRouteImport.update({
   id: '/system/splash',
   path: '/system/splash',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SystemMaintenanceRoute = SystemMaintenanceRouteImport.update({
+  id: '/system/maintenance',
+  path: '/system/maintenance',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AuthVerifyOtpRoute = AuthVerifyOtpRouteImport.update({
@@ -133,6 +139,7 @@ export interface FileRoutesByFullPath {
   '/auth/reset-password': typeof AuthResetPasswordRoute
   '/auth/signup': typeof AuthSignupRoute
   '/auth/verify-otp': typeof AuthVerifyOtpRoute
+  '/system/maintenance': typeof SystemMaintenanceRoute
   '/system/splash': typeof SystemSplashRoute
   '/auth/': typeof AuthIndexRoute
 }
@@ -150,6 +157,7 @@ export interface FileRoutesByTo {
   '/auth/reset-password': typeof AuthResetPasswordRoute
   '/auth/signup': typeof AuthSignupRoute
   '/auth/verify-otp': typeof AuthVerifyOtpRoute
+  '/system/maintenance': typeof SystemMaintenanceRoute
   '/system/splash': typeof SystemSplashRoute
   '/auth': typeof AuthIndexRoute
 }
@@ -170,6 +178,7 @@ export interface FileRoutesById {
   '/auth/reset-password': typeof AuthResetPasswordRoute
   '/auth/signup': typeof AuthSignupRoute
   '/auth/verify-otp': typeof AuthVerifyOtpRoute
+  '/system/maintenance': typeof SystemMaintenanceRoute
   '/system/splash': typeof SystemSplashRoute
   '/_public/': typeof PublicIndexRoute
   '/auth/': typeof AuthIndexRoute
@@ -191,6 +200,7 @@ export interface FileRouteTypes {
     | '/auth/reset-password'
     | '/auth/signup'
     | '/auth/verify-otp'
+    | '/system/maintenance'
     | '/system/splash'
     | '/auth/'
   fileRoutesByTo: FileRoutesByTo
@@ -208,6 +218,7 @@ export interface FileRouteTypes {
     | '/auth/reset-password'
     | '/auth/signup'
     | '/auth/verify-otp'
+    | '/system/maintenance'
     | '/system/splash'
     | '/auth'
   id:
@@ -227,6 +238,7 @@ export interface FileRouteTypes {
     | '/auth/reset-password'
     | '/auth/signup'
     | '/auth/verify-otp'
+    | '/system/maintenance'
     | '/system/splash'
     | '/_public/'
     | '/auth/'
@@ -237,6 +249,7 @@ export interface RootRouteChildren {
   PublicRouteRoute: typeof PublicRouteRouteWithChildren
   AuthRoute: typeof AuthRouteWithChildren
   UiRoute: typeof UiRoute
+  SystemMaintenanceRoute: typeof SystemMaintenanceRoute
   SystemSplashRoute: typeof SystemSplashRoute
 }
 
@@ -289,6 +302,13 @@ declare module '@tanstack/react-router' {
       path: '/system/splash'
       fullPath: '/system/splash'
       preLoaderRoute: typeof SystemSplashRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/system/maintenance': {
+      id: '/system/maintenance'
+      path: '/system/maintenance'
+      fullPath: '/system/maintenance'
+      preLoaderRoute: typeof SystemMaintenanceRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/auth/verify-otp': {
@@ -429,6 +449,7 @@ const rootRouteChildren: RootRouteChildren = {
   PublicRouteRoute: PublicRouteRouteWithChildren,
   AuthRoute: AuthRouteWithChildren,
   UiRoute: UiRoute,
+  SystemMaintenanceRoute: SystemMaintenanceRoute,
   SystemSplashRoute: SystemSplashRoute,
 }
 export const routeTree = rootRouteImport
