@@ -363,6 +363,8 @@ export function MatchCelebration({
               pointerEvents: "none",
             }}
           />
+        </div>
+
 
         {/* ---- Celebration copy (fades out as chat continues) ---- */}
         {!chat && (
