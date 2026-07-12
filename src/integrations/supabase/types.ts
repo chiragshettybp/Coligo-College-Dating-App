@@ -1122,8 +1122,43 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      admin_clear_reports: { Args: { _user_id: string }; Returns: Json }
       admin_dashboard_stats: { Args: never; Returns: Json }
       admin_distribution: { Args: never; Returns: Json }
+      admin_force_logout: { Args: { _user_id: string }; Returns: Json }
+      admin_list_users: {
+        Args: {
+          _filters?: Json
+          _limit?: number
+          _offset?: number
+          _search?: string
+          _sort?: string
+        }
+        Returns: {
+          account_status: string
+          age: number
+          avatar: string
+          chats_count: number
+          college_name: string
+          created_at: string
+          department_name: string
+          device_count: number
+          discovery: boolean
+          full_name: string
+          gender: string
+          graduation_year: number
+          id: string
+          last_login_at: string
+          matches_count: number
+          online: boolean
+          phone: string
+          profile_completion: number
+          reports_received: number
+          semester: number
+          total_count: number
+          verification_status: string
+        }[]
+      }
       admin_log_action: {
         Args: {
           _action: string
@@ -1135,8 +1170,26 @@ export type Database = {
         Returns: string
       }
       admin_recent_activity: { Args: { _limit?: number }; Returns: Json }
+      admin_reset_discovery: { Args: { _user_id: string }; Returns: Json }
       admin_search: { Args: { _q: string }; Returns: Json }
+      admin_set_account_status: {
+        Args: { _reason?: string; _status: string; _user_id: string }
+        Returns: Json
+      }
+      admin_set_verification: {
+        Args: { _status: string; _user_id: string }
+        Returns: Json
+      }
       admin_timeseries: { Args: { _days?: number }; Returns: Json }
+      admin_user_detail: { Args: { _user_id: string }; Returns: Json }
+      admin_user_devices: { Args: { _user_id: string }; Returns: Json }
+      admin_user_matches: { Args: { _user_id: string }; Returns: Json }
+      admin_user_reports: { Args: { _user_id: string }; Returns: Json }
+      admin_user_stats: { Args: { _user_id: string }; Returns: Json }
+      admin_user_timeline: {
+        Args: { _limit?: number; _user_id: string }
+        Returns: Json
+      }
       college_rank: { Args: { _college_id: string }; Returns: number }
       college_rankings: {
         Args: { _limit?: number; _offset?: number; _search?: string }
@@ -1263,7 +1316,7 @@ export type Database = {
       unread_notifications_count: { Args: never; Returns: number }
     }
     Enums: {
-      account_status: "active" | "suspended" | "deleted"
+      account_status: "active" | "suspended" | "deleted" | "banned"
       app_role: "user" | "moderator" | "admin"
       gender_option: "woman" | "man" | "nonbinary" | "other"
       looking_for_option: "women" | "men" | "everyone"
@@ -1395,7 +1448,7 @@ export type CompositeTypes<
 export const Constants = {
   public: {
     Enums: {
-      account_status: ["active", "suspended", "deleted"],
+      account_status: ["active", "suspended", "deleted", "banned"],
       app_role: ["user", "moderator", "admin"],
       gender_option: ["woman", "man", "nonbinary", "other"],
       looking_for_option: ["women", "men", "everyone"],

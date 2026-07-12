@@ -436,8 +436,8 @@ function RecentActivity({ events, loading }: { events?: ActivityEvent[]; loading
 }
 
 // ------------------------------------------------------------- quick actions
-const ACTIONS: { label: string; icon: React.ReactNode; badge?: boolean }[] = [
-  { label: "Manage Users", icon: <Users style={I} /> },
+const ACTIONS: { label: string; icon: React.ReactNode; badge?: boolean; to?: string }[] = [
+  { label: "Manage Users", icon: <Users style={I} />, to: "/admin/users" },
   { label: "Manage Colleges", icon: <Building2 style={I} /> },
   { label: "Manage Reports", icon: <Flag style={I} />, badge: true },
   { label: "Manage Chats", icon: <MessagesSquare style={I} /> },
@@ -446,6 +446,7 @@ const ACTIONS: { label: string; icon: React.ReactNode; badge?: boolean }[] = [
 ];
 
 function QuickActions({ pending }: { pending: number }) {
+  const navigate = useNavigate();
   return (
     <SettingsCard>
       {ACTIONS.map((a) => (
@@ -456,7 +457,8 @@ function QuickActions({ pending }: { pending: number }) {
           chevron={!(a.badge && pending > 0)}
           trailing={a.badge && pending > 0 ? <Badge tone="danger">{pending}</Badge> : undefined}
           onClick={() => {
-            /* future module — dashboard entry point */
+            if (a.to === "/admin/users") navigate({ to: "/admin/users" });
+            /* other modules — future dashboard entry points */
           }}
         />
       ))}
