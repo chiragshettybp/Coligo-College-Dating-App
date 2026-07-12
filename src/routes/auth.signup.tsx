@@ -22,6 +22,7 @@ import {
   formatPhoneIN,
   friendlyAuthError,
   OTP_ENABLED,
+  toE164,
 } from "@/lib/auth";
 import { haptic } from "@/lib/haptics";
 
@@ -56,7 +57,10 @@ function SignupPage() {
     setFieldErr({});
     setLoading(true);
     try {
-      const { available } = await checkPhoneAvailable({ data: { phone: parsed.data } });
+      const { data: available, error: rpcErr } = await supabase.rpc("phone_available", {
+        _e164: toE164(parsed.data),
+      });
+      if (rpcErr) throw rpcErr;
       if (!available) {
         setFieldErr({ phone: "An account with this number already exists." });
         return;
