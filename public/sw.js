@@ -14,8 +14,8 @@ self.addEventListener("push", (event) => {
   const data = payload.data || {};
   const options = {
     body: payload.body || "",
-    icon: "/icon-192.png",
-    badge: "/icon-192.png",
+    icon: "/coligo-512.png",
+    badge: "/coligo-512.png",
     tag: data.matchId ? `chat-${data.matchId}` : payload.type || "coligo",
     renotify: true,
     data,
