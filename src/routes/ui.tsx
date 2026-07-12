@@ -2654,13 +2654,16 @@ const WAVE_BARS = [0.4, 0.7, 1, 0.6, 0.85, 0.5, 0.75, 1, 0.55, 0.9, 0.45, 0.7, 0
 
 function VoiceMessage({ mine }: { mine?: boolean }) {
   const isMine = !!mine;
+  const fg = isMine ? "#ffffff" : colors.primary;
+  const dim = isMine ? "rgba(255,255,255,0.4)" : "rgba(60,60,67,0.25)";
+  const meta = isMine ? "rgba(255,255,255,0.85)" : colors.textMuted;
   return (
     <Bubble mine={isMine} groupPos="single" tail time="9:43" state={isMine ? "read" : undefined}>
       <div className="flex items-center gap-3" style={{ minWidth: 190 }}>
         <button
           aria-label="Play voice message"
           className="flex shrink-0 items-center justify-center rounded-full"
-          style={{ width: 34, height: 34, background: "rgba(255,255,255,0.16)", color: "#fff" }}
+          style={{ width: 34, height: 34, background: isMine ? "rgba(255,255,255,0.18)" : "rgba(10,132,255,0.12)", color: fg }}
         >
           <Play style={{ width: 15, height: 15, marginLeft: 1 }} fill="currentColor" />
         </button>
@@ -2672,13 +2675,13 @@ function VoiceMessage({ mine }: { mine?: boolean }) {
                 flex: 1,
                 height: `${Math.round(h * 100)}%`,
                 borderRadius: 2,
-                background: i < 6 ? "#fff" : "rgba(255,255,255,0.4)",
+                background: i < 6 ? fg : dim,
                 transformOrigin: "center",
               }}
             />
           ))}
         </div>
-        <span style={{ ...type.caption, color: "rgba(255,255,255,0.85)" }}>0:12</span>
+        <span style={{ ...type.caption, color: meta }}>0:12</span>
       </div>
     </Bubble>
   );
