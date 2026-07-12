@@ -12,6 +12,7 @@ import appCss from "../styles.css?url";
 import { supabase } from "@/integrations/supabase/client";
 import { NotFoundView } from "@/components/system/NotFoundView";
 import { ServerErrorView } from "@/components/system/ServerErrorView";
+import { Toaster } from "@/components/ui/sonner";
 
 function NotFoundComponent() {
   return <NotFoundView />;
