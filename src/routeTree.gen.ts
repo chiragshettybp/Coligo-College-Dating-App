@@ -54,6 +54,7 @@ import { Route as AuthenticatedHomeCollegeRankingsRouteImport } from './routes/_
 import { Route as AuthenticatedDiscoverNoMoreProfilesRouteImport } from './routes/_authenticated/discover.no-more-profiles'
 import { Route as AuthenticatedMatchesMatchIdUnmatchRouteImport } from './routes/_authenticated/matches.$matchId.unmatch'
 import { Route as AuthenticatedMatchesMatchIdNoteRouteImport } from './routes/_authenticated/matches.$matchId.note'
+import { Route as AuthenticatedMatchesMatchIdBlockRouteImport } from './routes/_authenticated/matches.$matchId.block'
 import { Route as AuthenticatedHomeCollegeCollegeIdRouteImport } from './routes/_authenticated/home.college.$collegeId'
 import { Route as AuthenticatedDiscoverProfileUserIdRouteImport } from './routes/_authenticated/discover.profile.$userId'
 import { Route as AuthenticatedDiscoverMatchMatchIdRouteImport } from './routes/_authenticated/discover.match.$matchId'
@@ -290,6 +291,12 @@ const AuthenticatedMatchesMatchIdNoteRoute =
     path: '/note',
     getParentRoute: () => AuthenticatedMatchesMatchIdRoute,
   } as any)
+const AuthenticatedMatchesMatchIdBlockRoute =
+  AuthenticatedMatchesMatchIdBlockRouteImport.update({
+    id: '/block',
+    path: '/block',
+    getParentRoute: () => AuthenticatedMatchesMatchIdRoute,
+  } as any)
 const AuthenticatedHomeCollegeCollegeIdRoute =
   AuthenticatedHomeCollegeCollegeIdRouteImport.update({
     id: '/college/$collegeId',
@@ -354,6 +361,7 @@ export interface FileRoutesByFullPath {
   '/discover/match/$matchId': typeof AuthenticatedDiscoverMatchMatchIdRoute
   '/discover/profile/$userId': typeof AuthenticatedDiscoverProfileUserIdRoute
   '/home/college/$collegeId': typeof AuthenticatedHomeCollegeCollegeIdRoute
+  '/matches/$matchId/block': typeof AuthenticatedMatchesMatchIdBlockRoute
   '/matches/$matchId/note': typeof AuthenticatedMatchesMatchIdNoteRoute
   '/matches/$matchId/unmatch': typeof AuthenticatedMatchesMatchIdUnmatchRoute
 }
@@ -397,6 +405,7 @@ export interface FileRoutesByTo {
   '/discover/match/$matchId': typeof AuthenticatedDiscoverMatchMatchIdRoute
   '/discover/profile/$userId': typeof AuthenticatedDiscoverProfileUserIdRoute
   '/home/college/$collegeId': typeof AuthenticatedHomeCollegeCollegeIdRoute
+  '/matches/$matchId/block': typeof AuthenticatedMatchesMatchIdBlockRoute
   '/matches/$matchId/note': typeof AuthenticatedMatchesMatchIdNoteRoute
   '/matches/$matchId/unmatch': typeof AuthenticatedMatchesMatchIdUnmatchRoute
 }
@@ -448,6 +457,7 @@ export interface FileRoutesById {
   '/_authenticated/discover/match/$matchId': typeof AuthenticatedDiscoverMatchMatchIdRoute
   '/_authenticated/discover/profile/$userId': typeof AuthenticatedDiscoverProfileUserIdRoute
   '/_authenticated/home/college/$collegeId': typeof AuthenticatedHomeCollegeCollegeIdRoute
+  '/_authenticated/matches/$matchId/block': typeof AuthenticatedMatchesMatchIdBlockRoute
   '/_authenticated/matches/$matchId/note': typeof AuthenticatedMatchesMatchIdNoteRoute
   '/_authenticated/matches/$matchId/unmatch': typeof AuthenticatedMatchesMatchIdUnmatchRoute
 }
@@ -498,6 +508,7 @@ export interface FileRouteTypes {
     | '/discover/match/$matchId'
     | '/discover/profile/$userId'
     | '/home/college/$collegeId'
+    | '/matches/$matchId/block'
     | '/matches/$matchId/note'
     | '/matches/$matchId/unmatch'
   fileRoutesByTo: FileRoutesByTo
@@ -541,6 +552,7 @@ export interface FileRouteTypes {
     | '/discover/match/$matchId'
     | '/discover/profile/$userId'
     | '/home/college/$collegeId'
+    | '/matches/$matchId/block'
     | '/matches/$matchId/note'
     | '/matches/$matchId/unmatch'
   id:
@@ -591,6 +603,7 @@ export interface FileRouteTypes {
     | '/_authenticated/discover/match/$matchId'
     | '/_authenticated/discover/profile/$userId'
     | '/_authenticated/home/college/$collegeId'
+    | '/_authenticated/matches/$matchId/block'
     | '/_authenticated/matches/$matchId/note'
     | '/_authenticated/matches/$matchId/unmatch'
   fileRoutesById: FileRoutesById
@@ -924,6 +937,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedMatchesMatchIdNoteRouteImport
       parentRoute: typeof AuthenticatedMatchesMatchIdRoute
     }
+    '/_authenticated/matches/$matchId/block': {
+      id: '/_authenticated/matches/$matchId/block'
+      path: '/block'
+      fullPath: '/matches/$matchId/block'
+      preLoaderRoute: typeof AuthenticatedMatchesMatchIdBlockRouteImport
+      parentRoute: typeof AuthenticatedMatchesMatchIdRoute
+    }
     '/_authenticated/home/college/$collegeId': {
       id: '/_authenticated/home/college/$collegeId'
       path: '/college/$collegeId'
@@ -987,12 +1007,15 @@ const AuthenticatedHomeRouteWithChildren =
   AuthenticatedHomeRoute._addFileChildren(AuthenticatedHomeRouteChildren)
 
 interface AuthenticatedMatchesMatchIdRouteChildren {
+  AuthenticatedMatchesMatchIdBlockRoute: typeof AuthenticatedMatchesMatchIdBlockRoute
   AuthenticatedMatchesMatchIdNoteRoute: typeof AuthenticatedMatchesMatchIdNoteRoute
   AuthenticatedMatchesMatchIdUnmatchRoute: typeof AuthenticatedMatchesMatchIdUnmatchRoute
 }
 
 const AuthenticatedMatchesMatchIdRouteChildren: AuthenticatedMatchesMatchIdRouteChildren =
   {
+    AuthenticatedMatchesMatchIdBlockRoute:
+      AuthenticatedMatchesMatchIdBlockRoute,
     AuthenticatedMatchesMatchIdNoteRoute: AuthenticatedMatchesMatchIdNoteRoute,
     AuthenticatedMatchesMatchIdUnmatchRoute:
       AuthenticatedMatchesMatchIdUnmatchRoute,
