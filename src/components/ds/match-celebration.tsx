@@ -286,10 +286,10 @@ export function MatchCelebration({
         className="absolute inset-0 backdrop-blur-2xl"
         style={{
           background:
-            "radial-gradient(70% 50% at 50% 30%, rgba(120,150,255,0.20) 0%, rgba(255,255,255,0) 60%)," +
-            "radial-gradient(90% 60% at 50% 28%, rgba(255,214,170,0.20) 0%, rgba(255,255,255,0) 58%)," +
-            "radial-gradient(120% 90% at 50% 120%, rgba(10,132,255,0.10) 0%, rgba(255,255,255,0) 62%)," +
-            "linear-gradient(180deg, rgba(255,255,255,0.86) 0%, rgba(244,246,250,0.92) 100%)",
+            "radial-gradient(70% 50% at 50% 30%, rgba(120,150,255,0.22) 0%, rgba(255,255,255,0) 58%)," +
+            "radial-gradient(90% 60% at 50% 28%, rgba(255,210,160,0.22) 0%, rgba(255,255,255,0) 56%)," +
+            "radial-gradient(120% 90% at 50% 122%, rgba(10,132,255,0.12) 0%, rgba(255,255,255,0) 60%)," +
+            "linear-gradient(180deg, rgba(255,255,255,0.97) 0%, rgba(246,247,250,0.98) 100%)",
         }}
       />
 
