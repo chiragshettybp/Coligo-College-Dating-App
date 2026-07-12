@@ -82,6 +82,19 @@ import {
   TextField,
   Toggle,
 } from "@/components/ds/glass";
+import {
+  TopBar,
+  LargeTitleHeader,
+  NavIconButton,
+  SegmentControl,
+  ScrollTabs,
+  BottomNav,
+  BottomSheet,
+  ActionSheet,
+  SearchBar,
+  NavFab,
+  type BottomNavItem,
+} from "@/components/ds/navigation";
 
 import memoji1 from "@/assets/sample.png";
 import memoji2 from "@/assets/sample.png";
@@ -176,6 +189,10 @@ function UIShowcase() {
   const [toasts, setToasts] = useState<ToastItem[]>([]);
   const [matchOpen, setMatchOpen] = useState(false);
   const [confirmOpen, setConfirmOpen] = useState(false);
+  const [navSearch, setNavSearch] = useState("");
+  const [sheetOpen, setSheetOpen] = useState(false);
+  const [actionOpen, setActionOpen] = useState(false);
+  const [headerCollapsed, setHeaderCollapsed] = useState(false);
 
   const toggleInterest = (i: string) =>
     setInterests((s) => (s.includes(i) ? s.filter((x) => x !== i) : [...s, i]));
@@ -985,39 +1002,51 @@ function UIShowcase() {
         {/* Navigation */}
         <Section
           title="Navigation"
-          description="A complete navigation system — large title, glass top bar, segmented + scrollable tabs, floating tab bar and FAB."
+          description="One invisible navigation system — collapsible large title, glass top bar, search, segmented + scrollable tabs, floating tab bar, bottom sheet, action sheet and FAB. Every surface inherits the same tokens."
         >
           <div className="space-y-4">
-            {/* Large-title top bar */}
-            <GlassPanel style={{ padding: `${spacing[3]}px ${spacing[4]}px ${spacing[4]}px` }}>
-              <div className="flex items-start justify-between">
-                <div className="min-w-0">
-                  <div style={{ ...type.caption, color: colors.primary }}>Sunday, July 12</div>
-                  <h3 style={{ ...type.displaySm, color: "#fff", marginTop: 2 }}>Discover</h3>
-                </div>
-                <div className="flex shrink-0 items-center" style={{ gap: spacing[1] }}>
-                  <NavAction label="Search"><Search style={{ width: 19, height: 19 }} /></NavAction>
-                  <NavAction label="Notifications" badge={3}>
+            {/* Collapsible large-title header */}
+            <LargeTitleHeader
+              eyebrow="Sunday, July 12"
+              title="Discover"
+              collapsed={headerCollapsed}
+              actions={
+                <>
+                  <NavIconButton label="Notifications" badge={3}>
                     <Bell style={{ width: 19, height: 19 }} />
-                  </NavAction>
+                  </NavIconButton>
                   <button aria-label="Profile" className="rounded-full" style={{ marginLeft: 2 }}>
                     <Avatar src={ana} size="sm" status="online" />
                   </button>
-                </div>
-              </div>
-            </GlassPanel>
+                </>
+              }
+            />
+
+            <Button variant="secondary" onClick={() => setHeaderCollapsed((c) => !c)}>
+              {headerCollapsed ? "Expand title" : "Collapse title"}
+            </Button>
+
+            {/* Search bar */}
+            <SearchBar
+              value={navSearch}
+              onChange={setNavSearch}
+              placeholder="Search people, interests…"
+              icon={<Search style={{ width: 18, height: 18 }} />}
+            />
 
             {/* Compact glass top bar with back + centered title */}
-            <GlassPanel style={{ padding: `${spacing[2]}px ${spacing[3]}px` }}>
-              <div className="flex items-center justify-between">
-                <NavAction label="Back"><ChevronLeft style={{ width: 22, height: 22 }} /></NavAction>
-                <span style={{ ...type.titleMd, color: "#fff" }}>Profile</span>
-                <NavAction label="More"><Plus style={{ width: 20, height: 20 }} /></NavAction>
-              </div>
-            </GlassPanel>
+            <TopBar
+              title="Profile"
+              onBack={() => haptic("light")}
+              trailing={
+                <NavIconButton label="More" onClick={() => setActionOpen(true)}>
+                  <Plus style={{ width: 20, height: 20 }} />
+                </NavIconButton>
+              }
+            />
 
             {/* Segmented control */}
-            <Segmented
+            <SegmentControl
               options={["Nearby", "Popular", "New"]}
               value={segment}
               onChange={setSegment}
@@ -1030,12 +1059,51 @@ function UIShowcase() {
               onChange={setScrollTab}
             />
 
-            {/* Floating bottom tab bar */}
-            <div style={{ position: "relative", paddingTop: spacing[2] }}>
-              <FloatingTabBar active={activeTab} onChange={setActiveTab} />
+            {/* Sheets */}
+            <div className="flex" style={{ gap: spacing[2] }}>
+              <Button variant="secondary" onClick={() => setSheetOpen(true)}>
+                Bottom sheet
+              </Button>
+              <Button variant="secondary" onClick={() => setActionOpen(true)}>
+                Action sheet
+              </Button>
+            </div>
+
+            {/* Floating bottom tab bar + FAB */}
+            <div
+              className="flex items-center"
+              style={{ position: "relative", gap: spacing[2], paddingTop: spacing[2] }}
+            >
+              <div style={{ flex: 1, minWidth: 0 }}>
+                <BottomNav items={NAV_ITEMS} active={activeTab} onChange={setActiveTab} />
+              </div>
+              <NavFab label="New" onClick={() => haptic("medium")}>
+                <Plus style={{ width: 26, height: 26 }} />
+              </NavFab>
             </div>
           </div>
+
+          <BottomSheet open={sheetOpen} onClose={() => setSheetOpen(false)} title="Filters">
+            <div className="space-y-3" style={{ marginTop: spacing[3] }}>
+              <SegmentControl
+                options={["Everyone", "Women", "Men"]}
+                value={segment}
+                onChange={setSegment}
+              />
+              <Text tone="secondary">Drag the handle down or tap outside to dismiss.</Text>
+            </div>
+          </BottomSheet>
+
+          <ActionSheet
+            open={actionOpen}
+            onClose={() => setActionOpen(false)}
+            actions={[
+              { label: "Share profile", onSelect: () => haptic("light") },
+              { label: "Report", destructive: true, onSelect: () => haptic("warning") },
+            ]}
+          />
         </Section>
+
 
         <Section
           title="Match Celebration"
@@ -2821,242 +2889,15 @@ function SettingRow({
 }
 
 // ---------------------------------------------------------------------------
-// Navigation design system
+// Navigation config — the reusable system lives in @/components/ds/navigation
 // ---------------------------------------------------------------------------
 
-function NavBadge({ count }: { count: number }) {
-  return (
-    <span
-      className="ds-react-pop flex items-center justify-center rounded-full"
-      style={{
-        position: "absolute",
-        top: -2,
-        right: -2,
-        minWidth: 17,
-        height: 17,
-        padding: "0 5px",
-        background: colors.danger,
-        color: "#fff",
-        fontSize: 10,
-        fontWeight: weights.bold,
-        lineHeight: 1,
-        border: `2px solid rgba(8,12,26,0.95)`,
-        boxShadow: "0 0 10px rgba(242,87,107,0.6)",
-      }}
-    >
-      {count > 9 ? "9+" : count}
-    </span>
-  );
-}
-
-function NavAction({
-  children,
-  label,
-  badge,
-}: {
-  children: React.ReactNode;
-  label: string;
-  badge?: number;
-}) {
-  return (
-    <button
-      aria-label={label}
-      className="ds-press flex items-center justify-center rounded-full"
-      style={{
-        position: "relative",
-        width: 44,
-        height: 44,
-        color: "#fff",
-      }}
-    >
-      {children}
-      {badge ? <NavBadge count={badge} /> : null}
-    </button>
-  );
-}
-
-function Segmented({
-  options,
-  value,
-  onChange,
-}: {
-  options: string[];
-  value: number;
-  onChange: (i: number) => void;
-}) {
-  return (
-    <div
-      role="tablist"
-      aria-label="Segmented control"
-      style={{
-        position: "relative",
-        display: "grid",
-        gridTemplateColumns: `repeat(${options.length}, 1fr)`,
-        padding: 4,
-        borderRadius: radii.md,
-        background: "rgba(8,12,26,0.5)",
-        border: `1px solid ${surfaces.borderSoft}`,
-      }}
-    >
-      <div
-        aria-hidden
-        style={{
-          position: "absolute",
-          top: 4,
-          bottom: 4,
-          left: `calc(${(value * 100) / options.length}% + 4px)`,
-          width: `calc(${100 / options.length}% - 8px)`,
-          borderRadius: radii.sm,
-          background: gradients.primaryButton,
-          boxShadow: shadows.primaryGlow,
-          transition: `left ${motion.base} ${motion.snappy}`,
-        }}
-      />
-      {options.map((opt, i) => (
-        <button
-          key={opt}
-          role="tab"
-          aria-selected={value === i}
-          onClick={() => onChange(i)}
-          style={{
-            position: "relative",
-            zIndex: 1,
-            padding: "9px 4px",
-            ...type.label,
-            fontSize: 13,
-            color: value === i ? "#fff" : colors.textSecondary,
-            transition: `color ${motion.fast} ${motion.snappy}`,
-          }}
-        >
-          {opt}
-        </button>
-      ))}
-    </div>
-  );
-}
-
-function ScrollTabs({
-  options,
-  value,
-  onChange,
-}: {
-  options: string[];
-  value: string;
-  onChange: (v: string) => void;
-}) {
-  return (
-    <div
-      role="tablist"
-      aria-label="Scrollable tabs"
-      className="flex items-center gap-2 overflow-x-auto"
-      style={{ scrollbarWidth: "none", margin: "0 -2px", padding: "2px" }}
-    >
-      {options.map((opt) => {
-        const active = value === opt;
-        return (
-          <button
-            key={opt}
-            role="tab"
-            aria-selected={active}
-            onClick={() => onChange(opt)}
-            className="ds-press shrink-0"
-            style={{
-              position: "relative",
-              padding: "8px 4px",
-              ...type.label,
-              fontSize: 15,
-              color: active ? "#fff" : colors.textMuted,
-              transition: `color ${motion.fast} ${motion.snappy}`,
-            }}
-          >
-            {opt}
-            <span
-              aria-hidden
-              style={{
-                position: "absolute",
-                left: 4,
-                right: 4,
-                bottom: 0,
-                height: 3,
-                borderRadius: 3,
-                background: active ? gradients.primaryButton : "transparent",
-                boxShadow: active ? shadows.primaryGlow : "none",
-                transition: `background ${motion.fast} ${motion.snappy}`,
-              }}
-            />
-          </button>
-        );
-      })}
-    </div>
-  );
-}
-
-const TABS = [
-  { icon: Home, label: "Home" },
-  { icon: Search, label: "Search" },
-  { icon: Heart, label: "Likes", badge: 5 },
-  { icon: MessageCircle, label: "Chats", badge: 2 },
-  { icon: User, label: "Profile" },
+const NAV_ITEMS: BottomNavItem[] = [
+  { icon: (p) => <Home {...p} />, label: "Home" },
+  { icon: (p) => <Search {...p} />, label: "Search" },
+  { icon: (p) => <Heart {...p} />, label: "Likes", badge: 5 },
+  { icon: (p) => <MessageCircle {...p} />, label: "Chats", badge: 2 },
+  { icon: (p) => <User {...p} />, label: "Profile" },
 ];
 
-function FloatingTabBar({
-  active,
-  onChange,
-}: {
-  active: number;
-  onChange: (i: number) => void;
-}) {
-  return (
-    <nav
-      aria-label="Primary"
-      className="flex items-center"
-      style={{
-        justifyContent: "space-between",
-        padding: 8,
-        borderRadius: radii.xl,
-        background: "rgba(10,14,28,0.72)",
-        backdropFilter: "blur(24px) saturate(150%)",
-        border: `1px solid ${surfaces.border}`,
-        boxShadow: shadows.glass,
-      }}
-    >
-      {TABS.map((tab, i) => {
-        const isActive = active === i;
-        const Icon = tab.icon;
-        return (
-          <button
-            key={tab.label}
-            aria-label={tab.label}
-            aria-current={isActive ? "page" : undefined}
-            onClick={() => onChange(i)}
-            className="ds-press flex items-center justify-center"
-            style={{
-              position: "relative",
-              gap: 8,
-              height: 48,
-              flex: isActive ? "1 1 auto" : "0 0 auto",
-              minWidth: 48,
-              padding: isActive ? "0 18px" : "0 12px",
-              borderRadius: radii.pill,
-              color: isActive ? "#fff" : colors.textMuted,
-              background: isActive ? gradients.primaryButton : "transparent",
-              boxShadow: isActive ? shadows.primaryGlow : "none",
-              transition: `flex ${motion.base} ${motion.snappy}, background ${motion.base} ${motion.snappy}, color ${motion.fast} ${motion.snappy}, padding ${motion.base} ${motion.snappy}`,
-            }}
-          >
-            <span style={{ position: "relative", display: "flex" }}>
-              <Icon style={{ width: 22, height: 22 }} strokeWidth={isActive ? 2.4 : 2} />
-              {tab.badge && !isActive ? <NavBadge count={tab.badge} /> : null}
-            </span>
-            {isActive && (
-              <span style={{ ...type.label, fontSize: 14, whiteSpace: "nowrap" }}>
-                {tab.label}
-              </span>
-            )}
-          </button>
-        );
-      })}
-    </nav>
-  );
-}
 
