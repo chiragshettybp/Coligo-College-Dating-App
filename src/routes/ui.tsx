@@ -1566,15 +1566,14 @@ function SwipeCard({ overlay }: { overlay?: "LIKE" | "NOPE" | "SUPER" | "BOOST" 
                 className="inline-flex items-center gap-1"
                 style={{
                   borderRadius: radii.pill,
-                  padding: "4px 10px",
+                  padding: "3px 9px",
                   fontSize: 12,
-                  fontWeight: 800,
-                  color: "#fff",
-                  background: gradients.success,
-                  boxShadow: shadows.glow,
+                  fontWeight: 600,
+                  color: "rgba(255,255,255,0.9)",
+                  background: "rgba(255,255,255,0.14)",
                 }}
               >
-                <Sparkles style={{ width: 12, height: 12 }} /> 92%
+                <Sparkles style={{ width: 11, height: 11 }} /> 92%
               </span>
             </span>
           </div>
