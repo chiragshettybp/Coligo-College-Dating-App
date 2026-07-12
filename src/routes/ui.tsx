@@ -886,6 +886,53 @@ function UIShowcase() {
           </div>
         </Section>
 
+        <Section
+          title="Match Celebration"
+          description="The emotional climax — two people connect. Avatars travel into a shared warm glow, details reveal progressively, and a soft chime + success haptic land on the peak. Reduced-motion friendly."
+        >
+          <GlassPanel style={{ padding: spacing[5] }}>
+            <div className="flex flex-col items-center text-center" style={{ gap: spacing[3] }}>
+              <div className="flex items-center">
+                <Avatar src={ana} size="lg" />
+                <div style={{ marginLeft: -18 }}>
+                  <Avatar src={memoji5} size="lg" />
+                </div>
+              </div>
+              <p style={{ ...type.bodyMd, color: colors.textSecondary, maxWidth: 320 }}>
+                Preview the signature moment users feel after a mutual like.
+              </p>
+              <Button
+                variant="primary"
+                pill
+                leftIcon={<Sparkles style={{ width: 18, height: 18 }} />}
+                onClick={() => setMatchOpen(true)}
+              >
+                Trigger “It’s a Match”
+              </Button>
+            </div>
+          </GlassPanel>
+        </Section>
+
+        <MatchCelebration
+          open={matchOpen}
+          left={{ src: ana, name: "Ana" }}
+          right={{ src: memoji5, name: "Jordan" }}
+          shared={{
+            college: "Stanford University",
+            gradYear: "Class of ’26",
+            interests: ["Music", "Coffee", "Hiking"],
+            clubs: "Design Collective",
+            compatibility: 94,
+          }}
+          onClose={() => setMatchOpen(false)}
+          onMessage={() => {
+            setMatchOpen(false);
+            pushToast("success", <MessageCircle style={{ width: 16, height: 16 }} />, "Opening chat with Jordan…");
+          }}
+        />
+
+
+
 
         <footer
           className="flex items-center gap-2"
