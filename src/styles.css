@@ -211,3 +211,18 @@
   0%, 100% { transform: scaleY(0.35); }
   50% { transform: scaleY(1); }
 }
+
+/* Tactile press — finger-connected scale + opacity for nav/controls. */
+.ds-press {
+  transition: transform 0.16s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.16s ease;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+}
+.ds-press:active {
+  transform: scale(0.9);
+  opacity: 0.85;
+}
+@media (prefers-reduced-motion: reduce) {
+  .ds-press { transition: none; }
+  .ds-press:active { transform: none; }
+}
