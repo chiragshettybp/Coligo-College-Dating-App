@@ -5,7 +5,7 @@
 // instead of navigating nowhere.
 // ============================================================================
 import { useNavigate } from "@tanstack/react-router";
-import { Heart, Flame, Sparkles, MessageCircle, UserRound } from "lucide-react";
+import { Heart, Flame, MessageCircle, UserRound } from "lucide-react";
 
 import { APP_BACKGROUND, FONT_FAMILY, spacing } from "@/lib/ds";
 import {
@@ -13,19 +13,21 @@ import {
   type BottomNavItem,
 } from "@/components/ds/navigation";
 
+// "matches" is kept in the union so Match screens can still frame themselves
+// in this shell, but it is no longer a bottom-nav tab.
 export type DiscoverTab = "home" | "discover" | "matches" | "chat" | "profile";
 
-const ORDER: DiscoverTab[] = ["home", "discover", "matches", "chat", "profile"];
+const ORDER: DiscoverTab[] = ["home", "discover", "chat", "profile"];
 
 export function DiscoverShell({
   children,
   active = "discover",
-  matchesBadge,
+  chatBadge,
   maxWidth = 560,
 }: {
   children: React.ReactNode;
   active?: DiscoverTab;
-  matchesBadge?: number;
+  chatBadge?: number;
   maxWidth?: number;
 }) {
   const navigate = useNavigate();
@@ -33,8 +35,7 @@ export function DiscoverShell({
   const navItems: BottomNavItem[] = [
     { icon: (p) => <Heart {...p} fill="currentColor" />, label: "Home" },
     { icon: (p) => <Flame {...p} />, label: "Discover" },
-    { icon: (p) => <Sparkles {...p} />, label: "Matches", badge: matchesBadge || undefined },
-    { icon: (p) => <MessageCircle {...p} />, label: "Chat" },
+    { icon: (p) => <MessageCircle {...p} />, label: "Chat", badge: chatBadge || undefined },
     { icon: (p) => <UserRound {...p} />, label: "Profile" },
   ];
 
