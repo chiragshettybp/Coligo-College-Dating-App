@@ -106,6 +106,50 @@ export function ReplyQuote({ author, text, mine }: { author: string; text: strin
   );
 }
 
+export type ReactionGroup = { emoji: string; count: number; mine: boolean };
+
+/** A row of reaction pills shown just below a message bubble. */
+export function ReactionsRow({
+  reactions,
+  mine,
+  onTap,
+}: {
+  reactions?: ReactionGroup[];
+  mine?: boolean;
+  onTap?: (emoji: string) => void;
+}) {
+  if (!reactions?.length) return null;
+  return (
+    <div
+      className="ds-react-pop flex items-center gap-1"
+      style={{ marginTop: -6, marginBottom: 2, justifyContent: mine ? "flex-end" : "flex-start", paddingLeft: mine ? 0 : 6, paddingRight: mine ? 6 : 0 }}
+    >
+      {reactions.map((r) => (
+        <button
+          key={r.emoji}
+          aria-label={`${r.emoji} ${r.count}`}
+          onClick={() => onTap?.(r.emoji)}
+          className="flex items-center gap-0.5 rounded-full"
+          style={{
+            padding: "1px 7px",
+            fontSize: 12,
+            lineHeight: 1.6,
+            background: r.mine ? "rgba(255,73,105,0.14)" : surfaces.glassSoft,
+            border: `1px solid ${r.mine ? colors.primary : surfaces.borderSoft}`,
+            boxShadow: shadows.soft,
+            cursor: onTap ? "pointer" : "default",
+          }}
+        >
+          <span>{r.emoji}</span>
+          {r.count > 1 && (
+            <span style={{ ...type.caption, fontSize: 11, color: colors.textSecondary }}>{r.count}</span>
+          )}
+        </button>
+      ))}
+    </div>
+  );
+}
+
 export function Bubble({
   children,
   mine,
@@ -117,6 +161,7 @@ export function Bubble({
   entrance,
   reply,
   onLongPress,
+  onReactionTap,
 }: {
   children: React.ReactNode;
   mine?: boolean;
@@ -124,10 +169,11 @@ export function Bubble({
   tail?: boolean;
   time?: string;
   state?: MsgState;
-  reactions?: string[];
+  reactions?: ReactionGroup[];
   entrance?: boolean;
   reply?: { author: string; text: string } | null;
   onLongPress?: () => void;
+  onReactionTap?: (emoji: string) => void;
 }) {
   const isMine = !!mine;
   const timer = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -144,7 +190,6 @@ export function Bubble({
       style={{
         alignItems: isMine ? "flex-end" : "flex-start",
         marginTop: groupPos === "first" || groupPos === "single" ? 8 : 2,
-        marginBottom: reactions?.length ? 8 : 0,
       }}
     >
       <div style={{ position: "relative", maxWidth: "80%" }}>
@@ -152,6 +197,12 @@ export function Bubble({
           onPointerDown={startPress}
           onPointerUp={cancelPress}
           onPointerLeave={cancelPress}
+          onContextMenu={(e) => {
+            if (onLongPress) {
+              e.preventDefault();
+              onLongPress();
+            }
+          }}
           style={{
             padding: "9px 14px",
             borderRadius: bubbleRadii(isMine, groupPos),
@@ -170,26 +221,8 @@ export function Bubble({
           {reply ? <ReplyQuote author={reply.author} text={reply.text} mine={isMine} /> : null}
           {children}
         </div>
-        {reactions?.length ? (
-          <div
-            className="ds-react-pop flex items-center gap-0.5 rounded-full"
-            style={{
-              position: "absolute",
-              bottom: -12,
-              [isMine ? "right" : "left"]: 10,
-              padding: "2px 7px",
-              background: surfaces.glassSoft,
-              border: `1px solid ${surfaces.borderSoft}`,
-              boxShadow: shadows.soft,
-              fontSize: 12,
-            }}
-          >
-            {reactions.map((r, i) => (
-              <span key={i}>{r}</span>
-            ))}
-          </div>
-        ) : null}
       </div>
+      <ReactionsRow reactions={reactions} mine={isMine} onTap={onReactionTap} />
       {tail && <MetaRow mine={isMine} time={time} state={state} />}
     </div>
   );
