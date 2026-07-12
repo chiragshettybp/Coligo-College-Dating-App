@@ -144,8 +144,11 @@ function UIShowcase() {
       <div
         className="mx-auto w-full"
         style={{
-          maxWidth: 1120,
-          padding: `${spacing[8]}px ${spacing[3]}px ${spacing[10]}px`,
+          maxWidth: 480,
+          paddingLeft: `max(${spacing[4]}px, env(safe-area-inset-left))`,
+          paddingRight: `max(${spacing[4]}px, env(safe-area-inset-right))`,
+          paddingTop: `calc(${spacing[7]}px + env(safe-area-inset-top))`,
+          paddingBottom: `calc(${spacing[10]}px + env(safe-area-inset-bottom))`,
         }}
       >
         {/* Hero */}
