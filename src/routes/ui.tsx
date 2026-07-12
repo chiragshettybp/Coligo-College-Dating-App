@@ -51,6 +51,7 @@ import {
   prefersReducedMotion,
 } from "@/lib/ds";
 import { haptic, type HapticToken } from "@/lib/haptics";
+import { cn } from "@/lib/utils";
 import {
   Card,
   CardHeader,
