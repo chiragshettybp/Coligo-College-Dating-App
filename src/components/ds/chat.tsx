@@ -516,6 +516,8 @@ export function Composer({
   onAttach,
   onCamera,
   onEmoji,
+  onVoice,
+  emojiActive,
   placeholder = "Message…",
   disabled,
   canSend,
@@ -528,6 +530,8 @@ export function Composer({
   onAttach?: () => void;
   onCamera?: () => void;
   onEmoji?: () => void;
+  onVoice?: () => void;
+  emojiActive?: boolean;
   placeholder?: string;
   disabled?: boolean;
   canSend?: boolean;
