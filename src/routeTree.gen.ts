@@ -48,6 +48,7 @@ import { Route as AuthenticatedDiscoverRouteImport } from './routes/_authenticat
 import { Route as AuthenticatedHomeIndexRouteImport } from './routes/_authenticated/home.index'
 import { Route as AuthenticatedDiscoverIndexRouteImport } from './routes/_authenticated/discover.index'
 import { Route as AuthenticatedHomeCollegeRankingsRouteImport } from './routes/_authenticated/home.college-rankings'
+import { Route as AuthenticatedDiscoverNoMoreProfilesRouteImport } from './routes/_authenticated/discover.no-more-profiles'
 import { Route as AuthenticatedHomeCollegeCollegeIdRouteImport } from './routes/_authenticated/home.college.$collegeId'
 import { Route as AuthenticatedDiscoverProfileUserIdRouteImport } from './routes/_authenticated/discover.profile.$userId'
 import { Route as AuthenticatedDiscoverMatchMatchIdRouteImport } from './routes/_authenticated/discover.match.$matchId'
@@ -249,6 +250,12 @@ const AuthenticatedHomeCollegeRankingsRoute =
     path: '/college-rankings',
     getParentRoute: () => AuthenticatedHomeRoute,
   } as any)
+const AuthenticatedDiscoverNoMoreProfilesRoute =
+  AuthenticatedDiscoverNoMoreProfilesRouteImport.update({
+    id: '/no-more-profiles',
+    path: '/no-more-profiles',
+    getParentRoute: () => AuthenticatedDiscoverRoute,
+  } as any)
 const AuthenticatedHomeCollegeCollegeIdRoute =
   AuthenticatedHomeCollegeCollegeIdRouteImport.update({
     id: '/college/$collegeId',
@@ -303,6 +310,7 @@ export interface FileRoutesByFullPath {
   '/system/splash': typeof SystemSplashRoute
   '/auth/': typeof AuthIndexRoute
   '/onboarding/': typeof OnboardingIndexRoute
+  '/discover/no-more-profiles': typeof AuthenticatedDiscoverNoMoreProfilesRoute
   '/home/college-rankings': typeof AuthenticatedHomeCollegeRankingsRoute
   '/discover/': typeof AuthenticatedDiscoverIndexRoute
   '/home/': typeof AuthenticatedHomeIndexRoute
@@ -341,6 +349,7 @@ export interface FileRoutesByTo {
   '/system/splash': typeof SystemSplashRoute
   '/auth': typeof AuthIndexRoute
   '/onboarding': typeof OnboardingIndexRoute
+  '/discover/no-more-profiles': typeof AuthenticatedDiscoverNoMoreProfilesRoute
   '/home/college-rankings': typeof AuthenticatedHomeCollegeRankingsRoute
   '/discover': typeof AuthenticatedDiscoverIndexRoute
   '/home': typeof AuthenticatedHomeIndexRoute
@@ -386,6 +395,7 @@ export interface FileRoutesById {
   '/_public/': typeof PublicIndexRoute
   '/auth/': typeof AuthIndexRoute
   '/onboarding/': typeof OnboardingIndexRoute
+  '/_authenticated/discover/no-more-profiles': typeof AuthenticatedDiscoverNoMoreProfilesRoute
   '/_authenticated/home/college-rankings': typeof AuthenticatedHomeCollegeRankingsRoute
   '/_authenticated/discover/': typeof AuthenticatedDiscoverIndexRoute
   '/_authenticated/home/': typeof AuthenticatedHomeIndexRoute
@@ -430,6 +440,7 @@ export interface FileRouteTypes {
     | '/system/splash'
     | '/auth/'
     | '/onboarding/'
+    | '/discover/no-more-profiles'
     | '/home/college-rankings'
     | '/discover/'
     | '/home/'
@@ -468,6 +479,7 @@ export interface FileRouteTypes {
     | '/system/splash'
     | '/auth'
     | '/onboarding'
+    | '/discover/no-more-profiles'
     | '/home/college-rankings'
     | '/discover'
     | '/home'
@@ -512,6 +524,7 @@ export interface FileRouteTypes {
     | '/_public/'
     | '/auth/'
     | '/onboarding/'
+    | '/_authenticated/discover/no-more-profiles'
     | '/_authenticated/home/college-rankings'
     | '/_authenticated/discover/'
     | '/_authenticated/home/'
@@ -807,6 +820,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedHomeCollegeRankingsRouteImport
       parentRoute: typeof AuthenticatedHomeRoute
     }
+    '/_authenticated/discover/no-more-profiles': {
+      id: '/_authenticated/discover/no-more-profiles'
+      path: '/no-more-profiles'
+      fullPath: '/discover/no-more-profiles'
+      preLoaderRoute: typeof AuthenticatedDiscoverNoMoreProfilesRouteImport
+      parentRoute: typeof AuthenticatedDiscoverRoute
+    }
     '/_authenticated/home/college/$collegeId': {
       id: '/_authenticated/home/college/$collegeId'
       path: '/college/$collegeId'
@@ -832,12 +852,15 @@ declare module '@tanstack/react-router' {
 }
 
 interface AuthenticatedDiscoverRouteChildren {
+  AuthenticatedDiscoverNoMoreProfilesRoute: typeof AuthenticatedDiscoverNoMoreProfilesRoute
   AuthenticatedDiscoverIndexRoute: typeof AuthenticatedDiscoverIndexRoute
   AuthenticatedDiscoverMatchMatchIdRoute: typeof AuthenticatedDiscoverMatchMatchIdRoute
   AuthenticatedDiscoverProfileUserIdRoute: typeof AuthenticatedDiscoverProfileUserIdRoute
 }
 
 const AuthenticatedDiscoverRouteChildren: AuthenticatedDiscoverRouteChildren = {
+  AuthenticatedDiscoverNoMoreProfilesRoute:
+    AuthenticatedDiscoverNoMoreProfilesRoute,
   AuthenticatedDiscoverIndexRoute: AuthenticatedDiscoverIndexRoute,
   AuthenticatedDiscoverMatchMatchIdRoute:
     AuthenticatedDiscoverMatchMatchIdRoute,
