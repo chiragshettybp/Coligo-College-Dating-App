@@ -395,7 +395,7 @@ export function MatchCelebration({
             {/* Connection indicators — reveal progressively, never all at once. */}
             <div
               className="flex flex-wrap items-center justify-center"
-              style={{ gap: spacing[1], marginTop: spacing[4] }}
+              style={{ gap: spacing[1], marginTop: "clamp(10px, 2vh, 20px)" }}
             >
               {indicators.map((it, i) => (
                 <div key={it.label} style={reveal(3 + i)}>
