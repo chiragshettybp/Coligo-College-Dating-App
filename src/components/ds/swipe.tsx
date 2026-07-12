@@ -412,21 +412,20 @@ function SwipeControl({
 
 /* -------------------------------------------------------------- SwipeDeck -- */
 
-export function SwipeDeck({
-  cards,
-  onDecision,
-  onOpenProfile,
-  onlineIds,
-  busy = false,
-}: {
-  /** Ordered; index 0 is the top card. */
-  cards: DiscoverCard[];
-  /** Fired when the top card leaves the stack. Parent removes it + persists. */
-  onDecision: (card: DiscoverCard, action: SwipeDecision) => void;
-  onOpenProfile?: (card: DiscoverCard) => void;
-  onlineIds?: Set<string>;
-  busy?: boolean;
-}) {
+export type SwipeDeckHandle = { swipe: (action: SwipeDecision) => void };
+
+export const SwipeDeck = forwardRef<
+  SwipeDeckHandle,
+  {
+    /** Ordered; index 0 is the top card. */
+    cards: DiscoverCard[];
+    /** Fired when the top card leaves the stack. Parent removes it + persists. */
+    onDecision: (card: DiscoverCard, action: SwipeDecision) => void;
+    onOpenProfile?: (card: DiscoverCard) => void;
+    onlineIds?: Set<string>;
+    busy?: boolean;
+  }
+>(function SwipeDeck({ cards, onDecision, onOpenProfile, onlineIds, busy = false }, ref) {
   const reduce = prefersReducedMotion();
   const [drag, setDrag] = useState({ x: 0, y: 0 });
   const [dragging, setDragging] = useState(false);
@@ -437,6 +436,7 @@ export function SwipeDeck({
 
   const top = cards[0];
   const topId = top?.id;
+
 
   useEffect(() => {
     // New top card — reset transient motion state.
