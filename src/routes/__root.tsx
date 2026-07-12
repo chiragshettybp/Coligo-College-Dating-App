@@ -77,18 +77,18 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "Campus — Meet people from your college" },
+      { title: "Wallet Balance — Design Showcase" },
       {
         name: "description",
         content:
-          "A calm, people-first dating app for students at the same college. Discover profiles, shared clubs and interests across your campus.",
+          "A glassmorphic wallet balance card UI showcase featuring balance, contacts, transactions and quick actions.",
       },
       { name: "author", content: "memento___studios" },
-      { property: "og:title", content: "Campus — Meet people from your college" },
+      { property: "og:title", content: "Wallet Balance — Design Showcase" },
       {
         property: "og:description",
         content:
-          "A calm, people-first dating app for students at the same college. Discover profiles, shared clubs and interests across your campus.",
+          "A glassmorphic wallet balance card UI showcase featuring balance, contacts, transactions and quick actions.",
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
