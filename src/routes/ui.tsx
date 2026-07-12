@@ -2578,7 +2578,8 @@ function ChatHeader() {
       style={{
         padding: `${spacing[3]}px ${spacing[4]}px`,
         borderBottom: `1px solid ${surfaces.borderSoft}`,
-        background: "rgba(8,12,26,0.5)",
+        background: "rgba(255,255,255,0.82)",
+        backdropFilter: "blur(20px)",
       }}
     >
       <button
@@ -2590,13 +2591,13 @@ function ChatHeader() {
       </button>
       <Avatar src={ana} size="sm" status="online" />
       <div className="min-w-0 flex-1">
-        <div style={{ ...type.titleMd, color: "#fff" }} className="truncate">
+        <div style={{ ...type.titleMd, color: colors.textPrimary }} className="truncate">
           Ana Rivera
         </div>
         <div className="flex items-center gap-1.5">
           <span
             className="rounded-full"
-            style={{ width: 7, height: 7, background: colors.success, boxShadow: shadows.glow }}
+            style={{ width: 7, height: 7, background: colors.success }}
           />
           <span style={{ ...type.caption, color: colors.success }}>Active now</span>
         </div>
@@ -2604,14 +2605,14 @@ function ChatHeader() {
       <button
         aria-label="Voice call"
         className="flex shrink-0 items-center justify-center rounded-full"
-        style={{ width: 40, height: 40, color: "#fff", background: surfaces.glassSoft, border: `1px solid ${surfaces.border}` }}
+        style={{ width: 40, height: 40, color: colors.primary, background: "rgba(120,120,128,0.10)", border: `1px solid ${surfaces.borderSoft}` }}
       >
         <Phone style={{ width: 18, height: 18 }} />
       </button>
       <button
         aria-label="Video call"
         className="flex shrink-0 items-center justify-center rounded-full"
-        style={{ width: 40, height: 40, color: "#fff", background: surfaces.glassSoft, border: `1px solid ${surfaces.border}` }}
+        style={{ width: 40, height: 40, color: colors.primary, background: "rgba(120,120,128,0.10)", border: `1px solid ${surfaces.borderSoft}` }}
       >
         <Video style={{ width: 18, height: 18 }} />
       </button>
