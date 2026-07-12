@@ -6,11 +6,10 @@
 // reuses the exact same visual language. Import from here — never hardcode.
 // ============================================================================
 
-/** App background: deep-blue radial glow + linear gradient (from the poster). */
+/** App background: calm, elegant off-white system (iOS-first). No glow. */
 export const APP_BACKGROUND =
-  "radial-gradient(90% 55% at 50% -12%, rgba(60,120,246,0.10) 0%, rgba(60,120,246,0) 62%)," +
-  "radial-gradient(80% 50% at 50% 112%, rgba(46,70,200,0.08) 0%, rgba(46,70,200,0) 58%)," +
-  "linear-gradient(180deg, #05070f 0%, #070b1a 48%, #05070f 100%)";
+  "radial-gradient(120% 80% at 50% -20%, #ffffff 0%, rgba(255,255,255,0) 60%)," +
+  "linear-gradient(180deg, #f8f8f7 0%, #f6f7f9 52%, #f4f5f7 100%)";
 
 export const FONT_FAMILY =
   '-apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "Inter", ui-sans-serif, system-ui, sans-serif';
