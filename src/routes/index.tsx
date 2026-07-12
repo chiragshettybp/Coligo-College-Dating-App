@@ -174,7 +174,7 @@ function WalletCard() {
       {/* Contacts row (overlaps header bottom) */}
       <div
         className="relative z-10 flex justify-center"
-        style={{ gap: u(24), marginTop: u(-40) }}
+        style={{ gap: u(24), marginTop: u(-32) }}
       >
         {contacts.map((src, i) => (
           <div
