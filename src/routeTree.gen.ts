@@ -24,6 +24,7 @@ import { Route as SystemMaintenanceRouteImport } from './routes/system.maintenan
 import { Route as OnboardingSemesterRouteImport } from './routes/onboarding/semester'
 import { Route as OnboardingNameRouteImport } from './routes/onboarding/name'
 import { Route as OnboardingLookingForRouteImport } from './routes/onboarding/looking-for'
+import { Route as OnboardingInterestsRouteImport } from './routes/onboarding/interests'
 import { Route as OnboardingGraduationYearRouteImport } from './routes/onboarding/graduation-year'
 import { Route as OnboardingGenderRouteImport } from './routes/onboarding/gender'
 import { Route as OnboardingDepartmentRouteImport } from './routes/onboarding/department'
@@ -113,6 +114,11 @@ const OnboardingNameRoute = OnboardingNameRouteImport.update({
 const OnboardingLookingForRoute = OnboardingLookingForRouteImport.update({
   id: '/looking-for',
   path: '/looking-for',
+  getParentRoute: () => OnboardingRouteRoute,
+} as any)
+const OnboardingInterestsRoute = OnboardingInterestsRouteImport.update({
+  id: '/interests',
+  path: '/interests',
   getParentRoute: () => OnboardingRouteRoute,
 } as any)
 const OnboardingGraduationYearRoute =
@@ -227,6 +233,7 @@ export interface FileRoutesByFullPath {
   '/onboarding/department': typeof OnboardingDepartmentRoute
   '/onboarding/gender': typeof OnboardingGenderRoute
   '/onboarding/graduation-year': typeof OnboardingGraduationYearRoute
+  '/onboarding/interests': typeof OnboardingInterestsRoute
   '/onboarding/looking-for': typeof OnboardingLookingForRoute
   '/onboarding/name': typeof OnboardingNameRoute
   '/onboarding/semester': typeof OnboardingSemesterRoute
@@ -257,6 +264,7 @@ export interface FileRoutesByTo {
   '/onboarding/department': typeof OnboardingDepartmentRoute
   '/onboarding/gender': typeof OnboardingGenderRoute
   '/onboarding/graduation-year': typeof OnboardingGraduationYearRoute
+  '/onboarding/interests': typeof OnboardingInterestsRoute
   '/onboarding/looking-for': typeof OnboardingLookingForRoute
   '/onboarding/name': typeof OnboardingNameRoute
   '/onboarding/semester': typeof OnboardingSemesterRoute
@@ -291,6 +299,7 @@ export interface FileRoutesById {
   '/onboarding/department': typeof OnboardingDepartmentRoute
   '/onboarding/gender': typeof OnboardingGenderRoute
   '/onboarding/graduation-year': typeof OnboardingGraduationYearRoute
+  '/onboarding/interests': typeof OnboardingInterestsRoute
   '/onboarding/looking-for': typeof OnboardingLookingForRoute
   '/onboarding/name': typeof OnboardingNameRoute
   '/onboarding/semester': typeof OnboardingSemesterRoute
@@ -326,6 +335,7 @@ export interface FileRouteTypes {
     | '/onboarding/department'
     | '/onboarding/gender'
     | '/onboarding/graduation-year'
+    | '/onboarding/interests'
     | '/onboarding/looking-for'
     | '/onboarding/name'
     | '/onboarding/semester'
@@ -356,6 +366,7 @@ export interface FileRouteTypes {
     | '/onboarding/department'
     | '/onboarding/gender'
     | '/onboarding/graduation-year'
+    | '/onboarding/interests'
     | '/onboarding/looking-for'
     | '/onboarding/name'
     | '/onboarding/semester'
@@ -389,6 +400,7 @@ export interface FileRouteTypes {
     | '/onboarding/department'
     | '/onboarding/gender'
     | '/onboarding/graduation-year'
+    | '/onboarding/interests'
     | '/onboarding/looking-for'
     | '/onboarding/name'
     | '/onboarding/semester'
@@ -516,6 +528,13 @@ declare module '@tanstack/react-router' {
       path: '/looking-for'
       fullPath: '/onboarding/looking-for'
       preLoaderRoute: typeof OnboardingLookingForRouteImport
+      parentRoute: typeof OnboardingRouteRoute
+    }
+    '/onboarding/interests': {
+      id: '/onboarding/interests'
+      path: '/interests'
+      fullPath: '/onboarding/interests'
+      preLoaderRoute: typeof OnboardingInterestsRouteImport
       parentRoute: typeof OnboardingRouteRoute
     }
     '/onboarding/graduation-year': {
@@ -680,6 +699,7 @@ interface OnboardingRouteRouteChildren {
   OnboardingDepartmentRoute: typeof OnboardingDepartmentRoute
   OnboardingGenderRoute: typeof OnboardingGenderRoute
   OnboardingGraduationYearRoute: typeof OnboardingGraduationYearRoute
+  OnboardingInterestsRoute: typeof OnboardingInterestsRoute
   OnboardingLookingForRoute: typeof OnboardingLookingForRoute
   OnboardingNameRoute: typeof OnboardingNameRoute
   OnboardingSemesterRoute: typeof OnboardingSemesterRoute
@@ -693,6 +713,7 @@ const OnboardingRouteRouteChildren: OnboardingRouteRouteChildren = {
   OnboardingDepartmentRoute: OnboardingDepartmentRoute,
   OnboardingGenderRoute: OnboardingGenderRoute,
   OnboardingGraduationYearRoute: OnboardingGraduationYearRoute,
+  OnboardingInterestsRoute: OnboardingInterestsRoute,
   OnboardingLookingForRoute: OnboardingLookingForRoute,
   OnboardingNameRoute: OnboardingNameRoute,
   OnboardingSemesterRoute: OnboardingSemesterRoute,
