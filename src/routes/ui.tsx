@@ -96,6 +96,7 @@ import {
   type BottomNavItem,
 } from "@/components/ds/navigation";
 import { EmptyStateFromPreset } from "@/components/ds/empty-state";
+import { MatchCelebration } from "@/components/ds/match-celebration";
 import {
   Switch,
   SettingsGroup,
@@ -1281,15 +1282,15 @@ function UIShowcase() {
           right={{ src: memoji5, name: "Jordan" }}
           shared={{
             college: "Stanford University",
-            gradYear: "Class of ’26",
+            semester: "Junior · Fall ’25",
             interests: ["Music", "Coffee", "Hiking"],
-            clubs: "Design Collective",
             compatibility: 94,
+            conversationStarter: "Coffee before the design showcase this week?",
           }}
           onClose={() => setMatchOpen(false)}
-          onMessage={() => {
+          onOpenChat={(message) => {
             setMatchOpen(false);
-            pushToast("success", <MessageCircle style={{ width: 16, height: 16 }} />, "Opening chat with Jordan…");
+            pushToast("success", <MessageCircle style={{ width: 16, height: 16 }} />, `Sent to Jordan: “${message}”`);
           }}
         />
 
