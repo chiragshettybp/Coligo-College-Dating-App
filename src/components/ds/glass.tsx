@@ -15,6 +15,7 @@ import {
   surfaces,
 } from "@/lib/ds";
 import { cn } from "@/lib/utils";
+import { haptic, type HapticToken } from "@/lib/haptics";
 
 const transition = `all ${motion.base} ${motion.easing}`;
 
@@ -148,6 +149,13 @@ export function Button({
   rightIcon?: React.ReactNode;
 }) {
   const isDisabled = disabled || loading;
+  // Semantic haptic per intent — never a generic "button was pressed" buzz.
+  const variantHaptic: HapticToken =
+    variant === "success"
+      ? "softSuccess"
+      : variant === "danger"
+        ? "medium"
+        : "selection";
   return (
     <button
       disabled={isDisabled}
@@ -165,8 +173,12 @@ export function Button({
         ...variantStyle(variant),
         ...style,
       }}
+      onPointerDown={() => {
+        if (!isDisabled) haptic(variantHaptic);
+      }}
       {...rest}
     >
+
       {loading ? (
         <Loader2 className="animate-spin" style={{ width: 18, height: 18 }} />
       ) : (
@@ -208,7 +220,9 @@ export function IconButton({
         color: "#e7ecff",
         ...style,
       }}
+      onPointerDown={() => haptic("selection")}
       {...rest}
+
     >
       {children}
     </button>
@@ -230,7 +244,11 @@ export function Chip({
 }) {
   return (
     <button
-      onClick={onClick}
+      onClick={() => {
+        haptic("selection");
+        onClick?.();
+      }}
+
       className={cn(
         "inline-flex items-center gap-1.5 backdrop-blur-md will-change-transform",
         "hover:-translate-y-[1px] active:scale-95",
@@ -482,7 +500,10 @@ export function Toggle({
     <button
       role="switch"
       aria-checked={checked}
-      onClick={() => onChange(!checked)}
+      onClick={() => {
+        haptic("selection");
+        onChange(!checked);
+      }}
       className="relative shrink-0"
       style={{
         width: 52,

@@ -46,6 +46,7 @@ import {
   weights,
   motion,
 } from "@/lib/ds";
+import { haptic, type HapticToken } from "@/lib/haptics";
 import {
   Avatar,
   Badge,
@@ -582,21 +583,22 @@ function UIShowcase() {
               className="flex items-end justify-center"
               style={{ gap: spacing[3], marginTop: spacing[2] }}
             >
-              <SwipeControl label="Undo" size={46} tint={colors.warning}>
+              <SwipeControl label="Undo" size={46} tint={colors.warning} hapticToken="confirm">
                 <RotateCcw style={{ width: 20, height: 20 }} strokeWidth={2.4} />
               </SwipeControl>
-              <SwipeControl label="Nope" size={58} tint={colors.danger}>
+              <SwipeControl label="Nope" size={58} tint={colors.danger} hapticToken="swipeSnap">
                 <X style={{ width: 26, height: 26 }} strokeWidth={2.8} />
               </SwipeControl>
-              <SwipeControl label="Super" size={52} tint={colors.info}>
+              <SwipeControl label="Super" size={52} tint={colors.info} hapticToken="heavy">
                 <Star style={{ width: 22, height: 22 }} fill="currentColor" />
               </SwipeControl>
-              <SwipeControl label="Like" size={68} tint={colors.success} primary>
+              <SwipeControl label="Like" size={68} tint={colors.success} primary hapticToken="softSuccess">
                 <Heart style={{ width: 30, height: 30 }} fill="#fff" />
               </SwipeControl>
-              <SwipeControl label="Boost" size={52} tint={colors.accent}>
+              <SwipeControl label="Boost" size={52} tint={colors.accent} hapticToken="medium">
                 <Zap style={{ width: 22, height: 22 }} fill="currentColor" />
               </SwipeControl>
+
             </div>
           </div>
 
@@ -901,6 +903,7 @@ function SharedGallery({ images }: { images: string[] }) {
   const open = (i: number) => {
     const el = thumbRefs.current[i];
     if (el) originRef.current = el.getBoundingClientRect();
+    haptic("light");
     setActive(i);
   };
 
@@ -930,6 +933,7 @@ function SharedGallery({ images }: { images: string[] }) {
   }, [active]);
 
   const close = useCallback(() => {
+    haptic("light");
     const img = imgRef.current;
     const rect = originRef.current;
     if (!img || !rect) return setActive(null);
@@ -1217,12 +1221,14 @@ function SwipeControl({
   size = 52,
   tint,
   primary = false,
+  hapticToken,
 }: {
   children: React.ReactNode;
   label?: string;
   size?: number;
   tint: string;
   primary?: boolean;
+  hapticToken?: HapticToken;
 }) {
   // Layered depth: ceramic surface, soft inner highlight, hairline border,
   // soft ambient + contact shadow, tiny directional specular highlight.
@@ -1250,6 +1256,7 @@ function SwipeControl({
     <div className="flex flex-col items-center" style={{ gap: spacing[2] }}>
       <button
         aria-label={label}
+        onPointerDown={() => haptic(hapticToken ?? (primary ? "softSuccess" : "selection"))}
         className="ds-swipe-btn relative flex shrink-0 items-center justify-center rounded-full will-change-transform"
         style={{
           width: size,
@@ -1730,6 +1737,7 @@ function Composer() {
       </div>
       <button
         aria-label="Send"
+        onPointerDown={() => haptic("messageSent")}
         className="flex shrink-0 items-center justify-center rounded-full"
         style={{
           width: 42,
