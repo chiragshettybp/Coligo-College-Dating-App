@@ -570,7 +570,7 @@ export function MatchCelebration({
                 style={{
                   ...type.caption,
                   marginTop: spacing[3],
-                  color: "rgba(255,255,255,0.55)",
+                  color: colors.textMuted,
                   background: "transparent",
                 }}
               >
