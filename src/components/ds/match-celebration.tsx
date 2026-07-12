@@ -345,7 +345,24 @@ export function MatchCelebration({
               <Avatar src={right.src} size="xl" ring />
             </div>
           </div>
-        </div>
+          {/* Elegant reflection — a soft mirrored sheen pooled beneath the pair. */}
+          <div
+            aria-hidden
+            className="absolute"
+            style={{
+              left: "50%",
+              bottom: 6,
+              width: 200,
+              height: 46,
+              transform: "translateX(-50%)",
+              background:
+                "radial-gradient(60% 100% at 50% 0%, rgba(180,205,255,0.28) 0%, rgba(180,205,255,0) 70%)",
+              filter: "blur(6px)",
+              opacity: chat ? 0 : 0.9,
+              transition: `opacity 0.5s ${EASE}`,
+              pointerEvents: "none",
+            }}
+          />
 
         {/* ---- Celebration copy (fades out as chat continues) ---- */}
         {!chat && (
