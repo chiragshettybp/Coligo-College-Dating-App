@@ -21,6 +21,13 @@ import { Route as AuthIndexRouteImport } from './routes/auth.index'
 import { Route as PublicIndexRouteImport } from './routes/_public/index'
 import { Route as SystemSplashRouteImport } from './routes/system.splash'
 import { Route as SystemMaintenanceRouteImport } from './routes/system.maintenance'
+import { Route as OnboardingSemesterRouteImport } from './routes/onboarding/semester'
+import { Route as OnboardingNameRouteImport } from './routes/onboarding/name'
+import { Route as OnboardingLookingForRouteImport } from './routes/onboarding/looking-for'
+import { Route as OnboardingGraduationYearRouteImport } from './routes/onboarding/graduation-year'
+import { Route as OnboardingGenderRouteImport } from './routes/onboarding/gender'
+import { Route as OnboardingDateOfBirthRouteImport } from './routes/onboarding/date-of-birth'
+import { Route as OnboardingBioRouteImport } from './routes/onboarding/bio'
 import { Route as AuthVerifyOtpRouteImport } from './routes/auth.verify-otp'
 import { Route as AuthSignupRouteImport } from './routes/auth.signup'
 import { Route as AuthResetPasswordRouteImport } from './routes/auth.reset-password'
@@ -90,6 +97,42 @@ const SystemMaintenanceRoute = SystemMaintenanceRouteImport.update({
   id: '/system/maintenance',
   path: '/system/maintenance',
   getParentRoute: () => rootRouteImport,
+} as any)
+const OnboardingSemesterRoute = OnboardingSemesterRouteImport.update({
+  id: '/semester',
+  path: '/semester',
+  getParentRoute: () => OnboardingRouteRoute,
+} as any)
+const OnboardingNameRoute = OnboardingNameRouteImport.update({
+  id: '/name',
+  path: '/name',
+  getParentRoute: () => OnboardingRouteRoute,
+} as any)
+const OnboardingLookingForRoute = OnboardingLookingForRouteImport.update({
+  id: '/looking-for',
+  path: '/looking-for',
+  getParentRoute: () => OnboardingRouteRoute,
+} as any)
+const OnboardingGraduationYearRoute =
+  OnboardingGraduationYearRouteImport.update({
+    id: '/graduation-year',
+    path: '/graduation-year',
+    getParentRoute: () => OnboardingRouteRoute,
+  } as any)
+const OnboardingGenderRoute = OnboardingGenderRouteImport.update({
+  id: '/gender',
+  path: '/gender',
+  getParentRoute: () => OnboardingRouteRoute,
+} as any)
+const OnboardingDateOfBirthRoute = OnboardingDateOfBirthRouteImport.update({
+  id: '/date-of-birth',
+  path: '/date-of-birth',
+  getParentRoute: () => OnboardingRouteRoute,
+} as any)
+const OnboardingBioRoute = OnboardingBioRouteImport.update({
+  id: '/bio',
+  path: '/bio',
+  getParentRoute: () => OnboardingRouteRoute,
 } as any)
 const AuthVerifyOtpRoute = AuthVerifyOtpRouteImport.update({
   id: '/verify-otp',
@@ -166,6 +209,13 @@ export interface FileRoutesByFullPath {
   '/auth/reset-password': typeof AuthResetPasswordRoute
   '/auth/signup': typeof AuthSignupRoute
   '/auth/verify-otp': typeof AuthVerifyOtpRoute
+  '/onboarding/bio': typeof OnboardingBioRoute
+  '/onboarding/date-of-birth': typeof OnboardingDateOfBirthRoute
+  '/onboarding/gender': typeof OnboardingGenderRoute
+  '/onboarding/graduation-year': typeof OnboardingGraduationYearRoute
+  '/onboarding/looking-for': typeof OnboardingLookingForRoute
+  '/onboarding/name': typeof OnboardingNameRoute
+  '/onboarding/semester': typeof OnboardingSemesterRoute
   '/system/maintenance': typeof SystemMaintenanceRoute
   '/system/splash': typeof SystemSplashRoute
   '/auth/': typeof AuthIndexRoute
@@ -187,6 +237,13 @@ export interface FileRoutesByTo {
   '/auth/reset-password': typeof AuthResetPasswordRoute
   '/auth/signup': typeof AuthSignupRoute
   '/auth/verify-otp': typeof AuthVerifyOtpRoute
+  '/onboarding/bio': typeof OnboardingBioRoute
+  '/onboarding/date-of-birth': typeof OnboardingDateOfBirthRoute
+  '/onboarding/gender': typeof OnboardingGenderRoute
+  '/onboarding/graduation-year': typeof OnboardingGraduationYearRoute
+  '/onboarding/looking-for': typeof OnboardingLookingForRoute
+  '/onboarding/name': typeof OnboardingNameRoute
+  '/onboarding/semester': typeof OnboardingSemesterRoute
   '/system/maintenance': typeof SystemMaintenanceRoute
   '/system/splash': typeof SystemSplashRoute
   '/auth': typeof AuthIndexRoute
@@ -212,6 +269,13 @@ export interface FileRoutesById {
   '/auth/reset-password': typeof AuthResetPasswordRoute
   '/auth/signup': typeof AuthSignupRoute
   '/auth/verify-otp': typeof AuthVerifyOtpRoute
+  '/onboarding/bio': typeof OnboardingBioRoute
+  '/onboarding/date-of-birth': typeof OnboardingDateOfBirthRoute
+  '/onboarding/gender': typeof OnboardingGenderRoute
+  '/onboarding/graduation-year': typeof OnboardingGraduationYearRoute
+  '/onboarding/looking-for': typeof OnboardingLookingForRoute
+  '/onboarding/name': typeof OnboardingNameRoute
+  '/onboarding/semester': typeof OnboardingSemesterRoute
   '/system/maintenance': typeof SystemMaintenanceRoute
   '/system/splash': typeof SystemSplashRoute
   '/_public/': typeof PublicIndexRoute
@@ -238,6 +302,13 @@ export interface FileRouteTypes {
     | '/auth/reset-password'
     | '/auth/signup'
     | '/auth/verify-otp'
+    | '/onboarding/bio'
+    | '/onboarding/date-of-birth'
+    | '/onboarding/gender'
+    | '/onboarding/graduation-year'
+    | '/onboarding/looking-for'
+    | '/onboarding/name'
+    | '/onboarding/semester'
     | '/system/maintenance'
     | '/system/splash'
     | '/auth/'
@@ -259,6 +330,13 @@ export interface FileRouteTypes {
     | '/auth/reset-password'
     | '/auth/signup'
     | '/auth/verify-otp'
+    | '/onboarding/bio'
+    | '/onboarding/date-of-birth'
+    | '/onboarding/gender'
+    | '/onboarding/graduation-year'
+    | '/onboarding/looking-for'
+    | '/onboarding/name'
+    | '/onboarding/semester'
     | '/system/maintenance'
     | '/system/splash'
     | '/auth'
@@ -283,6 +361,13 @@ export interface FileRouteTypes {
     | '/auth/reset-password'
     | '/auth/signup'
     | '/auth/verify-otp'
+    | '/onboarding/bio'
+    | '/onboarding/date-of-birth'
+    | '/onboarding/gender'
+    | '/onboarding/graduation-year'
+    | '/onboarding/looking-for'
+    | '/onboarding/name'
+    | '/onboarding/semester'
     | '/system/maintenance'
     | '/system/splash'
     | '/_public/'
@@ -387,6 +472,55 @@ declare module '@tanstack/react-router' {
       fullPath: '/system/maintenance'
       preLoaderRoute: typeof SystemMaintenanceRouteImport
       parentRoute: typeof rootRouteImport
+    }
+    '/onboarding/semester': {
+      id: '/onboarding/semester'
+      path: '/semester'
+      fullPath: '/onboarding/semester'
+      preLoaderRoute: typeof OnboardingSemesterRouteImport
+      parentRoute: typeof OnboardingRouteRoute
+    }
+    '/onboarding/name': {
+      id: '/onboarding/name'
+      path: '/name'
+      fullPath: '/onboarding/name'
+      preLoaderRoute: typeof OnboardingNameRouteImport
+      parentRoute: typeof OnboardingRouteRoute
+    }
+    '/onboarding/looking-for': {
+      id: '/onboarding/looking-for'
+      path: '/looking-for'
+      fullPath: '/onboarding/looking-for'
+      preLoaderRoute: typeof OnboardingLookingForRouteImport
+      parentRoute: typeof OnboardingRouteRoute
+    }
+    '/onboarding/graduation-year': {
+      id: '/onboarding/graduation-year'
+      path: '/graduation-year'
+      fullPath: '/onboarding/graduation-year'
+      preLoaderRoute: typeof OnboardingGraduationYearRouteImport
+      parentRoute: typeof OnboardingRouteRoute
+    }
+    '/onboarding/gender': {
+      id: '/onboarding/gender'
+      path: '/gender'
+      fullPath: '/onboarding/gender'
+      preLoaderRoute: typeof OnboardingGenderRouteImport
+      parentRoute: typeof OnboardingRouteRoute
+    }
+    '/onboarding/date-of-birth': {
+      id: '/onboarding/date-of-birth'
+      path: '/date-of-birth'
+      fullPath: '/onboarding/date-of-birth'
+      preLoaderRoute: typeof OnboardingDateOfBirthRouteImport
+      parentRoute: typeof OnboardingRouteRoute
+    }
+    '/onboarding/bio': {
+      id: '/onboarding/bio'
+      path: '/bio'
+      fullPath: '/onboarding/bio'
+      preLoaderRoute: typeof OnboardingBioRouteImport
+      parentRoute: typeof OnboardingRouteRoute
     }
     '/auth/verify-otp': {
       id: '/auth/verify-otp'
@@ -502,10 +636,24 @@ const PublicRouteRouteWithChildren = PublicRouteRoute._addFileChildren(
 )
 
 interface OnboardingRouteRouteChildren {
+  OnboardingBioRoute: typeof OnboardingBioRoute
+  OnboardingDateOfBirthRoute: typeof OnboardingDateOfBirthRoute
+  OnboardingGenderRoute: typeof OnboardingGenderRoute
+  OnboardingGraduationYearRoute: typeof OnboardingGraduationYearRoute
+  OnboardingLookingForRoute: typeof OnboardingLookingForRoute
+  OnboardingNameRoute: typeof OnboardingNameRoute
+  OnboardingSemesterRoute: typeof OnboardingSemesterRoute
   OnboardingIndexRoute: typeof OnboardingIndexRoute
 }
 
 const OnboardingRouteRouteChildren: OnboardingRouteRouteChildren = {
+  OnboardingBioRoute: OnboardingBioRoute,
+  OnboardingDateOfBirthRoute: OnboardingDateOfBirthRoute,
+  OnboardingGenderRoute: OnboardingGenderRoute,
+  OnboardingGraduationYearRoute: OnboardingGraduationYearRoute,
+  OnboardingLookingForRoute: OnboardingLookingForRoute,
+  OnboardingNameRoute: OnboardingNameRoute,
+  OnboardingSemesterRoute: OnboardingSemesterRoute,
   OnboardingIndexRoute: OnboardingIndexRoute,
 }
 
