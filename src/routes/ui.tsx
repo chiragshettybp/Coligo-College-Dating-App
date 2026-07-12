@@ -96,6 +96,17 @@ import {
   type BottomNavItem,
 } from "@/components/ds/navigation";
 import { EmptyStateFromPreset } from "@/components/ds/empty-state";
+import {
+  Switch,
+  SettingsGroup,
+  SettingsItem,
+  RadioGroup,
+  Checkbox,
+  Dropdown,
+  Slider,
+  CollapsibleGroup,
+  DangerZone,
+} from "@/components/ds/settings";
 
 
 
