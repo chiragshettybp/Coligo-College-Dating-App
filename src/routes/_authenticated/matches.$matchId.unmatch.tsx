@@ -199,7 +199,3 @@ export function ConfirmUnavailable({ title }: { title: string }) {
     </DiscoverShell>
   );
 }
-
-// re-export to satisfy lint of unused imports when consumed elsewhere
-export const _unmatchRadii = radii;
-export const _unmatchSurfaces = surfaces;
