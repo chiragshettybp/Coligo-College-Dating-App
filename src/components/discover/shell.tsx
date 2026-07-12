@@ -4,15 +4,12 @@
 // real routes. Tabs whose modules aren't built yet open a lightweight sheet
 // instead of navigating nowhere.
 // ============================================================================
-import { useState } from "react";
 import { useNavigate } from "@tanstack/react-router";
 import { Heart, Flame, Sparkles, MessageCircle, UserRound } from "lucide-react";
 
 import { APP_BACKGROUND, FONT_FAMILY, spacing } from "@/lib/ds";
-import { Text } from "@/components/ds/glass";
 import {
   BottomNav,
-  BottomSheet,
   type BottomNavItem,
 } from "@/components/ds/navigation";
 
