@@ -11,6 +11,7 @@ import { useEffect, type ReactNode } from "react";
 
 import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
+import { supabase } from "@/integrations/supabase/client";
 
 function NotFoundComponent() {
   return (
@@ -134,6 +135,27 @@ function RootShell({ children }: { children: ReactNode }) {
 
 function RootComponent() {
   const { queryClient } = Route.useRouteContext();
+  const router = useRouter();
+
+  useEffect(() => {
+    // Enforce "Remember me": if the last sign-in was marked ephemeral and this
+    // is a fresh browser launch (no sessionStorage marker), end the session.
+    if (typeof window !== "undefined") {
+      if (localStorage.getItem("cm:ephemeral") === "1" && !sessionStorage.getItem("cm:session")) {
+        supabase.auth.signOut();
+      } else if (localStorage.getItem("cm:ephemeral") === "1") {
+        sessionStorage.setItem("cm:session", "1");
+      }
+    }
+
+    // Single source of truth for auth transitions across tabs.
+    const { data } = supabase.auth.onAuthStateChange((event) => {
+      if (event !== "SIGNED_IN" && event !== "SIGNED_OUT" && event !== "USER_UPDATED") return;
+      router.invalidate();
+      if (event !== "SIGNED_OUT") queryClient.invalidateQueries();
+    });
+    return () => data.subscription.unsubscribe();
+  }, [queryClient, router]);
 
   return (
     <QueryClientProvider client={queryClient}>

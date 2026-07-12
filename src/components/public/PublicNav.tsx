@@ -132,12 +132,12 @@ export function PublicNav() {
 
         {/* Desktop CTAs */}
         <div className="hidden items-center md:flex" style={{ gap: spacing[1] }}>
-          <Link to="/auth" style={{ textDecoration: "none" }}>
+          <Link to="/auth/login" style={{ textDecoration: "none" }}>
             <Button variant="ghost" size="sm">
               Log in
             </Button>
           </Link>
-          <Link to="/auth" style={{ textDecoration: "none" }}>
+          <Link to="/auth/signup" style={{ textDecoration: "none" }}>
             <Button variant="primary" size="sm" pill>
               Get Started
             </Button>
@@ -259,12 +259,12 @@ export function PublicNav() {
           </ul>
 
           <div style={{ marginTop: "auto", display: "grid", gap: spacing[1] }}>
-            <Link to="/auth" style={{ textDecoration: "none" }}>
+            <Link to="/auth/login" style={{ textDecoration: "none" }}>
               <Button variant="secondary" fullWidth>
                 Log in
               </Button>
             </Link>
-            <Link to="/auth" style={{ textDecoration: "none" }}>
+            <Link to="/auth/signup" style={{ textDecoration: "none" }}>
               <Button variant="primary" fullWidth>
                 Get Started
               </Button>
