@@ -117,7 +117,7 @@ export function Text({
       }
     : {};
   const truncateStyle: React.CSSProperties = truncate
-    ? { overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }
+    ? { display: "block", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }
     : {};
   return (
     <Tag
