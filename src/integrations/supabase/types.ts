@@ -14,6 +14,45 @@ export type Database = {
   }
   public: {
     Tables: {
+      announcements: {
+        Row: {
+          body: string
+          created_at: string
+          expires_at: string | null
+          id: string
+          is_active: boolean
+          is_pinned: boolean
+          priority: number
+          published_at: string
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          body?: string
+          created_at?: string
+          expires_at?: string | null
+          id?: string
+          is_active?: boolean
+          is_pinned?: boolean
+          priority?: number
+          published_at?: string
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          body?: string
+          created_at?: string
+          expires_at?: string | null
+          id?: string
+          is_active?: boolean
+          is_pinned?: boolean
+          priority?: number
+          published_at?: string
+          title?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       app_versions: {
         Row: {
           created_at: string
@@ -82,26 +121,35 @@ export type Database = {
       }
       colleges: {
         Row: {
+          banner_url: string | null
           city: string | null
           created_at: string
+          description: string | null
           id: string
           is_active: boolean
+          logo_url: string | null
           name: string
           updated_at: string
         }
         Insert: {
+          banner_url?: string | null
           city?: string | null
           created_at?: string
+          description?: string | null
           id?: string
           is_active?: boolean
+          logo_url?: string | null
           name: string
           updated_at?: string
         }
         Update: {
+          banner_url?: string | null
           city?: string | null
           created_at?: string
+          description?: string | null
           id?: string
           is_active?: boolean
+          logo_url?: string | null
           name?: string
           updated_at?: string
         }
@@ -533,6 +581,27 @@ export type Database = {
         }
         Relationships: []
       }
+      matches: {
+        Row: {
+          created_at: string
+          id: string
+          user_a: string
+          user_b: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          user_a: string
+          user_b: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          user_a?: string
+          user_b?: string
+        }
+        Relationships: []
+      }
       photos: {
         Row: {
           created_at: string
@@ -759,6 +828,20 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      college_rank: { Args: { _college_id: string }; Returns: number }
+      college_rankings: {
+        Args: { _limit?: number; _offset?: number; _search?: string }
+        Returns: {
+          city: string
+          growth_30d: number
+          id: string
+          logo_url: string
+          member_count: number
+          name: string
+          rank: number
+        }[]
+      }
+      college_stats: { Args: { _college_id: string }; Returns: Json }
       dev_reset_password: {
         Args: { _e164: string; _password: string }
         Returns: boolean
@@ -770,7 +853,19 @@ export type Database = {
         }
         Returns: boolean
       }
+      my_matches_today: { Args: { _user_id: string }; Returns: Json }
+      new_members: {
+        Args: { _limit?: number }
+        Returns: {
+          avatar_url: string
+          college_name: string
+          created_at: string
+          full_name: string
+          id: string
+        }[]
+      }
       phone_available: { Args: { _e164: string }; Returns: boolean }
+      platform_stats: { Args: never; Returns: Json }
     }
     Enums: {
       account_status: "active" | "suspended" | "deleted"
