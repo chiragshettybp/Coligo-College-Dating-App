@@ -17,7 +17,7 @@ import {
 import { cn } from "@/lib/utils";
 import { haptic, type HapticToken } from "@/lib/haptics";
 
-const transition = `all ${motion.base} ${motion.easing}`;
+const transition = `all ${motion.base} ${motion.snappy}`;
 
 /* ---------------------------------------------------------------- GlassPanel */
 
@@ -650,7 +650,7 @@ export function ProgressBar({ value }: { value: number }) {
           borderRadius: radii.pill,
           background: gradients.primaryButton,
           boxShadow: shadows.glow,
-          transition: `width ${motion.slow} ${motion.easing}`,
+          transition: `width ${motion.slow} ${motion.snappy}`,
         }}
       />
     </div>

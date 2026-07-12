@@ -2129,7 +2129,7 @@ function Segmented({
           borderRadius: radii.sm,
           background: gradients.primaryButton,
           boxShadow: shadows.primaryGlow,
-          transition: `left ${motion.base} ${motion.easing}`,
+          transition: `left ${motion.base} ${motion.snappy}`,
         }}
       />
       {options.map((opt, i) => (
@@ -2145,7 +2145,7 @@ function Segmented({
             ...type.label,
             fontSize: 13,
             color: value === i ? "#fff" : colors.textSecondary,
-            transition: `color ${motion.fast} ${motion.easing}`,
+            transition: `color ${motion.fast} ${motion.snappy}`,
           }}
         >
           {opt}
@@ -2186,7 +2186,7 @@ function ScrollTabs({
               ...type.label,
               fontSize: 15,
               color: active ? "#fff" : colors.textMuted,
-              transition: `color ${motion.fast} ${motion.easing}`,
+              transition: `color ${motion.fast} ${motion.snappy}`,
             }}
           >
             {opt}
@@ -2201,7 +2201,7 @@ function ScrollTabs({
                 borderRadius: 3,
                 background: active ? gradients.primaryButton : "transparent",
                 boxShadow: active ? shadows.primaryGlow : "none",
-                transition: `background ${motion.fast} ${motion.easing}`,
+                transition: `background ${motion.fast} ${motion.snappy}`,
               }}
             />
           </button>
@@ -2261,7 +2261,7 @@ function FloatingTabBar({
               color: isActive ? "#fff" : colors.textMuted,
               background: isActive ? gradients.primaryButton : "transparent",
               boxShadow: isActive ? shadows.primaryGlow : "none",
-              transition: `flex ${motion.base} ${motion.easing}, background ${motion.base} ${motion.easing}, color ${motion.fast} ${motion.easing}, padding ${motion.base} ${motion.easing}`,
+              transition: `flex ${motion.base} ${motion.snappy}, background ${motion.base} ${motion.snappy}, color ${motion.fast} ${motion.snappy}, padding ${motion.base} ${motion.snappy}`,
             }}
           >
             <span style={{ position: "relative", display: "flex" }}>
