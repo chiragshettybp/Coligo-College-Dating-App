@@ -990,6 +990,7 @@ export type Database = {
         }
         Returns: boolean
       }
+      is_active_member: { Args: { _folder: string }; Returns: boolean }
       match_participants: {
         Args: { _match_id: string }
         Returns: {
