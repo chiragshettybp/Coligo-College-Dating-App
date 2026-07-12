@@ -211,4 +211,5 @@ export const adminActivityQuery = (limit = 25) =>
   queryOptions({ queryKey: ["admin", "activity", limit], queryFn: () => getAdminActivity({ data: { limit } }) });
 export const systemHealthQuery = () =>
   queryOptions({ queryKey: ["admin", "health"], queryFn: () => getSystemHealth(), refetchInterval: 30_000 });
-export const adminGuardQuery = () => queryOptions({ queryKey: ["admin", "guard"], queryFn: () => isAdmin() });
+export const adminGuardQuery = () =>
+  queryOptions({ queryKey: ["admin", "guard"], queryFn: () => isAdmin(), retry: 2, staleTime: 60_000 });

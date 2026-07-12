@@ -68,14 +68,40 @@ export const Route = createFileRoute("/admin/dashboard")({
 // -------------------------------------------------------------------- guard
 function AdminDashboardGuard() {
   const navigate = useNavigate();
-  const { data: allowed, isLoading, isError } = useQuery(adminGuardQuery());
+  const { data: allowed, isLoading, isError, refetch } = useQuery(adminGuardQuery());
 
   useEffect(() => {
-    if (isLoading) return;
-    if (isError || allowed === false) navigate({ to: "/admin/login", replace: true });
-  }, [isLoading, isError, allowed, navigate]);
+    // Only bounce to login on an explicit "not an admin" result. Transient
+    // network errors are handled with a retry card so a blip never logs out
+    // a legitimate admin.
+    if (!isLoading && allowed === false) navigate({ to: "/admin/login", replace: true });
+  }, [isLoading, allowed, navigate]);
 
   if (isLoading) return <DashboardSkeleton />;
+  if (isError) {
+    return (
+      <div className="mx-auto text-center" style={{ maxWidth: 420, padding: spacing[6] }}>
+        <Text variant="headingSm" color={colors.textPrimary}>Couldn't reach the server</Text>
+        <Text variant="body" tone="secondary" style={{ marginTop: spacing[2] }}>
+          Check your connection and try again.
+        </Text>
+        <div className="flex items-center justify-center" style={{ gap: spacing[2], marginTop: spacing[4] }}>
+          <button
+            onClick={() => refetch()}
+            style={{ padding: "10px 18px", borderRadius: radii.pill, background: colors.primary, color: "#fff", border: "none", fontWeight: 600, cursor: "pointer" }}
+          >
+            Retry
+          </button>
+          <button
+            onClick={() => navigate({ to: "/admin/login", replace: true })}
+            style={{ padding: "10px 18px", borderRadius: radii.pill, background: "transparent", color: colors.textSecondary, border: `1px solid ${surfaces.border}`, fontWeight: 600, cursor: "pointer" }}
+          >
+            Back to login
+          </button>
+        </div>
+      </div>
+    );
+  }
   if (!allowed) return null;
   return <AdminDashboard />;
 }
