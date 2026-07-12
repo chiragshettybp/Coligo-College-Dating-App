@@ -342,8 +342,38 @@
   100% { background-position: 240% 0; }
 }
 
+/* Empty States — illustrations breathe gently, elements reveal progressively. */
+@keyframes ds-es-breathe {
+  0%, 100% { transform: translateY(0) scale(1); }
+  50% { transform: translateY(-4px) scale(1.015); }
+}
+.ds-es-breathe { animation: ds-es-breathe 5.2s ease-in-out infinite; }
+
+@keyframes ds-es-drift {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-5px); }
+}
+.ds-es-drift { animation: ds-es-drift 4.4s ease-in-out infinite; }
+
+@keyframes ds-es-ring {
+  0%, 100% { opacity: 0.5; transform: scale(1); }
+  50% { opacity: 0.85; transform: scale(1.05); }
+}
+.ds-es-ring { animation: ds-es-ring 4.8s ease-in-out infinite; }
+
+@keyframes ds-es-reveal {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.ds-es-reveal { animation: ds-es-reveal 0.5s cubic-bezier(0.22, 1, 0.36, 1) both; }
+
 @media (prefers-reduced-motion: reduce) {
   .ds-match-breathe,
   .ds-match-halo,
   .ds-match-particle { animation: none; }
+  .ds-es-breathe,
+  .ds-es-drift,
+  .ds-es-ring,
+  .ds-es-reveal { animation: none; }
 }
+
