@@ -427,13 +427,8 @@ function QuickActions({ pending }: { pending: number }) {
           key={a.label}
           leading={<span style={{ color: colors.primary, display: "flex" }}>{a.icon}</span>}
           title={a.label}
-          trailing={
-            a.badge && pending > 0 ? (
-              <Badge tone="danger">{pending}</Badge>
-            ) : (
-              <ChevronRight style={{ width: 16, height: 16, color: colors.textMuted }} />
-            )
-          }
+          chevron={!(a.badge && pending > 0)}
+          trailing={a.badge && pending > 0 ? <Badge tone="danger">{pending}</Badge> : undefined}
           onClick={() => {
             /* future module — dashboard entry point */
           }}
