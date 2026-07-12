@@ -299,3 +299,35 @@
   .ds-feedback:hover { transform: none; filter: none; }
 }
 
+
+/* Match Celebration — the emotional climax. Calm, luxurious, never arcade. */
+@keyframes ds-match-breathe {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.035); }
+}
+.ds-match-breathe { animation: ds-match-breathe 3.6s ease-in-out infinite; }
+
+@keyframes ds-match-halo {
+  0%, 100% { opacity: 0.55; transform: scale(1); }
+  50% { opacity: 0.9; transform: scale(1.08); }
+}
+.ds-match-halo { animation: ds-match-halo 4.2s ease-in-out infinite; }
+
+@keyframes ds-match-particle {
+  0% { opacity: 0; transform: translateY(8px) scale(0.6); }
+  25% { opacity: var(--p-opacity, 0.5); }
+  75% { opacity: var(--p-opacity, 0.5); }
+  100% { opacity: 0; transform: translateY(-26px) scale(1); }
+}
+.ds-match-particle { animation: ds-match-particle var(--p-dur, 6s) ease-in-out var(--p-delay, 0s) infinite; }
+
+@keyframes ds-match-shimmer {
+  0% { background-position: -140% 0; }
+  100% { background-position: 240% 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ds-match-breathe,
+  .ds-match-halo,
+  .ds-match-particle { animation: none; }
+}
