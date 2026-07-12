@@ -26,13 +26,13 @@ import { colors, spacing, radii, surfaces, gradients, shadows } from "@/lib/ds";
 export const Route = createFileRoute("/_public/")({
   head: () => ({
     meta: [
-      { title: "CampusMatch — Dating for Verified College Students in India" },
+      { title: "Coligo — Dating for Verified College Students in India" },
       {
         name: "description",
         content:
-          "CampusMatch is the exclusive dating app for verified college students in India. Discover students, match, and chat securely in a privacy-first community.",
+          "Coligo is the exclusive dating app for verified college students in India. Discover students, match, and chat securely in a privacy-first community.",
       },
-      { property: "og:title", content: "CampusMatch — Dating for Verified College Students" },
+      { property: "og:title", content: "Coligo — Dating for Verified College Students" },
       {
         property: "og:description",
         content:
@@ -127,7 +127,7 @@ function Hero() {
           tone="secondary"
           style={{ marginTop: spacing[3], maxWidth: 560, marginInline: "auto" }}
         >
-          CampusMatch is the privacy-first dating community made just for verified college students in
+          Coligo is the privacy-first dating community made just for verified college students in
           India. Swipe, match, and message — safely.
         </Text>
       </SectionReveal>
@@ -176,7 +176,7 @@ function FeaturesSection() {
     <section className="mx-auto" style={{ maxWidth: 1120, padding: `${spacing[6]}px ${spacing[4]}px` }}>
       <SectionReveal>
         <Text variant="overline" tone="muted" align="center" as="p">
-          Why CampusMatch
+          Why Coligo
         </Text>
         <Text variant="displaySm" color={colors.textPrimary} align="center" style={{ marginTop: spacing[1] }}>
           Everything you need to connect
@@ -398,7 +398,7 @@ function CtaSection() {
             Ready to meet your match?
           </Text>
           <Text variant="bodyLg" color="rgba(255,255,255,0.9)" style={{ marginTop: spacing[2] }}>
-            Join thousands of verified students already connecting on CampusMatch.
+            Join thousands of verified students already connecting on Coligo.
           </Text>
           <div style={{ marginTop: spacing[5], display: "inline-flex" }}>
             <Link to="/auth/signup" style={{ textDecoration: "none" }}>
@@ -416,7 +416,7 @@ function CtaSection() {
 function LandingPage() {
   return (
     <>
-      <h1 className="sr-only">CampusMatch — Dating for verified college students in India</h1>
+      <h1 className="sr-only">Coligo — Dating for verified college students in India</h1>
       <Hero />
       <StatsSection />
       <FeaturesSection />

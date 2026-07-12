@@ -26,7 +26,7 @@ export const Route = createFileRoute("/system/splash")({
   ssr: false,
   head: () => ({
     meta: [
-      { title: "Starting CampusMatch" },
+      { title: "Starting Coligo" },
       { name: "robots", content: "noindex" },
     ],
   }),
@@ -149,7 +149,7 @@ function SplashPage() {
         </span>
 
         <Text variant="displaySm" color={colors.textPrimary} style={{ marginTop: spacing[4] }}>
-          CampusMatch
+          Coligo
         </Text>
 
         {offline ? (

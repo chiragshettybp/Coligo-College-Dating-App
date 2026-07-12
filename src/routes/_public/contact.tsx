@@ -19,16 +19,16 @@ import { haptic } from "@/lib/haptics";
 export const Route = createFileRoute("/_public/contact")({
   head: () => ({
     meta: [
-      { title: "Contact CampusMatch — Get in Touch" },
+      { title: "Contact Coligo — Get in Touch" },
       {
         name: "description",
         content:
-          "Reach the CampusMatch team for support, safety concerns, verification help, or partnerships. We're here to help verified students.",
+          "Reach the Coligo team for support, safety concerns, verification help, or partnerships. We're here to help verified students.",
       },
-      { property: "og:title", content: "Contact CampusMatch" },
+      { property: "og:title", content: "Contact Coligo" },
       {
         property: "og:description",
-        content: "Get in touch with the CampusMatch support team.",
+        content: "Get in touch with the Coligo support team.",
       },
       { property: "og:type", content: "website" },
     ],

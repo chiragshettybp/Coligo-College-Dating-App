@@ -8,7 +8,7 @@ import { graduationYearOptions } from "@/lib/onboarding";
 import { spacing } from "@/lib/ds";
 
 export const Route = createFileRoute("/onboarding/graduation-year")({
-  head: () => ({ meta: [{ title: "Graduation year — CampusMatch" }, { name: "robots", content: "noindex" }] }),
+  head: () => ({ meta: [{ title: "Graduation year — Coligo" }, { name: "robots", content: "noindex" }] }),
   component: GraduationYearStep,
 });
 

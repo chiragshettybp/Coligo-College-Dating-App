@@ -18,7 +18,7 @@ function BrandLogo() {
   return (
     <Link
       to="/"
-      aria-label="CampusMatch home"
+      aria-label="Coligo home"
       className="inline-flex items-center"
       style={{ gap: spacing[1], textDecoration: "none" }}
     >
@@ -37,7 +37,7 @@ function BrandLogo() {
         <Heart style={{ width: 18, height: 18, fill: "currentColor" }} />
       </span>
       <Text variant="headingSm" color={colors.textPrimary}>
-        CampusMatch
+        Coligo
       </Text>
     </Link>
   );

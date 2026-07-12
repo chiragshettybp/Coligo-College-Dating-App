@@ -29,8 +29,8 @@ import { haptic } from "@/lib/haptics";
 export const Route = createFileRoute("/auth/signup")({
   head: () => ({
     meta: [
-      { title: "Create account — CampusMatch" },
-      { name: "description", content: "Join CampusMatch — dating for verified college students in India." },
+      { title: "Create account — Coligo" },
+      { name: "description", content: "Join Coligo — dating for verified college students in India." },
     ],
   }),
   component: SignupPage,

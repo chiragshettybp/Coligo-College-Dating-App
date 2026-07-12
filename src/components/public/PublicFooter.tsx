@@ -76,7 +76,7 @@ export function PublicFooter() {
                 <Heart style={{ width: 16, height: 16, fill: "currentColor" }} />
               </span>
               <Text variant="title" color={colors.textPrimary}>
-                CampusMatch
+                Coligo
               </Text>
             </div>
             <Text variant="bodySm" tone="secondary" style={{ marginTop: spacing[2], maxWidth: 260 }}>
@@ -176,7 +176,7 @@ export function PublicFooter() {
           }}
         >
           <Text variant="caption" tone="muted">
-            © {year} CampusMatch. All rights reserved. Made for verified college students in India.
+            © {year} Coligo. All rights reserved. Made for verified college students in India.
           </Text>
         </div>
       </div>

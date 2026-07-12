@@ -22,7 +22,7 @@ export const Route = createFileRoute("/auth/reset-password")({
   validateSearch: (search: Record<string, unknown>) => ({
     phone: typeof search.phone === "string" ? search.phone : "",
   }),
-  head: () => ({ meta: [{ title: "Set new password — CampusMatch" }] }),
+  head: () => ({ meta: [{ title: "Set new password — Coligo" }] }),
   component: ResetPasswordPage,
 });
 

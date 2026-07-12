@@ -13,16 +13,16 @@ import { spacing } from "@/lib/ds";
 export const Route = createFileRoute("/_public/terms")({
   head: () => ({
     meta: [
-      { title: "Terms & Conditions — CampusMatch" },
+      { title: "Terms & Conditions — Coligo" },
       {
         name: "description",
         content:
-          "The terms of service for using CampusMatch, the verified dating app for college students in India.",
+          "The terms of service for using Coligo, the verified dating app for college students in India.",
       },
-      { property: "og:title", content: "Terms & Conditions — CampusMatch" },
+      { property: "og:title", content: "Terms & Conditions — Coligo" },
       {
         property: "og:description",
-        content: "The terms of service for using CampusMatch.",
+        content: "The terms of service for using Coligo.",
       },
       { property: "og:type", content: "article" },
     ],

@@ -25,16 +25,16 @@ import { colors, spacing, radii } from "@/lib/ds";
 export const Route = createFileRoute("/_public/community-guidelines")({
   head: () => ({
     meta: [
-      { title: "Community Guidelines — CampusMatch" },
+      { title: "Community Guidelines — Coligo" },
       {
         name: "description",
         content:
-          "How to keep CampusMatch safe and respectful: our community guidelines on communication, harassment, safety, and reporting.",
+          "How to keep Coligo safe and respectful: our community guidelines on communication, harassment, safety, and reporting.",
       },
-      { property: "og:title", content: "Community Guidelines — CampusMatch" },
+      { property: "og:title", content: "Community Guidelines — Coligo" },
       {
         property: "og:description",
-        content: "How to keep CampusMatch safe and respectful for everyone.",
+        content: "How to keep Coligo safe and respectful for everyone.",
       },
       { property: "og:type", content: "article" },
     ],
@@ -98,7 +98,7 @@ function GuidelinesPage() {
           {doc.title}
         </Text>
         <Text variant="bodyLg" tone="secondary" style={{ marginTop: spacing[2], maxWidth: 620 }}>
-          These guidelines keep CampusMatch safe, respectful, and authentic for every verified student.
+          These guidelines keep Coligo safe, respectful, and authentic for every verified student.
         </Text>
       </SectionReveal>
 

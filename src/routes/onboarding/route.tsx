@@ -145,7 +145,7 @@ function OnboardingLayout() {
                 {step && step !== "complete" ? `Step ${index + 1} of ${TOTAL_STEPS - 1}` : "Almost there"}
               </Text>
               <Text variant="caption" tone="muted">
-                CampusMatch
+                Coligo
               </Text>
             </div>
             <ProgressBar value={progress} />

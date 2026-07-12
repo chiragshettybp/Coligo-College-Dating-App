@@ -9,7 +9,7 @@ import { useOnboardingState, useSaveStep } from "@/components/onboarding/useOnbo
 import { departmentsQuery } from "@/lib/onboarding.functions";
 
 export const Route = createFileRoute("/onboarding/department")({
-  head: () => ({ meta: [{ title: "Your department — CampusMatch" }, { name: "robots", content: "noindex" }] }),
+  head: () => ({ meta: [{ title: "Your department — Coligo" }, { name: "robots", content: "noindex" }] }),
   component: DepartmentStep,
 });
 

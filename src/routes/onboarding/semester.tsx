@@ -8,7 +8,7 @@ import { SEMESTER_OPTIONS } from "@/lib/onboarding";
 import { spacing } from "@/lib/ds";
 
 export const Route = createFileRoute("/onboarding/semester")({
-  head: () => ({ meta: [{ title: "Your semester — CampusMatch" }, { name: "robots", content: "noindex" }] }),
+  head: () => ({ meta: [{ title: "Your semester — Coligo" }, { name: "robots", content: "noindex" }] }),
   component: SemesterStep,
 });
 

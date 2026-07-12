@@ -47,7 +47,7 @@ function AuthLayout() {
               <Heart style={{ width: 16, height: 16, fill: "currentColor" }} />
             </span>
             <Text variant="headingSm" color={colors.textPrimary}>
-              CampusMatch
+              Coligo
             </Text>
           </div>
         </div>

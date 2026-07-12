@@ -41,9 +41,9 @@ const DEFAULT_CONFIG: AppConfig = {
   maintenanceEnabled: false,
   maintenanceTitle: "We'll be right back",
   maintenanceMessage:
-    "CampusMatch is undergoing scheduled maintenance. Please check back soon.",
+    "Coligo is undergoing scheduled maintenance. Please check back soon.",
   estimatedCompletion: null,
-  supportEmail: "support@campusmatch.app",
+  supportEmail: "support@coligo.app",
   minAppVersion: null,
   featureFlags: {},
   latestVersion: null,
@@ -162,7 +162,7 @@ export const reportError = createServerFn({ method: "POST" })
 const supportTicketSchema = z.object({
   errorId: z.string().trim().min(1).max(128),
   message: z.string().trim().max(4000).optional().default(""),
-  email: z.string().trim().email().optional().default("anonymous@campusmatch.app"),
+  email: z.string().trim().email().optional().default("anonymous@coligo.app"),
 });
 
 export const createSupportTicket = createServerFn({ method: "POST" })
