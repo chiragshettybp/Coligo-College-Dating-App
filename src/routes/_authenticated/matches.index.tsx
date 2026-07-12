@@ -186,7 +186,19 @@ function MatchesPage() {
 
   return (
     <DiscoverShell active="matches" matchesBadge={totalUnread}>
-      <TopBar title="Matches" />
+      <TopBar
+        title="Matches"
+        trailing={
+          <button
+            aria-label="Open messages"
+            onClick={() => navigate({ to: "/chat" })}
+            className="flex items-center justify-center rounded-full"
+            style={{ width: 40, height: 40, color: colors.primary }}
+          >
+            <MessageCircle style={{ width: 22, height: 22 }} />
+          </button>
+        }
+      />
 
       {matches.length === 0 ? (
         <div style={{ flex: 1, display: "flex", alignItems: "center", paddingTop: spacing[6] }}>
