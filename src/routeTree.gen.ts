@@ -11,6 +11,7 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as UiRouteImport } from './routes/ui'
 import { Route as AuthRouteImport } from './routes/auth'
+import { Route as AdminRouteImport } from './routes/admin'
 import { Route as R500RouteImport } from './routes/500'
 import { Route as R404RouteImport } from './routes/404'
 import { Route as OnboardingRouteRouteImport } from './routes/onboarding/route'
@@ -101,6 +102,11 @@ const UiRoute = UiRouteImport.update({
 const AuthRoute = AuthRouteImport.update({
   id: '/auth',
   path: '/auth',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminRoute = AdminRouteImport.update({
+  id: '/admin',
+  path: '/admin',
   getParentRoute: () => rootRouteImport,
 } as any)
 const R500Route = R500RouteImport.update({
@@ -554,6 +560,7 @@ export interface FileRoutesByFullPath {
   '/onboarding': typeof OnboardingRouteRouteWithChildren
   '/404': typeof R404Route
   '/500': typeof R500Route
+  '/admin': typeof AdminRoute
   '/auth': typeof AuthRouteWithChildren
   '/ui': typeof UiRoute
   '/chat': typeof AuthenticatedChatRouteWithChildren
@@ -636,6 +643,7 @@ export interface FileRoutesByTo {
   '/': typeof PublicIndexRoute
   '/404': typeof R404Route
   '/500': typeof R500Route
+  '/admin': typeof AdminRoute
   '/ui': typeof UiRoute
   '/about': typeof PublicAboutRoute
   '/community-guidelines': typeof PublicCommunityGuidelinesRoute
@@ -716,6 +724,7 @@ export interface FileRoutesById {
   '/onboarding': typeof OnboardingRouteRouteWithChildren
   '/404': typeof R404Route
   '/500': typeof R500Route
+  '/admin': typeof AdminRoute
   '/auth': typeof AuthRouteWithChildren
   '/ui': typeof UiRoute
   '/_authenticated/chat': typeof AuthenticatedChatRouteWithChildren
@@ -802,6 +811,7 @@ export interface FileRouteTypes {
     | '/onboarding'
     | '/404'
     | '/500'
+    | '/admin'
     | '/auth'
     | '/ui'
     | '/chat'
@@ -884,6 +894,7 @@ export interface FileRouteTypes {
     | '/'
     | '/404'
     | '/500'
+    | '/admin'
     | '/ui'
     | '/about'
     | '/community-guidelines'
@@ -963,6 +974,7 @@ export interface FileRouteTypes {
     | '/onboarding'
     | '/404'
     | '/500'
+    | '/admin'
     | '/auth'
     | '/ui'
     | '/_authenticated/chat'
@@ -1049,6 +1061,7 @@ export interface RootRouteChildren {
   OnboardingRouteRoute: typeof OnboardingRouteRouteWithChildren
   R404Route: typeof R404Route
   R500Route: typeof R500Route
+  AdminRoute: typeof AdminRoute
   AuthRoute: typeof AuthRouteWithChildren
   UiRoute: typeof UiRoute
   SystemMaintenanceRoute: typeof SystemMaintenanceRoute
@@ -1070,6 +1083,13 @@ declare module '@tanstack/react-router' {
       path: '/auth'
       fullPath: '/auth'
       preLoaderRoute: typeof AuthRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin': {
+      id: '/admin'
+      path: '/admin'
+      fullPath: '/admin'
+      preLoaderRoute: typeof AdminRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/500': {
@@ -1932,6 +1952,7 @@ const rootRouteChildren: RootRouteChildren = {
   OnboardingRouteRoute: OnboardingRouteRouteWithChildren,
   R404Route: R404Route,
   R500Route: R500Route,
+  AdminRoute: AdminRoute,
   AuthRoute: AuthRouteWithChildren,
   UiRoute: UiRoute,
   SystemMaintenanceRoute: SystemMaintenanceRoute,
@@ -1941,13 +1962,3 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}
