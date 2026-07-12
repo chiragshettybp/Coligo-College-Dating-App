@@ -53,6 +53,7 @@ import { Route as AuthenticatedDiscoverRouteImport } from './routes/_authenticat
 import { Route as AuthenticatedChatRouteImport } from './routes/_authenticated/chat'
 import { Route as AdminUsersIndexRouteImport } from './routes/admin.users.index'
 import { Route as AdminReportsIndexRouteImport } from './routes/admin.reports.index'
+import { Route as AdminMatchesIndexRouteImport } from './routes/admin.matches.index'
 import { Route as AdminCollegesIndexRouteImport } from './routes/admin.colleges.index'
 import { Route as AuthenticatedSettingsIndexRouteImport } from './routes/_authenticated/settings.index'
 import { Route as AuthenticatedProfileIndexRouteImport } from './routes/_authenticated/profile.index'
@@ -323,6 +324,11 @@ const AdminUsersIndexRoute = AdminUsersIndexRouteImport.update({
 const AdminReportsIndexRoute = AdminReportsIndexRouteImport.update({
   id: '/reports/',
   path: '/reports/',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminMatchesIndexRoute = AdminMatchesIndexRouteImport.update({
+  id: '/matches/',
+  path: '/matches/',
   getParentRoute: () => AdminRoute,
 } as any)
 const AdminCollegesIndexRoute = AdminCollegesIndexRouteImport.update({
@@ -700,6 +706,7 @@ export interface FileRoutesByFullPath {
   '/profile/': typeof AuthenticatedProfileIndexRoute
   '/settings/': typeof AuthenticatedSettingsIndexRoute
   '/admin/colleges/': typeof AdminCollegesIndexRoute
+  '/admin/matches/': typeof AdminMatchesIndexRoute
   '/admin/reports/': typeof AdminReportsIndexRoute
   '/admin/users/': typeof AdminUsersIndexRoute
   '/chat/$chatId/info': typeof AuthenticatedChatChatIdInfoRoute
@@ -788,6 +795,7 @@ export interface FileRoutesByTo {
   '/profile': typeof AuthenticatedProfileIndexRoute
   '/settings': typeof AuthenticatedSettingsIndexRoute
   '/admin/colleges': typeof AdminCollegesIndexRoute
+  '/admin/matches': typeof AdminMatchesIndexRoute
   '/admin/reports': typeof AdminReportsIndexRoute
   '/admin/users': typeof AdminUsersIndexRoute
   '/chat/$chatId/info': typeof AuthenticatedChatChatIdInfoRoute
@@ -886,6 +894,7 @@ export interface FileRoutesById {
   '/_authenticated/profile/': typeof AuthenticatedProfileIndexRoute
   '/_authenticated/settings/': typeof AuthenticatedSettingsIndexRoute
   '/admin/colleges/': typeof AdminCollegesIndexRoute
+  '/admin/matches/': typeof AdminMatchesIndexRoute
   '/admin/reports/': typeof AdminReportsIndexRoute
   '/admin/users/': typeof AdminUsersIndexRoute
   '/_authenticated/chat/$chatId/info': typeof AuthenticatedChatChatIdInfoRoute
@@ -983,6 +992,7 @@ export interface FileRouteTypes {
     | '/profile/'
     | '/settings/'
     | '/admin/colleges/'
+    | '/admin/matches/'
     | '/admin/reports/'
     | '/admin/users/'
     | '/chat/$chatId/info'
@@ -1071,6 +1081,7 @@ export interface FileRouteTypes {
     | '/profile'
     | '/settings'
     | '/admin/colleges'
+    | '/admin/matches'
     | '/admin/reports'
     | '/admin/users'
     | '/chat/$chatId/info'
@@ -1168,6 +1179,7 @@ export interface FileRouteTypes {
     | '/_authenticated/profile/'
     | '/_authenticated/settings/'
     | '/admin/colleges/'
+    | '/admin/matches/'
     | '/admin/reports/'
     | '/admin/users/'
     | '/_authenticated/chat/$chatId/info'
@@ -1508,6 +1520,13 @@ declare module '@tanstack/react-router' {
       path: '/reports'
       fullPath: '/admin/reports/'
       preLoaderRoute: typeof AdminReportsIndexRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/matches/': {
+      id: '/admin/matches/'
+      path: '/matches'
+      fullPath: '/admin/matches/'
+      preLoaderRoute: typeof AdminMatchesIndexRouteImport
       parentRoute: typeof AdminRoute
     }
     '/admin/colleges/': {
@@ -2157,6 +2176,7 @@ interface AdminRouteChildren {
   AdminReportsReportIdRoute: typeof AdminReportsReportIdRoute
   AdminUsersUserIdRoute: typeof AdminUsersUserIdRoute
   AdminCollegesIndexRoute: typeof AdminCollegesIndexRoute
+  AdminMatchesIndexRoute: typeof AdminMatchesIndexRoute
   AdminReportsIndexRoute: typeof AdminReportsIndexRoute
   AdminUsersIndexRoute: typeof AdminUsersIndexRoute
 }
@@ -2170,6 +2190,7 @@ const AdminRouteChildren: AdminRouteChildren = {
   AdminReportsReportIdRoute: AdminReportsReportIdRoute,
   AdminUsersUserIdRoute: AdminUsersUserIdRoute,
   AdminCollegesIndexRoute: AdminCollegesIndexRoute,
+  AdminMatchesIndexRoute: AdminMatchesIndexRoute,
   AdminReportsIndexRoute: AdminReportsIndexRoute,
   AdminUsersIndexRoute: AdminUsersIndexRoute,
 }
