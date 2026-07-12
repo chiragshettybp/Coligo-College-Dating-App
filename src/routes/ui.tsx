@@ -51,6 +51,15 @@ import {
   prefersReducedMotion,
 } from "@/lib/ds";
 import { haptic, type HapticToken } from "@/lib/haptics";
+import {
+  ChatHeader,
+  Bubble,
+  DayDivider,
+  TypingBubble,
+  VoiceMessage,
+  ImageMessage,
+  Composer,
+} from "@/components/ds/chat";
 import { cn } from "@/lib/utils";
 import {
   Card,
