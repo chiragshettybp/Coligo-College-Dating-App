@@ -149,8 +149,8 @@ function UIShowcase() {
         }}
       >
         {/* Hero */}
-        <header style={{ marginBottom: spacing[9] }}>
-          <div className="flex items-center gap-2" style={{ marginBottom: 12 }}>
+        <header style={{ marginBottom: spacing[8] }}>
+          <div className="flex items-center" style={{ gap: spacing[1], marginBottom: spacing[2] }}>
             <Badge tone="info">
               <Sparkles style={{ width: 12, height: 12 }} /> DESIGN FOUNDATION
             </Badge>
@@ -174,8 +174,9 @@ function UIShowcase() {
             style={{
               color: colors.textSecondary,
               fontSize: 18,
+              lineHeight: 1.55,
               maxWidth: 620,
-              marginTop: 12,
+              marginTop: spacing[2],
             }}
           >
             The single source of truth for every screen. Auth, onboarding, swipe,
