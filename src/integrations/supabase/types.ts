@@ -199,37 +199,64 @@ export type Database = {
       }
       colleges: {
         Row: {
+          archived_at: string | null
           banner_url: string | null
           city: string | null
+          code: string | null
+          country: string
           created_at: string
           description: string | null
+          discovery_enabled: boolean
+          district: string | null
           id: string
           is_active: boolean
           logo_url: string | null
           name: string
+          short_name: string | null
+          state: string | null
+          status: string
           updated_at: string
+          website: string | null
         }
         Insert: {
+          archived_at?: string | null
           banner_url?: string | null
           city?: string | null
+          code?: string | null
+          country?: string
           created_at?: string
           description?: string | null
+          discovery_enabled?: boolean
+          district?: string | null
           id?: string
           is_active?: boolean
           logo_url?: string | null
           name: string
+          short_name?: string | null
+          state?: string | null
+          status?: string
           updated_at?: string
+          website?: string | null
         }
         Update: {
+          archived_at?: string | null
           banner_url?: string | null
           city?: string | null
+          code?: string | null
+          country?: string
           created_at?: string
           description?: string | null
+          discovery_enabled?: boolean
+          district?: string | null
           id?: string
           is_active?: boolean
           logo_url?: string | null
           name?: string
+          short_name?: string | null
+          state?: string | null
+          status?: string
           updated_at?: string
+          website?: string | null
         }
         Relationships: []
       }
@@ -316,6 +343,7 @@ export type Database = {
       }
       departments: {
         Row: {
+          college_id: string | null
           created_at: string
           id: string
           is_active: boolean
@@ -323,6 +351,7 @@ export type Database = {
           updated_at: string
         }
         Insert: {
+          college_id?: string | null
           created_at?: string
           id?: string
           is_active?: boolean
@@ -330,13 +359,22 @@ export type Database = {
           updated_at?: string
         }
         Update: {
+          college_id?: string | null
           created_at?: string
           id?: string
           is_active?: boolean
           name?: string
           updated_at?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "departments_college_id_fkey"
+            columns: ["college_id"]
+            isOneToOne: false
+            referencedRelation: "colleges"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       device_sessions: {
         Row: {
@@ -1123,9 +1161,85 @@ export type Database = {
     }
     Functions: {
       admin_clear_reports: { Args: { _user_id: string }; Returns: Json }
+      admin_college_detail: { Args: { _id: string }; Returns: Json }
+      admin_college_stats: { Args: { _id: string }; Returns: Json }
+      admin_college_students: {
+        Args: {
+          _id: string
+          _limit?: number
+          _offset?: number
+          _search?: string
+        }
+        Returns: {
+          account_status: string
+          age: number
+          avatar: string
+          created_at: string
+          department_name: string
+          full_name: string
+          gender: string
+          id: string
+          last_login_at: string
+          semester: number
+          total_count: number
+          verification_status: string
+        }[]
+      }
+      admin_college_summary: { Args: never; Returns: Json }
+      admin_college_timeseries: {
+        Args: { _days?: number; _id: string }
+        Returns: Json
+      }
       admin_dashboard_stats: { Args: never; Returns: Json }
+      admin_delete_college: { Args: { _id: string }; Returns: Json }
       admin_distribution: { Args: never; Returns: Json }
       admin_force_logout: { Args: { _user_id: string }; Returns: Json }
+      admin_list_colleges: {
+        Args: {
+          _filters?: Json
+          _limit?: number
+          _offset?: number
+          _search?: string
+          _sort?: string
+        }
+        Returns: {
+          active_users: number
+          banner_url: string
+          city: string
+          code: string
+          country: string
+          created_at: string
+          department_count: number
+          discovery_enabled: boolean
+          female_students: number
+          growth_30d: number
+          id: string
+          logo_url: string
+          male_students: number
+          messages_sent: number
+          name: string
+          online_users: number
+          profile_completion: number
+          short_name: string
+          state: string
+          status: string
+          total_count: number
+          total_matches: number
+          total_students: number
+          updated_at: string
+        }[]
+      }
+      admin_list_departments: {
+        Args: { _college_id?: string }
+        Returns: {
+          college_id: string
+          created_at: string
+          id: string
+          is_active: boolean
+          member_count: number
+          name: string
+        }[]
+      }
       admin_list_users: {
         Args: {
           _filters?: Json
@@ -1176,11 +1290,31 @@ export type Database = {
         Args: { _reason?: string; _status: string; _user_id: string }
         Returns: Json
       }
+      admin_set_college_discovery: {
+        Args: { _enabled: boolean; _id: string }
+        Returns: Json
+      }
+      admin_set_college_status: {
+        Args: { _id: string; _reason?: string; _status: string }
+        Returns: Json
+      }
+      admin_set_department_status: {
+        Args: { _active: boolean; _id: string }
+        Returns: Json
+      }
       admin_set_verification: {
         Args: { _status: string; _user_id: string }
         Returns: Json
       }
       admin_timeseries: { Args: { _days?: number }; Returns: Json }
+      admin_upsert_college: {
+        Args: { _id: string; _payload: Json }
+        Returns: Json
+      }
+      admin_upsert_department: {
+        Args: { _college_id?: string; _id: string; _name: string }
+        Returns: Json
+      }
       admin_user_detail: { Args: { _user_id: string }; Returns: Json }
       admin_user_devices: { Args: { _user_id: string }; Returns: Json }
       admin_user_matches: { Args: { _user_id: string }; Returns: Json }

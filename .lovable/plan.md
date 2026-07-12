@@ -1,57 +1,49 @@
-# Admin User Management Module — Implementation Plan
+# Admin College Management Module — Implementation Plan
 
-Scope: build `/admin/users` (list) and `/admin/users/:userId` (detail) only, reusing the existing design system, with real Supabase data, server-side admin gating, audit logging, and realtime. No new visual language — everything composes from `src/components/ds/*`, `src/components/ui/*`, and tokens in `src/lib/ds.ts`, matching what already ships on `/ui`, `/admin`, and `/admin/dashboard`.
+Builds `/admin/colleges` (list) and `/admin/colleges/:collegeId` (detail), plus create/edit/action sub-pages, following the exact patterns already used by the Users module (`admin.users.index.tsx`, `admin.functions.ts`, `charts.tsx`, `user-bits.tsx`) and gated by the existing admin layout + `has_role('admin')` server checks.
 
-This is intentionally scoped to what the current schema can back with real data. Items in your prompt that have no backing table today (warnings table, per-device IP/OS/browser, storage-bytes usage, CSV/XLSX export pipeline, tags, appeals, premium) are called out per phase as either (a) derived from existing data, or (b) deferred with a clear note — so nothing ships as fake/mock.
+## Reality check against current DB
+Your live schema is much smaller than the prompt assumes. To avoid mock data, I'll extend the schema first:
 
----
+- `colleges` today: `name, city, is_active, logo_url, banner_url, description`. Missing: `code, short_name, website, state, district, country, discovery_enabled, status (active/disabled/archived)`.
+- `departments` today: `name, is_active` only — **not linked to any college**. Per-college department management requires adding `college_id`.
+- No `likes`/`analytics`/`rankings`/`audit_logs` tables — likes live in `swipes`, rankings are computed by existing RPCs (`college_rankings`, `college_rank`), audit uses the existing `admin_logs` table.
 
-## Phase 1 — Backend: admin RPCs + audit + RLS
+## Phase 1 — Migration (schema + RPCs)
+Add to `colleges`: `code text unique`, `short_name text`, `website text`, `state text`, `district text`, `country text default 'India'`, `discovery_enabled boolean default true`, `status text default 'active'` (active|disabled|archived), `archived_at timestamptz`. Keep `is_active` in sync with `status` via trigger. Add indexes on `status`, `created_at`, `name`, `code`.
 
-All reads/writes go through `SECURITY DEFINER` RPCs that re-check `has_role(auth.uid(),'admin')` and raise `Forbidden`, matching the existing admin RPC pattern. No new broad RLS grants to `anon`/`authenticated`.
+Add `college_id uuid references colleges(id)` to `departments` (nullable — existing global rows stay global), plus index.
 
-New migration adds:
-- `admin_list_users(_search, _filters jsonb, _sort, _limit, _offset)` → paginated rows with: profile photo (primary), full_name, phone, gender, age (from `date_of_birth`), college name, department name, semester, graduation_year, created_at, last_login_at, account_status, verification_status, discovery (`settings.discovery_enabled`), profile completion %, matches count, chats count, reports-received count, device count, online status (`last_login_at > now()-5min`), plus `total_count` for server pagination.
-- `admin_user_detail(_user_id)` → full profile, account info, settings, photos, interests.
-- `admin_user_stats(_user_id)` → swipes, likes given/received, passes, matches, messages sent, media uploaded, reports received/submitted, blocks, unmatches, notifications count.
-- `admin_user_matches(_user_id)`, `admin_user_reports(_user_id)`, `admin_user_devices(_user_id)` (from `device_sessions`/`device_tokens`), `admin_user_timeline(_user_id)` (derived chronological events from existing tables + `admin_logs`).
-- Moderation writes: `admin_set_account_status(_user_id, _status, _reason)` (active/suspended/banned/deleted — soft), `admin_set_verification(_user_id, _status)`, `admin_reset_discovery(_user_id)`, `admin_force_logout(_user_id)` (revoke `device_sessions`), `admin_clear_reports(_user_id)`. Each writes an `admin_logs` row (admin_id, action, target, metadata) inside the same transaction and blocks self-targeting (can't ban yourself) and invalid transitions (e.g. restore an active user).
-- Realtime: add `profiles`, `reports` (if not already) to `supabase_realtime` publication so status/verification changes push live.
+New `SECURITY DEFINER` admin RPCs (each re-checks `has_role`):
+- `admin_college_summary()` — the dashboard summary cards (totals by status, students, joined today, added this month, avg completion/matches/messages, discovery activity, verification %).
+- `admin_list_colleges(_search, _filters jsonb, _sort, _limit, _offset)` — server-paginated rows with per-college aggregates (students, male/female, departments, active/online, matches, messages, profile completion, status) + `total_count`.
+- `admin_college_detail(_id)` — full record + overview.
+- `admin_college_stats(_id)` — realtime stats (extends existing `college_stats`).
+- `admin_college_timeseries(_id, _days)` — daily registrations/growth/activity.
+- `admin_college_students(_id, _search, _limit, _offset)` — enrolled student directory.
+- Moderation writes: `admin_set_college_status`, `admin_set_college_discovery`, `admin_upsert_college`, `admin_delete_college` (soft), and department ops `admin_upsert_department`, `admin_set_department_status`, `admin_delete_department` — all writing to `admin_logs`, blocking archive/delete when active students reference the college.
 
-Indexes: on `profiles(account_status)`, `profiles(created_at)`, `profiles(last_login_at)` to keep list queries fast.
+Enable realtime: `ALTER PUBLICATION supabase_realtime ADD TABLE colleges, departments;`
 
-## Phase 2 — Server functions layer
+## Phase 2 — Storage
+Create private buckets `college-logos` and `college-banners` via the storage tool, with admin-only write RLS on `storage.objects` and signed-URL reads (mirroring how photos are served).
 
-Extend `src/lib/admin.functions.ts` (or a new `src/lib/admin-users.functions.ts`) with `createServerFn` wrappers + `queryOptions` for every RPC above, all under `.middleware([requireSupabaseAuth])`. Typed inputs via zod (search string, filter object, sort enum, pagination, userId uuid). Moderation actions are `POST` fns that invalidate the relevant query keys on the client.
+## Phase 3 — Server functions
+Extend `src/lib/admin.functions.ts` with `createServerFn` wrappers + `queryOptions` for every RPC above, zod-validated inputs, same style as the existing user functions.
 
-## Phase 3 — Reusable admin table primitives
+## Phase 4 — List page `/admin/colleges`
+`admin.colleges.index.tsx`: summary cards (realtime), debounced search, multi-filter + sort persisted in URL search params, server pagination, bulk enable/disable/archive/restore/discovery with a dedicated confirmation sub-page (never a popup). Desktop table collapses to stacked cards on mobile. Reuses `ds`/`ui` table, card, skeleton, empty-state primitives. New shared bits in `src/components/admin/college-bits.tsx`.
 
-Small composables under `src/components/admin/` built ONLY from existing `ui`/`ds` pieces:
-- `UserTable` (desktop) using `ui/table.tsx`; collapses to stacked cards (`ds/card.tsx`) on mobile.
-- `UserFilters` (chips/selects), `UserSearch` (debounced `TextField`), `Pagination` (`ui/pagination.tsx`), `EmptyState` (`ds/empty-state.tsx`), loading `Skeleton`s, bulk-select checkboxes with cross-page persisted selection.
+## Phase 5 — Detail page `/admin/colleges/:collegeId`
+Tabbed: Overview, Statistics (charts via existing `charts.tsx`), Student Analytics, Departments (create/rename/disable/archive as dedicated pages), Student Directory (searchable, links to `admin.users.$userId`), Discovery Analytics, Media (logo/banner upload/replace/delete), Actions (edit/enable/disable/archive/restore/soft-delete/regenerate rankings) — each action confirms + logs.
 
-## Phase 4 — `/admin/users` list page
+## Phase 6 — Create/Edit + realtime + wiring
+`admin.colleges.new.tsx` and `admin.colleges.$collegeId.edit.tsx` full-page forms with client+server validation (unique name/code, file type/size, image dims), image upload to storage. `useAdminCollegesRealtime` hook. Add a **Manage Colleges** quick action on the dashboard. Typecheck + Playwright verify as admin.
 
-Route `src/routes/admin.users.tsx`. Admin guard via `adminGuardQuery` (same pattern as dashboard; redirect non-admins to `/admin/login`). Server-paginated, debounced search, multi-filter, sorting — all state kept in URL search params so failures/reloads preserve filters/pagination/selection. Realtime subscription invalidates the list on profile/report changes. Bulk actions (suspend/ban/verify/restore/delete) route to a dedicated in-page confirmation step (not a popup) and run transactionally, reporting partial failures.
-
-## Phase 5 — `/admin/users/:userId` detail page
-
-Route `src/routes/admin.users.$userId.tsx` with `errorComponent` + `notFoundComponent` (invalid/deleted user handled gracefully). Tabbed sections (`ui/tabs.tsx`): Profile, Account Info, Statistics (charts via existing `components/admin/charts.tsx`), Activity Timeline, Devices, Photos (gallery → `ds/image-viewer.tsx`), Matches, Reports. An Admin Actions panel with dedicated confirmation screens for each moderation action, each writing an audit log and updating live.
-
-## Phase 6 — Realtime, failure handling, verification
-
-Wire a `useAdminUsersRealtime` hook (mirrors existing `use-admin-realtime.ts`) to invalidate queries on `profiles`/`reports`/`matches` changes. Graceful handling for every failure case (invalid id, missing records, expired session, network/Supabase down, partial bulk failure) with clear messages + retry, preserving admin state. Verify with typecheck and a Playwright pass logged in as the admin account.
-
----
-
-## Explicitly deferred (no real backing data today — will NOT be faked)
-
-These are noted in the UI as "coming soon"/hidden rather than shown with mock data:
-- Username, warnings table, per-device OS/browser/IP, storage-bytes used, CSV/XLSX export generation, tags/labels, announcements, premium/payments, AI moderation, fraud/risk scoring, appeals. Each can be added later without redesign.
-
-If you'd like any deferred item pulled into scope (e.g. a real `warnings` table, or CSV export), tell me and I'll fold it into the relevant phase before building.
+## Explicitly deferred (no backing data — not faked)
+Latitude/longitude, college verification workflow, moderators/regional admins, events/clubs/announcements/ambassadors, AI ranking insights, heatmaps, referral analytics, premium partnerships, branding customization, per-college feature flags, CSV/XLSX export of full nested data (basic CSV of the visible table can be included), profile-views/session-time metrics (not tracked). These can be added later without redesign.
 
 ## Technical notes
-- Every table creation includes GRANTs + RLS per project rules; admin reads go only through `SECURITY DEFINER` RPCs.
-- No email auth anywhere; admin identity stays phone+PIN as already set up.
-- No changes to student `_authenticated` area; `/admin/*` stays a separate guarded surface.
+- Admin RPCs are `SECURITY DEFINER` + `has_role` gated; RLS on `colleges`/`departments` stays intact; no student-facing auth changes.
+- Adding `college_id` to `departments` is nullable and backward-compatible; onboarding keeps working with existing global departments and gains per-college scoping where set.
+- `status`↔`is_active` kept in sync so Home/Discovery/Onboarding (which read `is_active`) update immediately.
