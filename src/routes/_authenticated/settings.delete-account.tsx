@@ -126,13 +126,29 @@ function DeleteAccountPage() {
           />
         </label>
 
-        <TextField
-          label={'Type "DELETE" to confirm'}
-          value={confirm}
-          onChange={(e) => setConfirm(e.target.value)}
-          placeholder="DELETE"
-          autoCapitalize="characters"
-        />
+        <label className="block">
+          <span
+            className="mb-1.5 block"
+            style={{ color: colors.textSecondary, fontSize: 14, fontWeight: 600 }}
+          >
+            {'Type "DELETE" to confirm'}
+          </span>
+          <input
+            value={confirm}
+            onChange={(e) => setConfirm(e.target.value)}
+            placeholder="DELETE"
+            autoCapitalize="characters"
+            className="w-full outline-none"
+            style={{
+              borderRadius: radii.md,
+              padding: "12px 16px",
+              fontSize: 15,
+              background: surfaces.glassSoft,
+              border: `1px solid ${surfaces.border}`,
+              color: colors.textPrimary,
+            }}
+          />
+        </label>
       </div>
 
       <div className="flex flex-col" style={{ gap: spacing[2], marginTop: spacing[5] }}>
