@@ -9,7 +9,6 @@ import { useState } from "react";
 import { ArrowLeft } from "lucide-react";
 
 import { supabase } from "@/integrations/supabase/client";
-import { checkPhoneAvailable, signUpWithPhone } from "@/lib/auth.functions";
 import { touchLastLogin } from "@/lib/profile.functions";
 import { Button, Text, GlassPanel } from "@/components/ds/glass";
 import { AuthHeader } from "@/components/auth/AuthHeader";
