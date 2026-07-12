@@ -285,48 +285,62 @@ export function Chip({
 
 /* ------------------------------------------------------------------- Badge */
 
-type BadgeTone = "primary" | "success" | "warning" | "danger" | "info" | "neutral";
+type BadgeTone =
+  | "primary"
+  | "success"
+  | "warning"
+  | "danger"
+  | "info"
+  | "neutral"
+  | "accent";
 
 type BadgeStyle = { background: string; color: string; border: string; dot: string };
 
-// Layered glass tints — a soft top-lit gradient, hairline border and a
-// restrained accent. Calm, collectible, same recipe across every tone.
+// Calm iOS badge tones — a pale soft-tinted fill, hairline border and an
+// accent-colored label. No glow, no glass gradient, no bright surfaces.
+// One recipe across every tone so badges read as identity, not decoration.
 const badgeTone: Record<BadgeTone, BadgeStyle> = {
   primary: {
-    background: "linear-gradient(165deg, rgba(62,160,242,0.20), rgba(62,160,242,0.07))",
-    color: "#aed6ff",
-    border: "rgba(62,160,242,0.30)",
-    dot: colors.primary,
+    background: "rgba(10,132,255,0.10)",
+    color: "#0060df",
+    border: "rgba(10,132,255,0.16)",
+    dot: "#0a84ff",
   },
   success: {
-    background: "linear-gradient(165deg, rgba(67,217,163,0.18), rgba(67,217,163,0.06))",
-    color: "#8ff0cf",
-    border: "rgba(67,217,163,0.30)",
-    dot: colors.success,
+    background: "rgba(52,199,89,0.12)",
+    color: "#248a3d",
+    border: "rgba(52,199,89,0.18)",
+    dot: "#34c759",
   },
   warning: {
-    background: "linear-gradient(165deg, rgba(245,181,68,0.18), rgba(245,181,68,0.06))",
-    color: "#ffd894",
-    border: "rgba(245,181,68,0.30)",
-    dot: colors.warning,
+    background: "rgba(255,159,10,0.12)",
+    color: "#b25e00",
+    border: "rgba(255,159,10,0.20)",
+    dot: "#ff9f0a",
   },
   danger: {
-    background: "linear-gradient(165deg, rgba(242,87,107,0.18), rgba(242,87,107,0.06))",
-    color: "#ffaab5",
-    border: "rgba(242,87,107,0.30)",
-    dot: colors.danger,
+    background: "rgba(255,59,48,0.10)",
+    color: "#c01a12",
+    border: "rgba(255,59,48,0.18)",
+    dot: "#ff3b30",
   },
   info: {
-    background: "linear-gradient(165deg, rgba(87,176,246,0.18), rgba(87,176,246,0.06))",
-    color: "#b6ddff",
-    border: "rgba(87,176,246,0.30)",
-    dot: colors.info,
+    background: "rgba(10,132,255,0.10)",
+    color: "#0060df",
+    border: "rgba(10,132,255,0.16)",
+    dot: "#0a84ff",
   },
   neutral: {
-    background: "linear-gradient(165deg, rgba(255,255,255,0.09), rgba(255,255,255,0.03))",
-    color: colors.textSecondary,
-    border: surfaces.border,
-    dot: "#8ea3d6",
+    background: "rgba(120,120,128,0.10)",
+    color: "rgba(60,60,67,0.72)",
+    border: "rgba(0,0,0,0.08)",
+    dot: "rgba(60,60,67,0.5)",
+  },
+  accent: {
+    background: "rgba(255,55,95,0.10)",
+    color: "#d61f45",
+    border: "rgba(255,55,95,0.16)",
+    dot: "#ff375f",
   },
 };
 
