@@ -9,7 +9,7 @@ import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { toast } from "sonner";
 
 import { supabase } from "@/integrations/supabase/client";
-import { discoveryFeedQuery, type DiscoverCandidate } from "@/lib/discover.functions";
+import { discoveryFeedQuery, type DiscoverCard } from "@/lib/discover.functions";
 import { useEmptyGuard } from "@/lib/use-empty-guard";
 import { spacing } from "@/lib/ds";
 import { Button } from "@/components/ds/glass";
@@ -22,7 +22,7 @@ export const Route = createFileRoute("/_authenticated/empty/no-profiles")({
 
 function NoProfilesPage() {
   const navigate = useNavigate();
-  const { checking, refresh } = useEmptyGuard<DiscoverCandidate[]>({
+  const { checking, refresh } = useEmptyGuard<DiscoverCard[]>({
     query: discoveryFeedQuery(),
     hasData: (c) => c.length > 0,
     onData: () => navigate({ to: "/discover", replace: true }),
