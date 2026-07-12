@@ -22,6 +22,17 @@ import {
   Flame,
   RotateCcw,
   Zap,
+  ChevronLeft,
+  Phone,
+  Video,
+  Check,
+  CheckCheck,
+  Play,
+  Mic,
+  Camera,
+  Smile,
+  Plus as PlusIcon,
+  ArrowUp,
 } from "lucide-react";
 
 import {
