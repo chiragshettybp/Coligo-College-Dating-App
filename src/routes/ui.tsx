@@ -52,6 +52,19 @@ import {
 } from "@/lib/ds";
 import { haptic, type HapticToken } from "@/lib/haptics";
 import {
+  Card,
+  CardHeader,
+  CardBody,
+  CardFooter,
+  CardMedia,
+  StatCard,
+  AlertCard,
+  EmptyStateCard,
+  InfoCard,
+  SettingsCard,
+  SettingsRow,
+} from "@/components/ds/card";
+import {
   Avatar,
   Badge,
   IdentityBadge,
@@ -574,42 +587,95 @@ function UIShowcase() {
         {/* Cards */}
         <Section
           title="Cards"
-          description="Glass, profile, swipe and match cards — the building blocks of every feed."
+          description="One reusable, content-first card system — the primary building block of every screen."
         >
           <div className="grid gap-4" style={{ gridTemplateColumns: "repeat(auto-fit,minmax(260px,1fr))" }}>
-            {/* Swipe card */}
+            {/* Swipe / profile card */}
             <SwipeCard />
-            {/* Match card */}
-            <GlassPanel glow style={{ padding: spacing[5], textAlign: "center" }}>
-              <div className="flex justify-center" style={{ marginBottom: 12 }}>
-                <div style={{ marginRight: -18 }}>
-                  <Avatar src={ana} size="xl" ring />
-                </div>
-                <Avatar src={memoji2} size="xl" ring />
+
+            {/* Profile card — media + header + CTA */}
+            <Card padding={0}>
+              <CardMedia
+                src={ana}
+                alt="Maya"
+                height={200}
+                overlay={
+                  <div style={{ position: "absolute", left: spacing[3], bottom: spacing[3], display: "flex", gap: spacing[1] }}>
+                    <Badge tone="success"><Check style={{ width: 12, height: 12 }} /> Verified</Badge>
+                    <PresenceBadge online />
+                  </div>
+                }
+              />
+              <div style={{ padding: spacing[4] }}>
+                <CardHeader title="Maya, 21" subtitle="Design · Junior" />
+                <CardBody>
+                  <div className="flex flex-wrap" style={{ gap: spacing[1] }}>
+                    <IdentityBadge type="sameCollege" />
+                    <IdentityBadge type="mutualInterests" label="3 shared" />
+                  </div>
+                </CardBody>
+                <CardFooter>
+                  <Button fullWidth variant="primary" leftIcon={<MessageCircle style={{ width: 18, height: 18 }} />}>
+                    Say hi
+                  </Button>
+                </CardFooter>
               </div>
-              <div style={{ fontSize: 24, fontWeight: 800, color: "#fff" }}>It's a Match! 🎉</div>
-              <p style={{ color: colors.textSecondary, fontSize: 14, marginTop: 4 }}>
-                You and Maya liked each other
-              </p>
-              <div className="mt-4">
-                <Button fullWidth variant="primary" leftIcon={<MessageCircle style={{ width: 18, height: 18 }} />}>
-                  Say hi
-                </Button>
-              </div>
-            </GlassPanel>
-            {/* Stat card */}
-            <GlassPanel style={{ padding: spacing[5] }}>
-              <Label>Profile completion</Label>
-              <div style={{ fontSize: 40, fontWeight: 800, color: "#fff", margin: "6px 0 12px" }}>78%</div>
-              <ProgressBar value={78} />
-              <div className="mt-4 flex flex-wrap gap-2">
-                <Badge tone="success"><Check style={{ width: 12, height: 12 }} /> Verified</Badge>
-                <Badge tone="warning">Add photos</Badge>
-                <Badge tone="primary">Add bio</Badge>
-              </div>
-            </GlassPanel>
+            </Card>
+
+            {/* Stats */}
+            <StatCard label="Matches this week" value="24" delta="+8 vs last week" deltaTone="up" icon={<Heart style={{ width: 18, height: 18 }} />} />
+          </div>
+
+          {/* Alerts */}
+          <div className="grid gap-4" style={{ gridTemplateColumns: "repeat(auto-fit,minmax(260px,1fr))", marginTop: spacing[4] }}>
+            <AlertCard tone="success" title="Profile verified" message="Your student ID has been confirmed." />
+            <AlertCard
+              tone="warning"
+              title="Add more photos"
+              message="Profiles with 3+ photos get 2× more matches."
+              action={<Button size="sm" variant="secondary">Upload</Button>}
+            />
+            <AlertCard tone="danger" title="Verification failed" message="We couldn't read your ID. Try again." />
+          </div>
+
+          {/* Info + empty state */}
+          <div className="grid gap-4" style={{ gridTemplateColumns: "repeat(auto-fit,minmax(260px,1fr))", marginTop: spacing[4] }}>
+            <InfoCard icon={<ShieldCheck style={{ width: 18, height: 18 }} />} title="Safe & private">
+              Only verified students can see your profile. You control who you match with.
+            </InfoCard>
+            <EmptyStateCard
+              icon={<Search style={{ width: 26, height: 26 }} />}
+              title="No new profiles"
+              description="You're all caught up. Check back later for fresh matches nearby."
+              action={<Button size="sm" variant="secondary" leftIcon={<RotateCcw style={{ width: 16, height: 16 }} />}>Refresh</Button>}
+            />
+          </div>
+
+          {/* Settings grouped card */}
+          <div style={{ marginTop: spacing[4] }}>
+            <SettingsCard>
+              <SettingsRow
+                title="Notifications"
+                subtitle="Matches, messages & likes"
+                leading={<Bell style={{ width: 20, height: 20, color: colors.textSecondary }} />}
+                onClick={() => haptic("light")}
+              />
+              <SettingsRow
+                title="Privacy"
+                subtitle="Who can see you"
+                leading={<ShieldCheck style={{ width: 20, height: 20, color: colors.textSecondary }} />}
+                onClick={() => haptic("light")}
+              />
+              <SettingsRow
+                title="Discovery"
+                leading={<MapPin style={{ width: 20, height: 20, color: colors.textSecondary }} />}
+                trailing={<Text variant="bodySm" tone="muted">5 km</Text>}
+                onClick={() => haptic("light")}
+              />
+            </SettingsCard>
           </div>
         </Section>
+
 
         <Section
           title="Shared element transitions"
