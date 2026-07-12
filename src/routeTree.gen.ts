@@ -73,6 +73,10 @@ import { Route as AuthenticatedProfileBioRouteImport } from './routes/_authentic
 import { Route as AuthenticatedNotificationsNotificationIdRouteImport } from './routes/_authenticated/notifications.$notificationId'
 import { Route as AuthenticatedMatchesMatchIdRouteImport } from './routes/_authenticated/matches.$matchId'
 import { Route as AuthenticatedHomeCollegeRankingsRouteImport } from './routes/_authenticated/home.college-rankings'
+import { Route as AuthenticatedEmptyNoProfilesRouteImport } from './routes/_authenticated/empty.no-profiles'
+import { Route as AuthenticatedEmptyNoNotificationsRouteImport } from './routes/_authenticated/empty.no-notifications'
+import { Route as AuthenticatedEmptyNoMatchesRouteImport } from './routes/_authenticated/empty.no-matches'
+import { Route as AuthenticatedEmptyNoChatsRouteImport } from './routes/_authenticated/empty.no-chats'
 import { Route as AuthenticatedDiscoverNoMoreProfilesRouteImport } from './routes/_authenticated/discover.no-more-profiles'
 import { Route as AuthenticatedChatChatIdRouteImport } from './routes/_authenticated/chat.$chatId'
 import { Route as AuthenticatedNotificationsNotificationIdDeleteRouteImport } from './routes/_authenticated/notifications.$notificationId.delete'
@@ -431,6 +435,30 @@ const AuthenticatedHomeCollegeRankingsRoute =
     path: '/college-rankings',
     getParentRoute: () => AuthenticatedHomeRoute,
   } as any)
+const AuthenticatedEmptyNoProfilesRoute =
+  AuthenticatedEmptyNoProfilesRouteImport.update({
+    id: '/empty/no-profiles',
+    path: '/empty/no-profiles',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedEmptyNoNotificationsRoute =
+  AuthenticatedEmptyNoNotificationsRouteImport.update({
+    id: '/empty/no-notifications',
+    path: '/empty/no-notifications',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedEmptyNoMatchesRoute =
+  AuthenticatedEmptyNoMatchesRouteImport.update({
+    id: '/empty/no-matches',
+    path: '/empty/no-matches',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedEmptyNoChatsRoute =
+  AuthenticatedEmptyNoChatsRouteImport.update({
+    id: '/empty/no-chats',
+    path: '/empty/no-chats',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const AuthenticatedDiscoverNoMoreProfilesRoute =
   AuthenticatedDiscoverNoMoreProfilesRouteImport.update({
     id: '/no-more-profiles',
@@ -560,6 +588,10 @@ export interface FileRoutesByFullPath {
   '/onboarding/': typeof OnboardingIndexRoute
   '/chat/$chatId': typeof AuthenticatedChatChatIdRouteWithChildren
   '/discover/no-more-profiles': typeof AuthenticatedDiscoverNoMoreProfilesRoute
+  '/empty/no-chats': typeof AuthenticatedEmptyNoChatsRoute
+  '/empty/no-matches': typeof AuthenticatedEmptyNoMatchesRoute
+  '/empty/no-notifications': typeof AuthenticatedEmptyNoNotificationsRoute
+  '/empty/no-profiles': typeof AuthenticatedEmptyNoProfilesRoute
   '/home/college-rankings': typeof AuthenticatedHomeCollegeRankingsRoute
   '/matches/$matchId': typeof AuthenticatedMatchesMatchIdRouteWithChildren
   '/notifications/$notificationId': typeof AuthenticatedNotificationsNotificationIdRouteWithChildren
@@ -633,6 +665,10 @@ export interface FileRoutesByTo {
   '/onboarding': typeof OnboardingIndexRoute
   '/chat/$chatId': typeof AuthenticatedChatChatIdRouteWithChildren
   '/discover/no-more-profiles': typeof AuthenticatedDiscoverNoMoreProfilesRoute
+  '/empty/no-chats': typeof AuthenticatedEmptyNoChatsRoute
+  '/empty/no-matches': typeof AuthenticatedEmptyNoMatchesRoute
+  '/empty/no-notifications': typeof AuthenticatedEmptyNoNotificationsRoute
+  '/empty/no-profiles': typeof AuthenticatedEmptyNoProfilesRoute
   '/home/college-rankings': typeof AuthenticatedHomeCollegeRankingsRoute
   '/matches/$matchId': typeof AuthenticatedMatchesMatchIdRouteWithChildren
   '/notifications/$notificationId': typeof AuthenticatedNotificationsNotificationIdRouteWithChildren
@@ -715,6 +751,10 @@ export interface FileRoutesById {
   '/onboarding/': typeof OnboardingIndexRoute
   '/_authenticated/chat/$chatId': typeof AuthenticatedChatChatIdRouteWithChildren
   '/_authenticated/discover/no-more-profiles': typeof AuthenticatedDiscoverNoMoreProfilesRoute
+  '/_authenticated/empty/no-chats': typeof AuthenticatedEmptyNoChatsRoute
+  '/_authenticated/empty/no-matches': typeof AuthenticatedEmptyNoMatchesRoute
+  '/_authenticated/empty/no-notifications': typeof AuthenticatedEmptyNoNotificationsRoute
+  '/_authenticated/empty/no-profiles': typeof AuthenticatedEmptyNoProfilesRoute
   '/_authenticated/home/college-rankings': typeof AuthenticatedHomeCollegeRankingsRoute
   '/_authenticated/matches/$matchId': typeof AuthenticatedMatchesMatchIdRouteWithChildren
   '/_authenticated/notifications/$notificationId': typeof AuthenticatedNotificationsNotificationIdRouteWithChildren
@@ -796,6 +836,10 @@ export interface FileRouteTypes {
     | '/onboarding/'
     | '/chat/$chatId'
     | '/discover/no-more-profiles'
+    | '/empty/no-chats'
+    | '/empty/no-matches'
+    | '/empty/no-notifications'
+    | '/empty/no-profiles'
     | '/home/college-rankings'
     | '/matches/$matchId'
     | '/notifications/$notificationId'
@@ -869,6 +913,10 @@ export interface FileRouteTypes {
     | '/onboarding'
     | '/chat/$chatId'
     | '/discover/no-more-profiles'
+    | '/empty/no-chats'
+    | '/empty/no-matches'
+    | '/empty/no-notifications'
+    | '/empty/no-profiles'
     | '/home/college-rankings'
     | '/matches/$matchId'
     | '/notifications/$notificationId'
@@ -950,6 +998,10 @@ export interface FileRouteTypes {
     | '/onboarding/'
     | '/_authenticated/chat/$chatId'
     | '/_authenticated/discover/no-more-profiles'
+    | '/_authenticated/empty/no-chats'
+    | '/_authenticated/empty/no-matches'
+    | '/_authenticated/empty/no-notifications'
+    | '/_authenticated/empty/no-profiles'
     | '/_authenticated/home/college-rankings'
     | '/_authenticated/matches/$matchId'
     | '/_authenticated/notifications/$notificationId'
@@ -1454,6 +1506,34 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedHomeCollegeRankingsRouteImport
       parentRoute: typeof AuthenticatedHomeRoute
     }
+    '/_authenticated/empty/no-profiles': {
+      id: '/_authenticated/empty/no-profiles'
+      path: '/empty/no-profiles'
+      fullPath: '/empty/no-profiles'
+      preLoaderRoute: typeof AuthenticatedEmptyNoProfilesRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/empty/no-notifications': {
+      id: '/_authenticated/empty/no-notifications'
+      path: '/empty/no-notifications'
+      fullPath: '/empty/no-notifications'
+      preLoaderRoute: typeof AuthenticatedEmptyNoNotificationsRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/empty/no-matches': {
+      id: '/_authenticated/empty/no-matches'
+      path: '/empty/no-matches'
+      fullPath: '/empty/no-matches'
+      preLoaderRoute: typeof AuthenticatedEmptyNoMatchesRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/empty/no-chats': {
+      id: '/_authenticated/empty/no-chats'
+      path: '/empty/no-chats'
+      fullPath: '/empty/no-chats'
+      preLoaderRoute: typeof AuthenticatedEmptyNoChatsRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/discover/no-more-profiles': {
       id: '/_authenticated/discover/no-more-profiles'
       path: '/no-more-profiles'
@@ -1705,6 +1785,10 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedDiscoverRoute: typeof AuthenticatedDiscoverRouteWithChildren
   AuthenticatedHomeRoute: typeof AuthenticatedHomeRouteWithChildren
   AuthenticatedMatchesRoute: typeof AuthenticatedMatchesRouteWithChildren
+  AuthenticatedEmptyNoChatsRoute: typeof AuthenticatedEmptyNoChatsRoute
+  AuthenticatedEmptyNoMatchesRoute: typeof AuthenticatedEmptyNoMatchesRoute
+  AuthenticatedEmptyNoNotificationsRoute: typeof AuthenticatedEmptyNoNotificationsRoute
+  AuthenticatedEmptyNoProfilesRoute: typeof AuthenticatedEmptyNoProfilesRoute
   AuthenticatedNotificationsNotificationIdRoute: typeof AuthenticatedNotificationsNotificationIdRouteWithChildren
   AuthenticatedProfileBioRoute: typeof AuthenticatedProfileBioRoute
   AuthenticatedProfileEditRoute: typeof AuthenticatedProfileEditRoute
@@ -1731,6 +1815,11 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedDiscoverRoute: AuthenticatedDiscoverRouteWithChildren,
   AuthenticatedHomeRoute: AuthenticatedHomeRouteWithChildren,
   AuthenticatedMatchesRoute: AuthenticatedMatchesRouteWithChildren,
+  AuthenticatedEmptyNoChatsRoute: AuthenticatedEmptyNoChatsRoute,
+  AuthenticatedEmptyNoMatchesRoute: AuthenticatedEmptyNoMatchesRoute,
+  AuthenticatedEmptyNoNotificationsRoute:
+    AuthenticatedEmptyNoNotificationsRoute,
+  AuthenticatedEmptyNoProfilesRoute: AuthenticatedEmptyNoProfilesRoute,
   AuthenticatedNotificationsNotificationIdRoute:
     AuthenticatedNotificationsNotificationIdRouteWithChildren,
   AuthenticatedProfileBioRoute: AuthenticatedProfileBioRoute,
