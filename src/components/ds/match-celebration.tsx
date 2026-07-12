@@ -267,7 +267,7 @@ export function MatchCelebration({
   const clusterStyle: React.CSSProperties = {
     transform: chat ? "translateY(-4px) scale(0.5)" : "translateY(0) scale(1)",
     transition: reduce ? "none" : `transform 0.66s ${SPRING}`,
-    marginBottom: chat ? spacing[1] : spacing[5],
+    marginBottom: chat ? spacing[1] : "clamp(8px, 2vh, 24px)",
     willChange: "transform",
   };
 
@@ -277,8 +277,8 @@ export function MatchCelebration({
       role="dialog"
       aria-modal="true"
       aria-label={chat ? `Chat with ${right.name}` : `It's a match with ${right.name}`}
-      className="fixed inset-0 flex items-center justify-center"
-      style={{ zIndex: 80, padding: spacing[5] }}
+      className="fixed inset-0 flex items-center justify-center overflow-hidden"
+      style={{ zIndex: 80, height: "100dvh", padding: "clamp(12px, 3.5vw, 24px)" }}
     >
       {/* Backdrop — bright frosted light + gentle warm bloom, softly blurred. */}
       <div
@@ -319,9 +319,9 @@ export function MatchCelebration({
       </div>
 
       {/* Content */}
-      <div className="relative flex w-full flex-col items-center text-center" style={{ maxWidth: 380 }}>
+      <div className="relative flex w-full flex-col items-center text-center" style={{ maxWidth: 380, maxHeight: "100%" }}>
         {/* Shared avatar cluster — travels from centre into the chat header. */}
-        <div className="relative flex items-center justify-center" style={{ ...clusterStyle, height: 168 }}>
+        <div className="relative flex items-center justify-center" style={{ ...clusterStyle, height: "clamp(112px, 18vh, 168px)" }}>
           <div
             className="ds-match-halo absolute rounded-full"
             style={{
@@ -375,7 +375,7 @@ export function MatchCelebration({
             <h2
               style={{
                 ...reveal(1),
-                fontSize: "clamp(38px, 10vw, 52px)",
+                fontSize: "clamp(30px, 8vw, 48px)",
                 fontWeight: 800,
                 lineHeight: 1.02,
                 letterSpacing: "-0.03em",
@@ -388,14 +388,14 @@ export function MatchCelebration({
             >
               It’s a match
             </h2>
-            <p style={{ ...reveal(2), ...type.bodyLg, color: colors.textSecondary, marginTop: 8 }}>
+            <p style={{ ...reveal(2), ...type.bodyLg, color: colors.textSecondary, marginTop: 6 }}>
               You and <span style={{ color: colors.textPrimary, fontWeight: 600 }}>{right.name}</span> liked each other
             </p>
 
             {/* Connection indicators — reveal progressively, never all at once. */}
             <div
               className="flex flex-wrap items-center justify-center"
-              style={{ gap: spacing[1], marginTop: spacing[4] }}
+              style={{ gap: spacing[1], marginTop: "clamp(10px, 2vh, 20px)" }}
             >
               {indicators.map((it, i) => (
                 <div key={it.label} style={reveal(3 + i)}>
@@ -409,7 +409,7 @@ export function MatchCelebration({
 
             {/* Shared interests — the real thing, each chip revealed in turn. */}
             {shared.interests.length > 0 && (
-              <div style={{ ...reveal(3 + indicators.length), marginTop: spacing[3], width: "100%" }}>
+              <div style={{ ...reveal(3 + indicators.length), marginTop: "clamp(10px, 2vh, 16px)", width: "100%" }}>
                 <span style={{ ...type.caption, color: colors.textMuted }}>You both like</span>
                 <div className="flex flex-wrap items-center justify-center" style={{ gap: spacing[1], marginTop: spacing[2] }}>
                   {shared.interests.map((interest) => (
@@ -437,7 +437,7 @@ export function MatchCelebration({
             <div
               style={{
                 ...reveal(4 + indicators.length),
-                marginTop: spacing[5],
+                marginTop: "clamp(12px, 2.4vh, 24px)",
                 width: "100%",
               }}
             >
@@ -462,7 +462,7 @@ export function MatchCelebration({
             </div>
 
             {/* CTAs emerge with a small spring lift. */}
-            <div className="w-full" style={{ marginTop: spacing[5] }}>
+            <div className="w-full" style={{ marginTop: "clamp(12px, 2.4vh, 24px)" }}>
               <div style={reveal(5 + indicators.length)}>
                 <Button
                   variant="primary"
