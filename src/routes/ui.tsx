@@ -46,6 +46,7 @@ import {
   weights,
   motion,
 } from "@/lib/ds";
+import { haptic, type HapticToken } from "@/lib/haptics";
 import {
   Avatar,
   Badge,
