@@ -963,7 +963,7 @@ function UIShowcase() {
                 mine={false}
                 entrance
                 groupPos="single"
-                reactions={["❤️", "🔥"]}
+                reactions={[{ emoji: "❤️", count: 1, mine: true }, { emoji: "🔥", count: 2, mine: false }]}
               >
                 Second year. Coffee this week? ☕️
               </Bubble>

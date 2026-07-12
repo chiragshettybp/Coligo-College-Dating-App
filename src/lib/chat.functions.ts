@@ -44,8 +44,12 @@ export type ChatMessage = {
   senderId: string;
   createdAt: string;
   readAt: string | null;
+  deliveredAt: string | null;
   kind: string;
   imageUrl: string | null;
+  audioUrl: string | null;
+  audioDurationMs: number | null;
+  reactions: Record<string, string[]>;
   replyTo: { id: string; body: string; senderId: string; kind: string } | null;
 };
 
@@ -105,6 +109,55 @@ function resolveUrl(raw: string | null | undefined, signed: Map<string, string>)
   if (!raw) return null;
   if (raw.startsWith("http")) return raw;
   return signed.get(raw) ?? null;
+}
+
+function parseReactions(v: unknown): Record<string, string[]> {
+  if (!v || typeof v !== "object") return {};
+  const out: Record<string, string[]> = {};
+  for (const [k, val] of Object.entries(v as Record<string, unknown>)) {
+    if (Array.isArray(val)) out[k] = val.filter((x): x is string => typeof x === "string");
+  }
+  return out;
+}
+
+// Columns selected for a full chat message row.
+const MSG_COLS =
+  "id, body, sender_id, created_at, read_at, delivered_at, kind, image_path, audio_path, audio_duration_ms, reactions, reply_to";
+
+type MessageRow = {
+  id: string;
+  body: string | null;
+  sender_id: string;
+  created_at: string;
+  read_at: string | null;
+  delivered_at: string | null;
+  kind: string | null;
+  image_path: string | null;
+  audio_path: string | null;
+  audio_duration_ms: number | null;
+  reactions: unknown;
+  reply_to: string | null;
+};
+
+function mapMessageRow(
+  r: MessageRow,
+  parents: Map<string, { id: string; body: string; senderId: string; kind: string }>,
+  signed: Map<string, string>,
+): ChatMessage {
+  return {
+    id: r.id,
+    body: r.body ?? "",
+    senderId: r.sender_id,
+    createdAt: r.created_at,
+    readAt: r.read_at ?? null,
+    deliveredAt: r.delivered_at ?? null,
+    kind: r.kind ?? "text",
+    imageUrl: resolveUrl(r.image_path, signed),
+    audioUrl: resolveUrl(r.audio_path, signed),
+    audioDurationMs: r.audio_duration_ms ?? null,
+    reactions: parseReactions(r.reactions),
+    replyTo: r.reply_to ? parents.get(r.reply_to) ?? null : null,
+  };
 }
 
 // --------------------------------------------------------------- List --------
@@ -191,7 +244,7 @@ export const getConversation = createServerFn({ method: "GET" })
     // then reverse to ascending for display.
     let q = supabase
       .from("messages")
-      .select("id, body, sender_id, created_at, read_at, kind, image_path, reply_to")
+      .select(MSG_COLS)
       .eq("match_id", data.chatId)
       .order("created_at", { ascending: false })
       .limit(limit + 1);
@@ -224,21 +277,15 @@ export const getConversation = createServerFn({ method: "GET" })
       }
     }
 
-    const signed = await signPaths(supabase, CHAT_BUCKET, windowRows.map((r) => r.image_path));
+    const signed = await signPaths(supabase, CHAT_BUCKET, [
+      ...windowRows.map((r) => r.image_path),
+      ...windowRows.map((r) => r.audio_path),
+    ]);
 
     const messages: ChatMessage[] = windowRows
       .slice()
       .reverse()
-      .map((r) => ({
-        id: r.id as string,
-        body: (r.body as string) ?? "",
-        senderId: r.sender_id as string,
-        createdAt: r.created_at as string,
-        readAt: (r.read_at as string) ?? null,
-        kind: (r.kind as string) ?? "text",
-        imageUrl: resolveUrl(r.image_path as string | null, signed),
-        replyTo: r.reply_to ? parents.get(r.reply_to as string) ?? null : null,
-      }));
+      .map((r) => mapMessageRow(r, parents, signed));
 
     return { viewerId: userId, messages, hasMore };
   });
@@ -254,22 +301,31 @@ export const conversationQuery = (chatId: string) =>
 export const sendMessage = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator(
-    (input: { chatId: string; body?: string; imagePath?: string; replyTo?: string }) =>
+    (input: {
+      chatId: string;
+      body?: string;
+      imagePath?: string;
+      audioPath?: string;
+      audioDurationMs?: number;
+      replyTo?: string;
+    }) =>
       z
         .object({
           chatId: z.string().uuid(),
           body: z.string().trim().max(MESSAGE_MAX).optional(),
           imagePath: z.string().max(400).optional(),
+          audioPath: z.string().max(400).optional(),
+          audioDurationMs: z.number().int().min(0).max(1000 * 60 * 10).optional(),
           replyTo: z.string().uuid().optional(),
         })
-        .refine((v) => (v.body && v.body.length > 0) || !!v.imagePath, {
+        .refine((v) => (v.body && v.body.length > 0) || !!v.imagePath || !!v.audioPath, {
           message: "Message cannot be empty",
         })
         .parse(input),
   )
   .handler(async ({ context, data }): Promise<ChatMessage> => {
     const { supabase, userId } = context;
-    const kind = data.imagePath ? "image" : "text";
+    const kind = data.audioPath ? "voice" : data.imagePath ? "image" : "text";
     const { data: row, error } = await supabase
       .from("messages")
       .insert({
@@ -277,24 +333,17 @@ export const sendMessage = createServerFn({ method: "POST" })
         sender_id: userId,
         body: data.body ?? "",
         image_path: data.imagePath ?? null,
+        audio_path: data.audioPath ?? null,
+        audio_duration_ms: data.audioDurationMs ?? null,
         reply_to: data.replyTo ?? null,
         kind,
       })
-      .select("id, body, sender_id, created_at, read_at, kind, image_path, reply_to")
+      .select(MSG_COLS)
       .single();
     if (error) throw new Error(error.message);
 
-    const signed = await signPaths(supabase, CHAT_BUCKET, [row.image_path]);
-    return {
-      id: row.id as string,
-      body: (row.body as string) ?? "",
-      senderId: row.sender_id as string,
-      createdAt: row.created_at as string,
-      readAt: (row.read_at as string) ?? null,
-      kind: (row.kind as string) ?? "text",
-      imageUrl: resolveUrl(row.image_path as string | null, signed),
-      replyTo: null,
-    };
+    const signed = await signPaths(supabase, CHAT_BUCKET, [row.image_path, row.audio_path]);
+    return mapMessageRow(row as MessageRow, new Map(), signed);
   });
 
 export const markConversationRead = createServerFn({ method: "POST" })
@@ -491,4 +540,122 @@ export const reportStatusQuery = (chatId: string) =>
     queryKey: ["chat", "report-status", chatId],
     queryFn: () => getChatInfo({ data: { chatId } }),
     staleTime: 30_000,
+  });
+
+// ----------------------------------------------------- Delivered receipts ----
+export const markConversationDelivered = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((input: { chatId: string }) =>
+    z.object({ chatId: z.string().uuid() }).parse(input),
+  )
+  .handler(async ({ context, data }): Promise<{ ok: true }> => {
+    const { supabase } = context;
+    const { error } = await supabase.rpc("mark_delivered", { _match_id: data.chatId });
+    if (error) throw new Error(error.message);
+    return { ok: true };
+  });
+
+// --------------------------------------------------------- Reactions ---------
+export const toggleReaction = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((input: { messageId: string; emoji: string }) =>
+    z.object({ messageId: z.string().uuid(), emoji: z.string().min(1).max(16) }).parse(input),
+  )
+  .handler(async ({ context, data }): Promise<Record<string, string[]>> => {
+    const { supabase } = context;
+    const { data: res, error } = await supabase.rpc("toggle_reaction", {
+      _message_id: data.messageId,
+      _emoji: data.emoji,
+    });
+    if (error) throw new Error(error.message);
+    return parseReactions(res);
+  });
+
+// --------------------------------------------------- Voice note upload -------
+export const createChatAudioUpload = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((input: { chatId: string; ext: string }) =>
+    z
+      .object({
+        chatId: z.string().uuid(),
+        ext: z.enum(["webm", "mp4", "m4a", "ogg", "mp3", "wav"]),
+      })
+      .parse(input),
+  )
+  .handler(async ({ context, data }): Promise<{ path: string; token: string }> => {
+    const { supabase, userId } = context;
+    const name = `voice-${Date.now()}-${crypto.randomUUID()}.${data.ext}`;
+    const path = `${data.chatId}/${userId}/${name}`;
+    const { data: signed, error } = await supabase.storage
+      .from(CHAT_BUCKET)
+      .createSignedUploadUrl(path);
+    if (error || !signed) throw new Error(error?.message ?? "Could not prepare upload");
+    return { path, token: signed.token };
+  });
+
+// ------------------------------------------------ Web push subscriptions -----
+export const VAPID_PUBLIC_KEY =
+  "BFKmhpvmC3nGuP6XPLFVMHNv4IrreDl9IMjgXHqWHN4xtJz-PS1hxZ3mRoTfmCdnrX19v8nOt4MYJRgotzlyO_I";
+
+export const savePushSubscription = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((input: { subscription: unknown }) =>
+    z
+      .object({
+        subscription: z.object({
+          endpoint: z.string().url(),
+          keys: z.object({ p256dh: z.string(), auth: z.string() }),
+        }),
+      })
+      .parse(input),
+  )
+  .handler(async ({ context, data }): Promise<{ ok: true }> => {
+    const { supabase, userId } = context;
+    const token = JSON.stringify(data.subscription);
+    // De-dupe by endpoint: drop any prior row for this endpoint, then insert.
+    const { data: existing } = await supabase
+      .from("device_tokens")
+      .select("id, token, user_id")
+      .eq("user_id", userId)
+      .eq("platform", "web");
+    for (const row of existing ?? []) {
+      try {
+        const parsed = JSON.parse((row as { token: string }).token) as { endpoint?: string };
+        if (parsed.endpoint === data.subscription.endpoint) {
+          await supabase.from("device_tokens").delete().eq("id", (row as { id: string }).id);
+        }
+      } catch {
+        /* ignore malformed rows */
+      }
+    }
+    const { error } = await supabase
+      .from("device_tokens")
+      .insert({ user_id: userId, platform: "web", token });
+    if (error) throw new Error(error.message);
+    return { ok: true };
+  });
+
+export const deletePushSubscription = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((input: { endpoint: string }) =>
+    z.object({ endpoint: z.string().url() }).parse(input),
+  )
+  .handler(async ({ context, data }): Promise<{ ok: true }> => {
+    const { supabase, userId } = context;
+    const { data: existing } = await supabase
+      .from("device_tokens")
+      .select("id, token")
+      .eq("user_id", userId)
+      .eq("platform", "web");
+    for (const row of existing ?? []) {
+      try {
+        const parsed = JSON.parse((row as { token: string }).token) as { endpoint?: string };
+        if (parsed.endpoint === data.endpoint) {
+          await supabase.from("device_tokens").delete().eq("id", (row as { id: string }).id);
+        }
+      } catch {
+        /* ignore */
+      }
+    }
+    return { ok: true };
   });

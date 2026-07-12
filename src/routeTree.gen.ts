@@ -51,6 +51,7 @@ import { Route as AuthenticatedMatchesIndexRouteImport } from './routes/_authent
 import { Route as AuthenticatedHomeIndexRouteImport } from './routes/_authenticated/home.index'
 import { Route as AuthenticatedDiscoverIndexRouteImport } from './routes/_authenticated/discover.index'
 import { Route as AuthenticatedChatIndexRouteImport } from './routes/_authenticated/chat.index'
+import { Route as ApiPublicPushRouteImport } from './routes/api/public/push'
 import { Route as AuthenticatedMatchesMatchIdRouteImport } from './routes/_authenticated/matches.$matchId'
 import { Route as AuthenticatedHomeCollegeRankingsRouteImport } from './routes/_authenticated/home.college-rankings'
 import { Route as AuthenticatedDiscoverNoMoreProfilesRouteImport } from './routes/_authenticated/discover.no-more-profiles'
@@ -279,6 +280,11 @@ const AuthenticatedChatIndexRoute = AuthenticatedChatIndexRouteImport.update({
   path: '/',
   getParentRoute: () => AuthenticatedChatRoute,
 } as any)
+const ApiPublicPushRoute = ApiPublicPushRouteImport.update({
+  id: '/api/public/push',
+  path: '/api/public/push',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AuthenticatedMatchesMatchIdRoute =
   AuthenticatedMatchesMatchIdRouteImport.update({
     id: '/$matchId',
@@ -410,6 +416,7 @@ export interface FileRoutesByFullPath {
   '/discover/no-more-profiles': typeof AuthenticatedDiscoverNoMoreProfilesRoute
   '/home/college-rankings': typeof AuthenticatedHomeCollegeRankingsRoute
   '/matches/$matchId': typeof AuthenticatedMatchesMatchIdRouteWithChildren
+  '/api/public/push': typeof ApiPublicPushRoute
   '/chat/': typeof AuthenticatedChatIndexRoute
   '/discover/': typeof AuthenticatedDiscoverIndexRoute
   '/home/': typeof AuthenticatedHomeIndexRoute
@@ -461,6 +468,7 @@ export interface FileRoutesByTo {
   '/discover/no-more-profiles': typeof AuthenticatedDiscoverNoMoreProfilesRoute
   '/home/college-rankings': typeof AuthenticatedHomeCollegeRankingsRoute
   '/matches/$matchId': typeof AuthenticatedMatchesMatchIdRouteWithChildren
+  '/api/public/push': typeof ApiPublicPushRoute
   '/chat': typeof AuthenticatedChatIndexRoute
   '/discover': typeof AuthenticatedDiscoverIndexRoute
   '/home': typeof AuthenticatedHomeIndexRoute
@@ -521,6 +529,7 @@ export interface FileRoutesById {
   '/_authenticated/discover/no-more-profiles': typeof AuthenticatedDiscoverNoMoreProfilesRoute
   '/_authenticated/home/college-rankings': typeof AuthenticatedHomeCollegeRankingsRoute
   '/_authenticated/matches/$matchId': typeof AuthenticatedMatchesMatchIdRouteWithChildren
+  '/api/public/push': typeof ApiPublicPushRoute
   '/_authenticated/chat/': typeof AuthenticatedChatIndexRoute
   '/_authenticated/discover/': typeof AuthenticatedDiscoverIndexRoute
   '/_authenticated/home/': typeof AuthenticatedHomeIndexRoute
@@ -580,6 +589,7 @@ export interface FileRouteTypes {
     | '/discover/no-more-profiles'
     | '/home/college-rankings'
     | '/matches/$matchId'
+    | '/api/public/push'
     | '/chat/'
     | '/discover/'
     | '/home/'
@@ -631,6 +641,7 @@ export interface FileRouteTypes {
     | '/discover/no-more-profiles'
     | '/home/college-rankings'
     | '/matches/$matchId'
+    | '/api/public/push'
     | '/chat'
     | '/discover'
     | '/home'
@@ -690,6 +701,7 @@ export interface FileRouteTypes {
     | '/_authenticated/discover/no-more-profiles'
     | '/_authenticated/home/college-rankings'
     | '/_authenticated/matches/$matchId'
+    | '/api/public/push'
     | '/_authenticated/chat/'
     | '/_authenticated/discover/'
     | '/_authenticated/home/'
@@ -717,6 +729,7 @@ export interface RootRouteChildren {
   UiRoute: typeof UiRoute
   SystemMaintenanceRoute: typeof SystemMaintenanceRoute
   SystemSplashRoute: typeof SystemSplashRoute
+  ApiPublicPushRoute: typeof ApiPublicPushRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -1014,6 +1027,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/chat/'
       preLoaderRoute: typeof AuthenticatedChatIndexRouteImport
       parentRoute: typeof AuthenticatedChatRoute
+    }
+    '/api/public/push': {
+      id: '/api/public/push'
+      path: '/api/public/push'
+      fullPath: '/api/public/push'
+      preLoaderRoute: typeof ApiPublicPushRouteImport
+      parentRoute: typeof rootRouteImport
     }
     '/_authenticated/matches/$matchId': {
       id: '/_authenticated/matches/$matchId'
@@ -1336,6 +1356,7 @@ const rootRouteChildren: RootRouteChildren = {
   UiRoute: UiRoute,
   SystemMaintenanceRoute: SystemMaintenanceRoute,
   SystemSplashRoute: SystemSplashRoute,
+  ApiPublicPushRoute: ApiPublicPushRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
