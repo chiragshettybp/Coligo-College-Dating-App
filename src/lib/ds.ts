@@ -23,24 +23,47 @@ export const weights = {
   heavy: 800,
 } as const;
 
-/** Mobile-first type scale. size / lineHeight / weight / letterSpacing. */
+/**
+ * Production-grade type scale — one source of truth for every text role.
+ * Optical tracking tightens as size grows (Apple HIG behaviour); numeric roles
+ * use tabular figures for aligned columns. Never hardcode a font size in a
+ * component — inherit a token from here (or use the <Text> primitive).
+ *
+ * size / lineHeight / weight / letterSpacing (+ optional numeric / transform).
+ */
 export const type = {
+  // Display — hero moments, balances, big numbers.
+  displayXl: { fontSize: 44, lineHeight: 1.02, fontWeight: weights.heavy, letterSpacing: "-0.035em" },
   displayLg: { fontSize: 40, lineHeight: 1.05, fontWeight: weights.heavy, letterSpacing: "-0.03em" },
   displayMd: { fontSize: 34, lineHeight: 1.08, fontWeight: weights.heavy, letterSpacing: "-0.03em" },
   displaySm: { fontSize: 28, lineHeight: 1.1, fontWeight: weights.bold, letterSpacing: "-0.02em" },
+  // Headings — section and screen hierarchy.
+  headingXl: { fontSize: 32, lineHeight: 1.1, fontWeight: weights.bold, letterSpacing: "-0.025em" },
   headingLg: { fontSize: 24, lineHeight: 1.15, fontWeight: weights.bold, letterSpacing: "-0.02em" },
   headingMd: { fontSize: 20, lineHeight: 1.2, fontWeight: weights.bold, letterSpacing: "-0.015em" },
   headingSm: { fontSize: 18, lineHeight: 1.25, fontWeight: weights.semibold, letterSpacing: "-0.01em" },
+  // Title — card and row headers.
+  title: { fontSize: 16, lineHeight: 1.3, fontWeight: weights.semibold, letterSpacing: "-0.005em" },
   titleMd: { fontSize: 16, lineHeight: 1.3, fontWeight: weights.semibold, letterSpacing: "-0.005em" },
-  bodyLg: { fontSize: 16, lineHeight: 1.5, fontWeight: weights.regular, letterSpacing: "0" },
-  bodyMd: { fontSize: 14, lineHeight: 1.5, fontWeight: weights.regular, letterSpacing: "0" },
+  // Body — reading text.
+  bodyLg: { fontSize: 17, lineHeight: 1.5, fontWeight: weights.regular, letterSpacing: "-0.01em" },
+  body: { fontSize: 15, lineHeight: 1.5, fontWeight: weights.regular, letterSpacing: "0" },
+  bodyMd: { fontSize: 15, lineHeight: 1.5, fontWeight: weights.regular, letterSpacing: "0" },
   bodySm: { fontSize: 13, lineHeight: 1.45, fontWeight: weights.regular, letterSpacing: "0" },
-  caption: { fontSize: 12, lineHeight: 1.4, fontWeight: weights.medium, letterSpacing: "0.01em" },
+  // Supporting roles.
+  caption: { fontSize: 12, lineHeight: 1.35, fontWeight: weights.medium, letterSpacing: "0.005em" },
   overline: { fontSize: 11, lineHeight: 1.3, fontWeight: weights.bold, letterSpacing: "0.08em", textTransform: "uppercase" as const },
   label: { fontSize: 14, lineHeight: 1.2, fontWeight: weights.semibold, letterSpacing: "0" },
+  buttonLabel: { fontSize: 15, lineHeight: 1, fontWeight: weights.semibold, letterSpacing: "-0.01em" },
   button: { fontSize: 15, lineHeight: 1, fontWeight: weights.semibold, letterSpacing: "-0.01em" },
+  inputText: { fontSize: 16, lineHeight: 1.4, fontWeight: weights.regular, letterSpacing: "-0.005em" },
+  navLabel: { fontSize: 11, lineHeight: 1.1, fontWeight: weights.semibold, letterSpacing: "0.01em" },
+  badgeLabel: { fontSize: 12, lineHeight: 1, fontWeight: weights.semibold, letterSpacing: "0.01em", fontVariantNumeric: "tabular-nums" as const },
+  // Numeric — tabular figures for aligned columns.
   number: { fontSize: 34, lineHeight: 1, fontWeight: weights.heavy, letterSpacing: "-0.02em", fontVariantNumeric: "tabular-nums" as const },
 } as const;
+
+export type TypeToken = keyof typeof type;
 
 /** Semantic colors — calm, low-saturation iOS palette. Dark text on light. */
 export const colors = {

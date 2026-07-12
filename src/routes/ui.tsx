@@ -63,6 +63,7 @@ import {
   IconButton,
   ProgressBar,
   Skeleton,
+  Text,
   TextField,
   Toggle,
 } from "@/components/ds/glass";
@@ -262,42 +263,75 @@ function UIShowcase() {
         {/* Typography */}
         <Section
           title="Typography"
-          description="SF Pro on Apple devices, Inter everywhere else. Tuned weights, line heights and optical tracking build the full hierarchy."
+          description="One production-grade scale. Every role is a token — Display through Badge Label — with optical tracking, tuned line height and tabular numerics. Hierarchy comes from type, not color."
         >
           <GlassPanel style={{ padding: spacing[5] }}>
-            <div style={{ fontSize: 48, fontWeight: 800, color: "#fff", letterSpacing: "-0.03em" }}>
-              Display / 48
+            <div className="flex flex-col" style={{ gap: spacing[3] }}>
+              <Text variant="displayXl">Display XL</Text>
+              <Text variant="displayLg">Display L</Text>
+              <Text variant="headingXl">Heading XL</Text>
+              <Text variant="headingLg">Heading L</Text>
+              <Text variant="headingMd">Heading M</Text>
+              <Text variant="headingSm">Heading S</Text>
+              <Text variant="title">Title</Text>
+              <Text variant="bodyLg" tone="secondary">
+                Body Large — the quick brown fox jumps over the lazy dog.
+              </Text>
+              <Text variant="body" tone="secondary">
+                Body — the quick brown fox jumps over the lazy dog.
+              </Text>
+              <Text variant="bodySm" tone="muted">
+                Body Small — supporting detail and helper text.
+              </Text>
+              <Text variant="caption" tone="muted">
+                Caption — metadata and timestamps
+              </Text>
+              <Text variant="overline" tone="muted">
+                Overline
+              </Text>
+              <div className="flex flex-wrap items-center" style={{ gap: spacing[4] }}>
+                <Text variant="label">Label</Text>
+                <Text variant="buttonLabel">Button Label</Text>
+                <Text variant="navLabel" tone="muted">Nav Label</Text>
+                <Text variant="badgeLabel" tone="muted">Badge</Text>
+              </div>
             </div>
-            <div style={{ fontSize: 34, fontWeight: 800, color: "#fff", marginTop: 12 }}>
-              Heading 1 / 34
-            </div>
-            <div style={{ fontSize: 26, fontWeight: 700, color: "#fff", marginTop: 8 }}>
-              Heading 2 / 26
-            </div>
-            <div style={{ fontSize: 20, fontWeight: 700, color: "#fff", marginTop: 8 }}>
-              Title / 20
-            </div>
-            <div style={{ fontSize: 16, fontWeight: 500, color: colors.textSecondary, marginTop: 8 }}>
-              Body / 16 — the quick brown fox jumps over the lazy dog.
-            </div>
-            <div style={{ fontSize: 13, fontWeight: 500, color: colors.textMuted, marginTop: 8 }}>
-              Caption / 13 — supporting metadata and timestamps.
-            </div>
+
             <div
               style={{
-                fontSize: 40,
-                fontWeight: 800,
-                marginTop: 14,
-                background: "linear-gradient(120deg,#57b0f6,#ea6fa6)",
-                WebkitBackgroundClip: "text",
-                backgroundClip: "text",
-                color: "transparent",
+                marginTop: spacing[5],
+                paddingTop: spacing[4],
+                borderTop: `1px solid ${surfaces.border}`,
               }}
             >
-              Gradient Text
+              <Text variant="overline" tone="muted">Numeric alignment</Text>
+              <div className="mt-2 flex flex-col" style={{ gap: 2 }}>
+                <Text variant="title" numeric align="right" style={{ width: 140 }}>1,204.50</Text>
+                <Text variant="title" numeric align="right" style={{ width: 140 }}>98.00</Text>
+                <Text variant="title" numeric align="right" style={{ width: 140 }}>52,002.50</Text>
+              </div>
+            </div>
+
+            <div
+              style={{
+                marginTop: spacing[5],
+                paddingTop: spacing[4],
+                borderTop: `1px solid ${surfaces.border}`,
+              }}
+            >
+              <Text variant="overline" tone="muted">Truncation &amp; clamp</Text>
+              <div className="mt-2" style={{ maxWidth: 260 }}>
+                <Text variant="body" tone="secondary" truncate>
+                  Single line truncates with an ellipsis when it runs out of room here.
+                </Text>
+                <Text variant="body" tone="secondary" clamp={2} style={{ marginTop: spacing[2] }}>
+                  This paragraph clamps cleanly to two lines and then adds an ellipsis, no matter how much text follows it in the string content.
+                </Text>
+              </div>
             </div>
           </GlassPanel>
         </Section>
+
 
         {/* Buttons */}
         <Section
