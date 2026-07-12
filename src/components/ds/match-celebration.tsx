@@ -277,8 +277,8 @@ export function MatchCelebration({
       role="dialog"
       aria-modal="true"
       aria-label={chat ? `Chat with ${right.name}` : `It's a match with ${right.name}`}
-      className="fixed inset-0 flex items-center justify-center"
-      style={{ zIndex: 80, padding: spacing[5] }}
+      className="fixed inset-0 flex items-center justify-center overflow-hidden"
+      style={{ zIndex: 80, height: "100dvh", padding: "clamp(12px, 3.5vw, 24px)" }}
     >
       {/* Backdrop — bright frosted light + gentle warm bloom, softly blurred. */}
       <div
