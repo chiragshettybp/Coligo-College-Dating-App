@@ -1626,12 +1626,106 @@ function SwipeCard({ overlay }: { overlay?: "LIKE" | "NOPE" | "SUPER" | "BOOST" 
 }
 
 function SwipeDeck() {
+  // Live drag state — the card follows the finger 1:1, then either flings out
+  // with momentum or springs back. Rotation, elastic stack interpolation and
+  // threshold stamps are all derived from the same pointer position.
+  const [drag, setDrag] = useState({ x: 0, y: 0 });
+  const [dragging, setDragging] = useState(false);
+  const [springing, setSpringing] = useState(false);
+  const start = useRef({ x: 0, y: 0, t: 0 });
+  const last = useRef({ x: 0, y: 0, t: 0, vx: 0, vy: 0 });
+  const resetTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  const THRESHOLD = 110;
+
+  useEffect(() => () => {
+    if (resetTimer.current) clearTimeout(resetTimer.current);
+  }, []);
+
+  const onPointerDown = (e: React.PointerEvent) => {
+    if (springing) return;
+    (e.target as HTMLElement).setPointerCapture?.(e.pointerId);
+    const now = performance.now();
+    start.current = { x: e.clientX, y: e.clientY, t: now };
+    last.current = { x: e.clientX, y: e.clientY, t: now, vx: 0, vy: 0 };
+    setDragging(true);
+  };
+
+  const onPointerMove = (e: React.PointerEvent) => {
+    if (!dragging) return;
+    const now = performance.now();
+    const dx = e.clientX - start.current.x;
+    const dy = e.clientY - start.current.y;
+    const dt = Math.max(1, now - last.current.t);
+    last.current = {
+      x: e.clientX,
+      y: e.clientY,
+      t: now,
+      vx: (e.clientX - last.current.x) / dt,
+      vy: (e.clientY - last.current.y) / dt,
+    };
+    setDrag({ x: dx, y: dy });
+  };
+
+  const settle = () => setDrag({ x: 0, y: 0 });
+
+  const fling = (dirX: number, dirY: number) => {
+    haptic("light");
+    setSpringing(true);
+    setDrag({ x: dirX * 620, y: dirY * 620 + drag.y * 0.6 });
+    resetTimer.current = setTimeout(() => {
+      setSpringing(false);
+      // Snap the next card into place without animating the reset.
+      requestAnimationFrame(() => {
+        setDrag({ x: 0, y: 0 });
+      });
+    }, 260);
+  };
+
+  const onPointerUp = () => {
+    if (!dragging) return;
+    setDragging(false);
+    const { vx, vy } = last.current;
+    const flingLeft = drag.x < -THRESHOLD || vx < -0.6;
+    const flingRight = drag.x > THRESHOLD || vx > 0.6;
+    const flingUp = drag.y < -THRESHOLD || vy < -0.6;
+    if (flingUp && Math.abs(drag.y) > Math.abs(drag.x)) fling(0, -1);
+    else if (flingRight) fling(1, 0);
+    else if (flingLeft) fling(-1, 0);
+    else {
+      setSpringing(true);
+      settle();
+      resetTimer.current = setTimeout(() => setSpringing(false), 320);
+    }
+  };
+
+  const clamp01 = (n: number) => Math.max(0, Math.min(1, n));
+  const rotation = drag.x / 18;
+  const likeOp = clamp01(drag.x / THRESHOLD);
+  const nopeOp = clamp01(-drag.x / THRESHOLD);
+  const superOp = clamp01(-drag.y / THRESHOLD);
+  const progress = clamp01(Math.hypot(drag.x, drag.y) / 140);
+  // Behind cards rise toward the top as the front card leaves.
+  const secondScale = 0.95 + 0.05 * progress;
+  const secondY = 11 * (1 - progress);
+  const thirdScale = 0.9 + 0.05 * progress;
+  const thirdY = 22 - 11 * progress;
+
+  const springCurve = springing ? spring.responsive : "none";
+  const frontTransition = dragging
+    ? "none"
+    : `transform ${springing ? 0.42 : 0.32}s ${springCurve === "none" ? "cubic-bezier(0.22,1,0.36,1)" : springCurve}`;
+
   return (
-    <div style={{ position: "relative" }}>
+    <div style={{ position: "relative", touchAction: "none", userSelect: "none" }}>
       {/* third card */}
       <div
         className="absolute inset-0"
-        style={{ transform: "translateY(22px) scale(0.9)", opacity: 0.35 }}
+        style={{
+          transform: `translateY(${thirdY}px) scale(${thirdScale})`,
+          opacity: 0.35 + 0.25 * progress,
+          transition: dragging ? "none" : "transform 0.32s cubic-bezier(0.22,1,0.36,1), opacity 0.32s ease",
+        }}
       >
         <div
           style={{
@@ -1646,7 +1740,11 @@ function SwipeDeck() {
       {/* second card */}
       <div
         className="absolute inset-0"
-        style={{ transform: "translateY(11px) scale(0.95)", opacity: 0.6 }}
+        style={{
+          transform: `translateY(${secondY}px) scale(${secondScale})`,
+          opacity: 0.6 + 0.4 * progress,
+          transition: dragging ? "none" : "transform 0.32s cubic-bezier(0.22,1,0.36,1), opacity 0.32s ease",
+        }}
       >
         <div
           style={{
@@ -1658,13 +1756,36 @@ function SwipeDeck() {
           }}
         />
       </div>
-      {/* top card */}
-      <div style={{ position: "relative", transform: "rotate(-1.5deg)" }}>
-        <SwipeCard overlay="LIKE" />
+      {/* top card — follows the finger */}
+      <div
+        onPointerDown={onPointerDown}
+        onPointerMove={onPointerMove}
+        onPointerUp={onPointerUp}
+        onPointerCancel={onPointerUp}
+        style={{
+          position: "relative",
+          transform: `translate3d(${drag.x}px, ${drag.y}px, 0) rotate(${rotation}deg)`,
+          transition: frontTransition,
+          cursor: dragging ? "grabbing" : "grab",
+          willChange: "transform",
+        }}
+      >
+        <SwipeCard />
+        {/* live threshold stamps driven by the drag position */}
+        <div className="pointer-events-none absolute" style={{ top: spacing[6], left: spacing[4], opacity: likeOp, transform: `rotate(-12deg) scale(${0.9 + 0.1 * likeOp})` }}>
+          <Stamp label="LIKE" color={colors.success} rotate={0} />
+        </div>
+        <div className="pointer-events-none absolute" style={{ top: spacing[6], right: spacing[4], opacity: nopeOp, transform: `rotate(12deg) scale(${0.9 + 0.1 * nopeOp})` }}>
+          <Stamp label="NOPE" color={colors.danger} rotate={0} />
+        </div>
+        <div className="pointer-events-none absolute left-1/2 -translate-x-1/2" style={{ bottom: 120, opacity: superOp, transform: `translateX(-50%) scale(${0.9 + 0.1 * superOp})` }}>
+          <Stamp label="SUPER" color={colors.info} rotate={0} />
+        </div>
       </div>
     </div>
   );
 }
+
 
 function SwipeControl({
   children,
