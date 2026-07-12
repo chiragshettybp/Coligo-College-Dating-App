@@ -512,7 +512,7 @@ function FilterSelect({ label, value, onChange, options }: { label: string; valu
         onChange={(e) => onChange(e.target.value)}
         style={{
           appearance: "none",
-          background: surfaces.raised,
+          background: surfaces.glassSoft,
           color: colors.textPrimary,
           border: `1px solid ${surfaces.border}`,
           borderRadius: 10,
@@ -554,7 +554,7 @@ function pagerStyle(disabled: boolean): React.CSSProperties {
     padding: "8px 14px",
     borderRadius: 10,
     border: `1px solid ${surfaces.border}`,
-    background: surfaces.raised,
+    background: surfaces.glassSoft,
     color: disabled ? colors.textMuted : colors.textPrimary,
     fontSize: 13,
     fontWeight: 600,
