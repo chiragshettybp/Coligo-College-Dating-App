@@ -15,7 +15,7 @@ export const OTP_ENABLED = false;
 
 // Alias domain used to represent phone numbers as Supabase email identities.
 // Swapped for native Supabase phone auth once an SMS provider is enabled.
-const PHONE_ALIAS_DOMAIN = "phone.campusmatch.app";
+const PHONE_ALIAS_DOMAIN = "campusmatch.app";
 
 // ---------------------------------------------------------------------------
 // Phone helpers (India, +91, 10 digits, starts 6-9)
