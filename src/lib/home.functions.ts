@@ -183,7 +183,7 @@ export const getHomeDashboard = createServerFn({ method: "GET" })
       id: string; full_name: string | null; avatar_url: string | null; college_name: string | null;
     }[];
 
-    const signed = await signAvatars([prof?.avatar_url ?? null, ...members.map((m) => m.avatar_url)]);
+    const signed = await signAvatars(supabase, [prof?.avatar_url ?? null, ...members.map((m) => m.avatar_url)]);
 
     const stats = (statsRes.data ?? null) as StatsJson | null;
     const collegeRow = collegeRes.data;
