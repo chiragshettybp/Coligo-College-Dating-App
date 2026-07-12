@@ -47,6 +47,7 @@ import { Route as AuthenticatedMatchesRouteImport } from './routes/_authenticate
 import { Route as AuthenticatedHomeRouteImport } from './routes/_authenticated/home'
 import { Route as AuthenticatedDiscoverRouteImport } from './routes/_authenticated/discover'
 import { Route as AuthenticatedChatRouteImport } from './routes/_authenticated/chat'
+import { Route as AuthenticatedProfileIndexRouteImport } from './routes/_authenticated/profile.index'
 import { Route as AuthenticatedNotificationsIndexRouteImport } from './routes/_authenticated/notifications.index'
 import { Route as AuthenticatedMatchesIndexRouteImport } from './routes/_authenticated/matches.index'
 import { Route as AuthenticatedHomeIndexRouteImport } from './routes/_authenticated/home.index'
@@ -261,6 +262,12 @@ const AuthenticatedChatRoute = AuthenticatedChatRouteImport.update({
   path: '/chat',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedProfileIndexRoute =
+  AuthenticatedProfileIndexRouteImport.update({
+    id: '/profile/',
+    path: '/profile/',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const AuthenticatedNotificationsIndexRoute =
   AuthenticatedNotificationsIndexRouteImport.update({
     id: '/notifications/',
@@ -444,6 +451,7 @@ export interface FileRoutesByFullPath {
   '/home/': typeof AuthenticatedHomeIndexRoute
   '/matches/': typeof AuthenticatedMatchesIndexRoute
   '/notifications/': typeof AuthenticatedNotificationsIndexRoute
+  '/profile/': typeof AuthenticatedProfileIndexRoute
   '/chat/$chatId/info': typeof AuthenticatedChatChatIdInfoRoute
   '/chat/$chatId/media': typeof AuthenticatedChatChatIdMediaRoute
   '/chat/$chatId/report': typeof AuthenticatedChatChatIdReportRoute
@@ -499,6 +507,7 @@ export interface FileRoutesByTo {
   '/home': typeof AuthenticatedHomeIndexRoute
   '/matches': typeof AuthenticatedMatchesIndexRoute
   '/notifications': typeof AuthenticatedNotificationsIndexRoute
+  '/profile': typeof AuthenticatedProfileIndexRoute
   '/chat/$chatId/info': typeof AuthenticatedChatChatIdInfoRoute
   '/chat/$chatId/media': typeof AuthenticatedChatChatIdMediaRoute
   '/chat/$chatId/report': typeof AuthenticatedChatChatIdReportRoute
@@ -563,6 +572,7 @@ export interface FileRoutesById {
   '/_authenticated/home/': typeof AuthenticatedHomeIndexRoute
   '/_authenticated/matches/': typeof AuthenticatedMatchesIndexRoute
   '/_authenticated/notifications/': typeof AuthenticatedNotificationsIndexRoute
+  '/_authenticated/profile/': typeof AuthenticatedProfileIndexRoute
   '/_authenticated/chat/$chatId/info': typeof AuthenticatedChatChatIdInfoRoute
   '/_authenticated/chat/$chatId/media': typeof AuthenticatedChatChatIdMediaRoute
   '/_authenticated/chat/$chatId/report': typeof AuthenticatedChatChatIdReportRoute
@@ -626,6 +636,7 @@ export interface FileRouteTypes {
     | '/home/'
     | '/matches/'
     | '/notifications/'
+    | '/profile/'
     | '/chat/$chatId/info'
     | '/chat/$chatId/media'
     | '/chat/$chatId/report'
@@ -681,6 +692,7 @@ export interface FileRouteTypes {
     | '/home'
     | '/matches'
     | '/notifications'
+    | '/profile'
     | '/chat/$chatId/info'
     | '/chat/$chatId/media'
     | '/chat/$chatId/report'
@@ -744,6 +756,7 @@ export interface FileRouteTypes {
     | '/_authenticated/home/'
     | '/_authenticated/matches/'
     | '/_authenticated/notifications/'
+    | '/_authenticated/profile/'
     | '/_authenticated/chat/$chatId/info'
     | '/_authenticated/chat/$chatId/media'
     | '/_authenticated/chat/$chatId/report'
@@ -1037,6 +1050,13 @@ declare module '@tanstack/react-router' {
       path: '/chat'
       fullPath: '/chat'
       preLoaderRoute: typeof AuthenticatedChatRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/profile/': {
+      id: '/_authenticated/profile/'
+      path: '/profile'
+      fullPath: '/profile/'
+      preLoaderRoute: typeof AuthenticatedProfileIndexRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/notifications/': {
@@ -1333,6 +1353,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedMatchesRoute: typeof AuthenticatedMatchesRouteWithChildren
   AuthenticatedNotificationsNotificationIdRoute: typeof AuthenticatedNotificationsNotificationIdRouteWithChildren
   AuthenticatedNotificationsIndexRoute: typeof AuthenticatedNotificationsIndexRoute
+  AuthenticatedProfileIndexRoute: typeof AuthenticatedProfileIndexRoute
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
@@ -1343,6 +1364,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedNotificationsNotificationIdRoute:
     AuthenticatedNotificationsNotificationIdRouteWithChildren,
   AuthenticatedNotificationsIndexRoute: AuthenticatedNotificationsIndexRoute,
+  AuthenticatedProfileIndexRoute: AuthenticatedProfileIndexRoute,
 }
 
 const AuthenticatedRouteRouteWithChildren =
