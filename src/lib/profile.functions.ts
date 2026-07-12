@@ -13,6 +13,7 @@ export type MyProfile = {
   phone: string | null;
   displayName: string | null;
   avatarUrl: string | null;
+  collegeId: string | null;
   verificationStatus: string;
   onboardingCompleted: boolean;
   accountStatus: AccountStatus;
@@ -26,7 +27,7 @@ export const getMyProfile = createServerFn({ method: "GET" })
     const { data, error } = await supabase
       .from("profiles")
       .select(
-        "id, phone, display_name, avatar_url, verification_status, onboarding_completed, account_status, last_login_at",
+        "id, phone, display_name, avatar_url, college_id, verification_status, onboarding_completed, account_status, last_login_at",
       )
       .eq("id", userId)
       .maybeSingle();
@@ -37,6 +38,7 @@ export const getMyProfile = createServerFn({ method: "GET" })
       phone: data.phone,
       displayName: data.display_name,
       avatarUrl: data.avatar_url,
+      collegeId: data.college_id,
       verificationStatus: data.verification_status ?? "unverified",
       onboardingCompleted: data.onboarding_completed ?? false,
       accountStatus: (data.account_status ?? "active") as AccountStatus,

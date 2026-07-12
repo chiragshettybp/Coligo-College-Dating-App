@@ -112,7 +112,16 @@ type StatsJson = {
 /** Batch-sign private avatar storage paths using the admin client. Only the
  *  curated public-facing paths passed here are ever signed. Full https URLs are
  *  passed through untouched. */
-type SignerClient = { storage: { from: (b: string) => { createSignedUrls: (paths: string[], ttl: number) => Promise<{ data: { path: string | null; signedUrl: string | null }[] | null }> } } };
+type SignerClient = {
+  storage: {
+    from: (b: string) => {
+      createSignedUrls: (
+        paths: string[],
+        ttl: number,
+      ) => Promise<{ data: { path: string | null; signedUrl: string | null }[] | null }>;
+    };
+  };
+};
 
 async function signAvatars(
   client: SignerClient,
@@ -162,10 +171,18 @@ export const getHomeDashboard = createServerFn({ method: "GET" })
       annRes,
     ] = await Promise.all([
       collegeId
-        ? supabase.from("colleges").select("id, name, city, logo_url, is_active").eq("id", collegeId).maybeSingle()
+        ? supabase
+            .from("colleges")
+            .select("id, name, city, logo_url, is_active")
+            .eq("id", collegeId)
+            .maybeSingle()
         : Promise.resolve({ data: null, error: null } as const),
-      collegeId ? supabase.rpc("college_stats", { _college_id: collegeId }) : Promise.resolve({ data: null, error: null } as const),
-      collegeId ? supabase.rpc("college_rank", { _college_id: collegeId }) : Promise.resolve({ data: null, error: null } as const),
+      collegeId
+        ? supabase.rpc("college_stats", { _college_id: collegeId })
+        : Promise.resolve({ data: null, error: null } as const),
+      collegeId
+        ? supabase.rpc("college_rank", { _college_id: collegeId })
+        : Promise.resolve({ data: null, error: null } as const),
       supabase.rpc("college_rankings", { _search: "", _limit: 5, _offset: 0 }),
       supabase.rpc("platform_stats"),
       supabase.rpc("my_matches_today", { _user_id: userId }),
@@ -180,10 +197,16 @@ export const getHomeDashboard = createServerFn({ method: "GET" })
     ]);
 
     const members = (membersRes.data ?? []) as {
-      id: string; full_name: string | null; avatar_url: string | null; college_name: string | null;
+      id: string;
+      full_name: string | null;
+      avatar_url: string | null;
+      college_name: string | null;
     }[];
 
-    const signed = await signAvatars(supabase, [prof?.avatar_url ?? null, ...members.map((m) => m.avatar_url)]);
+    const signed = await signAvatars(supabase, [
+      prof?.avatar_url ?? null,
+      ...members.map((m) => m.avatar_url),
+    ]);
 
     const stats = (statsRes.data ?? null) as StatsJson | null;
     const collegeRow = collegeRes.data;
@@ -202,7 +225,10 @@ export const getHomeDashboard = createServerFn({ method: "GET" })
         : null;
 
     const platform = (platformRes.data ?? {}) as {
-      total_students?: number; participating_colleges?: number; active_users?: number; matches_today?: number;
+      total_students?: number;
+      participating_colleges?: number;
+      active_users?: number;
+      matches_today?: number;
     };
     const matches = (matchesRes.data ?? {}) as { total?: number; mine?: number };
 
@@ -240,12 +266,15 @@ export const getHomeDashboard = createServerFn({ method: "GET" })
     };
   });
 
-function mapRankings(
-  data: unknown,
-): RankingRow[] {
+function mapRankings(data: unknown): RankingRow[] {
   const rows = (data ?? []) as {
-    id: string; name: string; city: string | null; logo_url: string | null;
-    member_count: number; growth_30d: number; rank: number;
+    id: string;
+    name: string;
+    city: string | null;
+    logo_url: string | null;
+    member_count: number;
+    growth_30d: number;
+    rank: number;
   }[];
   return rows.map((r) => ({
     id: r.id,
