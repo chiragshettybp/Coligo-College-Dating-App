@@ -668,8 +668,6 @@ function UIShowcase() {
                 mine={false}
                 entrance
                 groupPos="single"
-                tail
-                time="9:42"
                 reactions={["❤️", "🔥"]}
               >
                 Second year. Coffee this week? ☕️
