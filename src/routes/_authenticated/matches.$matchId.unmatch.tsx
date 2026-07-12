@@ -49,8 +49,8 @@ function UnmatchPage() {
     try {
       const res = await run({ data: { matchId } });
       if (!res.ok) throw new Error("Already unmatched.");
-      qc.setQueryData(matchesQuery().queryKey, (old: unknown) =>
-        Array.isArray(old) ? old.filter((m: { matchId: string }) => m.matchId !== matchId) : old,
+      qc.setQueryData<MatchListItem[]>(matchesQuery().queryKey, (old) =>
+        (old ?? []).filter((m) => m.matchId !== matchId),
       );
       await qc.invalidateQueries({ queryKey: matchesQuery().queryKey });
       toast.success(`Unmatched ${name.split(/\s+/)[0]}`);
