@@ -409,7 +409,7 @@ export function MatchCelebration({
 
             {/* Shared interests — the real thing, each chip revealed in turn. */}
             {shared.interests.length > 0 && (
-              <div style={{ ...reveal(3 + indicators.length), marginTop: spacing[3], width: "100%" }}>
+              <div style={{ ...reveal(3 + indicators.length), marginTop: "clamp(10px, 2vh, 16px)", width: "100%" }}>
                 <span style={{ ...type.caption, color: colors.textMuted }}>You both like</span>
                 <div className="flex flex-wrap items-center justify-center" style={{ gap: spacing[1], marginTop: spacing[2] }}>
                   {shared.interests.map((interest) => (
