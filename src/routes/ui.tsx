@@ -2747,7 +2747,8 @@ function Composer() {
       style={{
         padding: `${spacing[2]}px ${spacing[3]}px calc(${spacing[3]}px + env(safe-area-inset-bottom, 0px))`,
         borderTop: `1px solid ${surfaces.borderSoft}`,
-        background: "rgba(8,12,26,0.6)",
+        background: "rgba(255,255,255,0.82)",
+        backdropFilter: "blur(20px)",
       }}
     >
       <ComposerAction icon={<Plus style={{ width: 22, height: 22 }} />} label="Attachments" />
@@ -2757,8 +2758,8 @@ function Composer() {
           minHeight: 42,
           padding: "6px 8px 6px 16px",
           borderRadius: radii.lg,
-          background: surfaces.glassSoft,
-          border: `1px solid ${surfaces.border}`,
+          background: "rgba(120,120,128,0.10)",
+          border: `1px solid ${surfaces.borderSoft}`,
         }}
       >
         <span style={{ ...type.bodyLg, fontSize: 15, color: colors.textMuted, flex: 1 }}>
