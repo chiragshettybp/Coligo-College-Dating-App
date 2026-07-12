@@ -147,6 +147,74 @@ function ChatInbox() {
   );
 }
 
+const PUSH_DISMISS_KEY = "push-banner-dismissed";
+
+function PushBanner() {
+  const { supported, enabled, loading, enable } = usePushNotifications();
+  const [dismissed, setDismissed] = useState(false);
+
+  useEffect(() => {
+    setDismissed(localStorage.getItem(PUSH_DISMISS_KEY) === "1");
+  }, []);
+
+  if (!supported || enabled || dismissed) return null;
+
+  const onEnable = async () => {
+    const ok = await enable();
+    if (ok) toast.success("Push notifications enabled");
+    else toast("Enable notifications in your browser settings to get alerts.");
+  };
+
+  const onDismiss = () => {
+    localStorage.setItem(PUSH_DISMISS_KEY, "1");
+    setDismissed(true);
+  };
+
+  return (
+    <div
+      className="flex items-center gap-3"
+      style={{
+        marginTop: spacing[3],
+        padding: `${spacing[3]}px`,
+        borderRadius: radii.lg,
+        background: surfaces.glassSoft,
+        border: `1px solid ${surfaces.borderSoft}`,
+        boxShadow: shadows.soft,
+      }}
+    >
+      <div
+        className="flex shrink-0 items-center justify-center rounded-full"
+        style={{ width: 40, height: 40, background: gradients.primaryButton, color: "#fff", boxShadow: shadows.primaryGlow }}
+      >
+        <Bell style={{ width: 20, height: 20 }} />
+      </div>
+      <div className="min-w-0 flex-1">
+        <div style={{ ...ds.titleSm, color: colors.textPrimary, fontWeight: weights.semibold }}>Turn on notifications</div>
+        <div style={{ ...ds.caption, color: colors.textSecondary }}>Get alerted about new matches and messages.</div>
+      </div>
+      <button
+        onClick={onEnable}
+        disabled={loading}
+        className="shrink-0 rounded-full"
+        style={{
+          padding: "8px 14px",
+          background: gradients.primaryButton,
+          color: "#fff",
+          ...ds.caption,
+          fontWeight: weights.semibold,
+          boxShadow: shadows.primaryGlow,
+          opacity: loading ? 0.6 : 1,
+        }}
+      >
+        {loading ? "…" : "Enable"}
+      </button>
+      <button aria-label="Dismiss" onClick={onDismiss} className="shrink-0" style={{ color: colors.textMuted }}>
+        <X style={{ width: 18, height: 18 }} />
+      </button>
+    </div>
+  );
+}
+
 function ChatRow({
   chat,
   online,
