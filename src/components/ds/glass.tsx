@@ -275,43 +275,99 @@ export function Chip({
 
 type BadgeTone = "primary" | "success" | "warning" | "danger" | "info" | "neutral";
 
-const badgeTone: Record<BadgeTone, React.CSSProperties> = {
-  primary: { background: "rgba(62,160,242,0.18)", color: colors.info, border: "rgba(62,160,242,0.4)" },
-  success: { background: "rgba(67,217,163,0.16)", color: colors.success, border: "rgba(67,217,163,0.4)" },
-  warning: { background: "rgba(245,181,68,0.16)", color: colors.warning, border: "rgba(245,181,68,0.4)" },
-  danger: { background: "rgba(242,87,107,0.16)", color: colors.danger, border: "rgba(242,87,107,0.4)" },
-  info: { background: "rgba(87,176,246,0.16)", color: colors.info, border: "rgba(87,176,246,0.4)" },
-  neutral: { background: surfaces.glassSoft, color: colors.textSecondary, border: surfaces.border },
+type BadgeStyle = { background: string; color: string; border: string; dot: string };
+
+// Layered glass tints — a soft top-lit gradient, hairline border and a
+// restrained accent. Calm, collectible, same recipe across every tone.
+const badgeTone: Record<BadgeTone, BadgeStyle> = {
+  primary: {
+    background: "linear-gradient(165deg, rgba(62,160,242,0.20), rgba(62,160,242,0.07))",
+    color: "#aed6ff",
+    border: "rgba(62,160,242,0.30)",
+    dot: colors.primary,
+  },
+  success: {
+    background: "linear-gradient(165deg, rgba(67,217,163,0.18), rgba(67,217,163,0.06))",
+    color: "#8ff0cf",
+    border: "rgba(67,217,163,0.30)",
+    dot: colors.success,
+  },
+  warning: {
+    background: "linear-gradient(165deg, rgba(245,181,68,0.18), rgba(245,181,68,0.06))",
+    color: "#ffd894",
+    border: "rgba(245,181,68,0.30)",
+    dot: colors.warning,
+  },
+  danger: {
+    background: "linear-gradient(165deg, rgba(242,87,107,0.18), rgba(242,87,107,0.06))",
+    color: "#ffaab5",
+    border: "rgba(242,87,107,0.30)",
+    dot: colors.danger,
+  },
+  info: {
+    background: "linear-gradient(165deg, rgba(87,176,246,0.18), rgba(87,176,246,0.06))",
+    color: "#b6ddff",
+    border: "rgba(87,176,246,0.30)",
+    dot: colors.info,
+  },
+  neutral: {
+    background: "linear-gradient(165deg, rgba(255,255,255,0.09), rgba(255,255,255,0.03))",
+    color: colors.textSecondary,
+    border: surfaces.border,
+    dot: "#8ea3d6",
+  },
 };
 
 export function Badge({
   children,
   tone = "primary",
+  dot = false,
+  pulse = false,
   className,
 }: {
   children: React.ReactNode;
   tone?: BadgeTone;
+  /** Show a leading status dot in the tone accent — color-independent cue. */
+  dot?: boolean;
+  /** Soft breathing pulse on the dot (e.g. "online", "typing"). */
+  pulse?: boolean;
   className?: string;
 }) {
   const t = badgeTone[tone];
   return (
     <span
-      className={cn("inline-flex items-center gap-1", className)}
+      className={cn("inline-flex items-center gap-1.5 backdrop-blur-md", className)}
       style={{
         borderRadius: radii.pill,
-        padding: "3px 10px",
+        padding: dot ? "4px 11px 4px 9px" : "4px 11px",
         fontSize: 12,
-        fontWeight: 700,
-        letterSpacing: "0.02em",
+        lineHeight: 1,
+        fontWeight: 600,
+        letterSpacing: "0.01em",
+        fontVariantNumeric: "tabular-nums",
         background: t.background,
-        color: t.color as string,
+        color: t.color,
         border: `1px solid ${t.border}`,
+        boxShadow: "inset 0 1px 0 rgba(255,255,255,0.10), 0 1px 2px rgba(0,0,0,0.25)",
       }}
     >
+      {dot && (
+        <span
+          className={pulse ? "ds-badge-pulse" : undefined}
+          style={{
+            width: 6,
+            height: 6,
+            borderRadius: 999,
+            background: t.dot,
+            boxShadow: `0 0 8px ${t.dot}`,
+          }}
+        />
+      )}
       {children}
     </span>
   );
 }
+
 
 /* ------------------------------------------------------------------ Avatar */
 
