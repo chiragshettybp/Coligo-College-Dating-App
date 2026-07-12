@@ -1002,39 +1002,51 @@ function UIShowcase() {
         {/* Navigation */}
         <Section
           title="Navigation"
-          description="A complete navigation system — large title, glass top bar, segmented + scrollable tabs, floating tab bar and FAB."
+          description="One invisible navigation system — collapsible large title, glass top bar, search, segmented + scrollable tabs, floating tab bar, bottom sheet, action sheet and FAB. Every surface inherits the same tokens."
         >
           <div className="space-y-4">
-            {/* Large-title top bar */}
-            <GlassPanel style={{ padding: `${spacing[3]}px ${spacing[4]}px ${spacing[4]}px` }}>
-              <div className="flex items-start justify-between">
-                <div className="min-w-0">
-                  <div style={{ ...type.caption, color: colors.primary }}>Sunday, July 12</div>
-                  <h3 style={{ ...type.displaySm, color: "#fff", marginTop: 2 }}>Discover</h3>
-                </div>
-                <div className="flex shrink-0 items-center" style={{ gap: spacing[1] }}>
-                  <NavAction label="Search"><Search style={{ width: 19, height: 19 }} /></NavAction>
-                  <NavAction label="Notifications" badge={3}>
+            {/* Collapsible large-title header */}
+            <LargeTitleHeader
+              eyebrow="Sunday, July 12"
+              title="Discover"
+              collapsed={headerCollapsed}
+              actions={
+                <>
+                  <NavIconButton label="Notifications" badge={3}>
                     <Bell style={{ width: 19, height: 19 }} />
-                  </NavAction>
+                  </NavIconButton>
                   <button aria-label="Profile" className="rounded-full" style={{ marginLeft: 2 }}>
                     <Avatar src={ana} size="sm" status="online" />
                   </button>
-                </div>
-              </div>
-            </GlassPanel>
+                </>
+              }
+            />
+
+            <Button variant="secondary" onClick={() => setHeaderCollapsed((c) => !c)}>
+              {headerCollapsed ? "Expand title" : "Collapse title"}
+            </Button>
+
+            {/* Search bar */}
+            <SearchBar
+              value={navSearch}
+              onChange={setNavSearch}
+              placeholder="Search people, interests…"
+              icon={<Search style={{ width: 18, height: 18 }} />}
+            />
 
             {/* Compact glass top bar with back + centered title */}
-            <GlassPanel style={{ padding: `${spacing[2]}px ${spacing[3]}px` }}>
-              <div className="flex items-center justify-between">
-                <NavAction label="Back"><ChevronLeft style={{ width: 22, height: 22 }} /></NavAction>
-                <span style={{ ...type.titleMd, color: "#fff" }}>Profile</span>
-                <NavAction label="More"><Plus style={{ width: 20, height: 20 }} /></NavAction>
-              </div>
-            </GlassPanel>
+            <TopBar
+              title="Profile"
+              onBack={() => haptic("light")}
+              trailing={
+                <NavIconButton label="More" onClick={() => setActionOpen(true)}>
+                  <Plus style={{ width: 20, height: 20 }} />
+                </NavIconButton>
+              }
+            />
 
             {/* Segmented control */}
-            <Segmented
+            <SegmentControl
               options={["Nearby", "Popular", "New"]}
               value={segment}
               onChange={setSegment}
@@ -1047,12 +1059,51 @@ function UIShowcase() {
               onChange={setScrollTab}
             />
 
-            {/* Floating bottom tab bar */}
-            <div style={{ position: "relative", paddingTop: spacing[2] }}>
-              <FloatingTabBar active={activeTab} onChange={setActiveTab} />
+            {/* Sheets */}
+            <div className="flex" style={{ gap: spacing[2] }}>
+              <Button variant="secondary" onClick={() => setSheetOpen(true)}>
+                Bottom sheet
+              </Button>
+              <Button variant="secondary" onClick={() => setActionOpen(true)}>
+                Action sheet
+              </Button>
+            </div>
+
+            {/* Floating bottom tab bar + FAB */}
+            <div
+              className="flex items-center"
+              style={{ position: "relative", gap: spacing[2], paddingTop: spacing[2] }}
+            >
+              <div style={{ flex: 1, minWidth: 0 }}>
+                <BottomNav items={NAV_ITEMS} active={activeTab} onChange={setActiveTab} />
+              </div>
+              <NavFab label="New" onClick={() => haptic("medium")}>
+                <Plus style={{ width: 26, height: 26 }} />
+              </NavFab>
             </div>
           </div>
+
+          <BottomSheet open={sheetOpen} onClose={() => setSheetOpen(false)} title="Filters">
+            <div className="space-y-3" style={{ marginTop: spacing[3] }}>
+              <SegmentControl
+                options={["Everyone", "Women", "Men"]}
+                value={segment}
+                onChange={setSegment}
+              />
+              <Text tone="secondary">Drag the handle down or tap outside to dismiss.</Text>
+            </div>
+          </BottomSheet>
+
+          <ActionSheet
+            open={actionOpen}
+            onClose={() => setActionOpen(false)}
+            actions={[
+              { label: "Share profile", onSelect: () => haptic("light") },
+              { label: "Report", destructive: true, onSelect: () => haptic("warning") },
+            ]}
+          />
         </Section>
+
 
         <Section
           title="Match Celebration"
