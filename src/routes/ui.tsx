@@ -1476,7 +1476,7 @@ function SwipeCard({ overlay }: { overlay?: "LIKE" | "NOPE" | "SUPER" | "BOOST" 
 
   return (
     <GlassPanel style={{ padding: 0, overflow: "hidden", boxShadow: shadows.large }}>
-      <div style={{ position: "relative", height: 380 }}>
+      <div style={{ position: "relative", height: 440 }}>
         <img src={memoji5} alt="Jordan's profile" className="h-full w-full object-cover" />
 
         {/* page indicator */}
