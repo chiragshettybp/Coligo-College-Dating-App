@@ -45,6 +45,8 @@ import { Route as PublicCommunityGuidelinesRouteImport } from './routes/_public/
 import { Route as PublicAboutRouteImport } from './routes/_public/about'
 import { Route as AuthenticatedHomeRouteImport } from './routes/_authenticated/home'
 import { Route as AuthenticatedHomeIndexRouteImport } from './routes/_authenticated/home.index'
+import { Route as AuthenticatedHomeCollegeRankingsRouteImport } from './routes/_authenticated/home.college-rankings'
+import { Route as AuthenticatedHomeCollegeCollegeIdRouteImport } from './routes/_authenticated/home.college.$collegeId'
 
 const UiRoute = UiRouteImport.update({
   id: '/ui',
@@ -226,6 +228,18 @@ const AuthenticatedHomeIndexRoute = AuthenticatedHomeIndexRouteImport.update({
   path: '/',
   getParentRoute: () => AuthenticatedHomeRoute,
 } as any)
+const AuthenticatedHomeCollegeRankingsRoute =
+  AuthenticatedHomeCollegeRankingsRouteImport.update({
+    id: '/college-rankings',
+    path: '/college-rankings',
+    getParentRoute: () => AuthenticatedHomeRoute,
+  } as any)
+const AuthenticatedHomeCollegeCollegeIdRoute =
+  AuthenticatedHomeCollegeCollegeIdRouteImport.update({
+    id: '/college/$collegeId',
+    path: '/college/$collegeId',
+    getParentRoute: () => AuthenticatedHomeRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof PublicIndexRoute
@@ -261,7 +275,9 @@ export interface FileRoutesByFullPath {
   '/system/splash': typeof SystemSplashRoute
   '/auth/': typeof AuthIndexRoute
   '/onboarding/': typeof OnboardingIndexRoute
+  '/home/college-rankings': typeof AuthenticatedHomeCollegeRankingsRoute
   '/home/': typeof AuthenticatedHomeIndexRoute
+  '/home/college/$collegeId': typeof AuthenticatedHomeCollegeCollegeIdRoute
 }
 export interface FileRoutesByTo {
   '/': typeof PublicIndexRoute
@@ -294,7 +310,9 @@ export interface FileRoutesByTo {
   '/system/splash': typeof SystemSplashRoute
   '/auth': typeof AuthIndexRoute
   '/onboarding': typeof OnboardingIndexRoute
+  '/home/college-rankings': typeof AuthenticatedHomeCollegeRankingsRoute
   '/home': typeof AuthenticatedHomeIndexRoute
+  '/home/college/$collegeId': typeof AuthenticatedHomeCollegeCollegeIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -333,7 +351,9 @@ export interface FileRoutesById {
   '/_public/': typeof PublicIndexRoute
   '/auth/': typeof AuthIndexRoute
   '/onboarding/': typeof OnboardingIndexRoute
+  '/_authenticated/home/college-rankings': typeof AuthenticatedHomeCollegeRankingsRoute
   '/_authenticated/home/': typeof AuthenticatedHomeIndexRoute
+  '/_authenticated/home/college/$collegeId': typeof AuthenticatedHomeCollegeCollegeIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -371,7 +391,9 @@ export interface FileRouteTypes {
     | '/system/splash'
     | '/auth/'
     | '/onboarding/'
+    | '/home/college-rankings'
     | '/home/'
+    | '/home/college/$collegeId'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -404,7 +426,9 @@ export interface FileRouteTypes {
     | '/system/splash'
     | '/auth'
     | '/onboarding'
+    | '/home/college-rankings'
     | '/home'
+    | '/home/college/$collegeId'
   id:
     | '__root__'
     | '/_authenticated'
@@ -442,7 +466,9 @@ export interface FileRouteTypes {
     | '/_public/'
     | '/auth/'
     | '/onboarding/'
+    | '/_authenticated/home/college-rankings'
     | '/_authenticated/home/'
+    | '/_authenticated/home/college/$collegeId'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -711,15 +737,34 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedHomeIndexRouteImport
       parentRoute: typeof AuthenticatedHomeRoute
     }
+    '/_authenticated/home/college-rankings': {
+      id: '/_authenticated/home/college-rankings'
+      path: '/college-rankings'
+      fullPath: '/home/college-rankings'
+      preLoaderRoute: typeof AuthenticatedHomeCollegeRankingsRouteImport
+      parentRoute: typeof AuthenticatedHomeRoute
+    }
+    '/_authenticated/home/college/$collegeId': {
+      id: '/_authenticated/home/college/$collegeId'
+      path: '/college/$collegeId'
+      fullPath: '/home/college/$collegeId'
+      preLoaderRoute: typeof AuthenticatedHomeCollegeCollegeIdRouteImport
+      parentRoute: typeof AuthenticatedHomeRoute
+    }
   }
 }
 
 interface AuthenticatedHomeRouteChildren {
+  AuthenticatedHomeCollegeRankingsRoute: typeof AuthenticatedHomeCollegeRankingsRoute
   AuthenticatedHomeIndexRoute: typeof AuthenticatedHomeIndexRoute
+  AuthenticatedHomeCollegeCollegeIdRoute: typeof AuthenticatedHomeCollegeCollegeIdRoute
 }
 
 const AuthenticatedHomeRouteChildren: AuthenticatedHomeRouteChildren = {
+  AuthenticatedHomeCollegeRankingsRoute: AuthenticatedHomeCollegeRankingsRoute,
   AuthenticatedHomeIndexRoute: AuthenticatedHomeIndexRoute,
+  AuthenticatedHomeCollegeCollegeIdRoute:
+    AuthenticatedHomeCollegeCollegeIdRoute,
 }
 
 const AuthenticatedHomeRouteWithChildren =
