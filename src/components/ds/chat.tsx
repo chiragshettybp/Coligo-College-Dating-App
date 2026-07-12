@@ -618,27 +618,47 @@ export function Composer({
           <button aria-label="Camera" onClick={onCamera} className="flex shrink-0 items-center justify-center" style={{ color: colors.textSecondary }}>
             <Camera style={{ width: 21, height: 21 }} />
           </button>
-          <button aria-label="Emoji" onClick={onEmoji} className="flex shrink-0 items-center justify-center" style={{ color: colors.textSecondary }}>
+          <button aria-label="Emoji" onClick={onEmoji} className="flex shrink-0 items-center justify-center" style={{ color: emojiActive ? colors.primary : colors.textSecondary }}>
             <Smile style={{ width: 21, height: 21 }} />
           </button>
         </div>
-        <button
-          aria-label="Send"
-          disabled={disabled || !sendActive}
-          onPointerDown={() => haptic("messageSent")}
-          onClick={() => sendActive && onSend?.()}
-          className="flex shrink-0 items-center justify-center rounded-full"
-          style={{
-            width: 42,
-            height: 42,
-            background: gradients.primaryButton,
-            boxShadow: shadows.primaryGlow,
-            color: "#fff",
-            opacity: disabled || !sendActive ? 0.5 : 1,
-          }}
-        >
-          <ArrowUp style={{ width: 20, height: 20 }} strokeWidth={2.5} />
-        </button>
+        {sendActive || !onVoice ? (
+          <button
+            aria-label="Send"
+            disabled={disabled || !sendActive}
+            onPointerDown={() => haptic("messageSent")}
+            onClick={() => sendActive && onSend?.()}
+            className="flex shrink-0 items-center justify-center rounded-full"
+            style={{
+              width: 42,
+              height: 42,
+              background: gradients.primaryButton,
+              boxShadow: shadows.primaryGlow,
+              color: "#fff",
+              opacity: disabled || !sendActive ? 0.5 : 1,
+            }}
+          >
+            <ArrowUp style={{ width: 20, height: 20 }} strokeWidth={2.5} />
+          </button>
+        ) : (
+          <button
+            aria-label="Record voice message"
+            disabled={disabled}
+            onPointerDown={() => haptic("light")}
+            onClick={onVoice}
+            className="flex shrink-0 items-center justify-center rounded-full"
+            style={{
+              width: 42,
+              height: 42,
+              background: gradients.primaryButton,
+              boxShadow: shadows.primaryGlow,
+              color: "#fff",
+              opacity: disabled ? 0.5 : 1,
+            }}
+          >
+            <Mic style={{ width: 20, height: 20 }} />
+          </button>
+        )}
       </div>
     </div>
   );
