@@ -461,6 +461,7 @@ function QuickActions({ pending }: { pending: number }) {
             if (a.to === "/admin/users") navigate({ to: "/admin/users" });
             else if (a.to === "/admin/colleges") navigate({ to: "/admin/colleges" });
             else if (a.to === "/admin/reports") navigate({ to: "/admin/reports" });
+            else if (a.to === "/admin/matches") navigate({ to: "/admin/matches" });
             /* other modules — future dashboard entry points */
           }}
         />
