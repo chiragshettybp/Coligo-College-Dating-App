@@ -1,68 +1,57 @@
-# Coligo Admin Module — Implementation Plan
+# Admin User Management Module — Implementation Plan
 
-Scope: **only** `/admin/login` and `/admin/dashboard`. Real Supabase data, admin-only access, realtime. Reuses the `/ui` design system (no redesign). Future modules (Users, Reports, etc.) are surfaced as Quick Actions that link to `/admin/dashboard` for now.
+Scope: build `/admin/users` (list) and `/admin/users/:userId` (detail) only, reusing the existing design system, with real Supabase data, server-side admin gating, audit logging, and realtime. No new visual language — everything composes from `src/components/ds/*`, `src/components/ui/*`, and tokens in `src/lib/ds.ts`, matching what already ships on `/ui`, `/admin`, and `/admin/dashboard`.
 
-## How admin auth works (important)
-The app already signs students in with **+91 phone + password** by mapping the phone to an email *alias* (`phoneToAlias`) and calling `signInWithPassword`. No email is ever sent. The admin reuses this exact mechanism:
-- **Identity** = admin phone number (+91).
-- **6-digit PIN** = the auth password, hashed by Supabase Auth (bcrypt) — never stored in plaintext or in a table.
-- **Authorization** = a row in the existing `user_roles` table with `role = 'admin'`, checked by the existing `has_role()` security-definer function.
-
-This satisfies "phone + PIN, no email auth, PIN hashed, admin-only" without a parallel auth system.
-
-After you approve, I will **ask you for the admin phone number and 6-digit PIN**, then create that single admin account (no fake/hardcoded credentials).
+This is intentionally scoped to what the current schema can back with real data. Items in your prompt that have no backing table today (warnings table, per-device IP/OS/browser, storage-bytes usage, CSV/XLSX export pipeline, tags, appeals, premium) are called out per phase as either (a) derived from existing data, or (b) deferred with a clear note — so nothing ships as fake/mock.
 
 ---
 
-## Phase 1 — Database & security (migration)
-1. **`admin_logs`** audit table: `admin_id`, `action`, `target_table`, `target_id`, `ip`, `metadata jsonb`, `created_at`. RLS: only admins can read; inserts via security-definer logging fn. GRANTs to `authenticated` + `service_role`.
-2. **`admin_login_attempts`** table for rate limiting / brute-force protection: `phone`, `success`, `ip`, `created_at`. Admin-read only.
-3. **Admin-gated aggregate RPCs** (SQL `SECURITY DEFINER`, each begins with `IF NOT has_role(auth.uid(),'admin') THEN RAISE EXCEPTION`):
-   - `admin_dashboard_stats()` → all overview counters (total/verified/active/online/new users, gender split, colleges, departments, swipes, likes, passes, matches, matches today, messages today, conversations, photos, reports pending, blocked, deleted accounts) as one `jsonb`.
-   - `admin_timeseries(_days int)` → daily signups, matches, messages, active users, storage growth.
-   - `admin_distribution()` → gender, department, profile-completion, top colleges, college growth.
-   - `admin_recent_activity(_limit int)` → unified latest registrations/matches/messages/reports/blocks/deleted/admin actions.
-   - `admin_log_action(...)` → append to `admin_logs`.
-4. Enable **realtime** on the tables the dashboard subscribes to (profiles, matches, messages, reports, blocks) via `ALTER PUBLICATION supabase_realtime ADD TABLE ...` (skip any already added).
-5. Reuse existing `platform_stats()`, `college_rankings()`, `has_role()`.
+## Phase 1 — Backend: admin RPCs + audit + RLS
 
-## Phase 2 — Admin account creation
-- After approval, prompt for **admin phone + 6-digit PIN**.
-- Create the auth user (phone alias + PIN as password) and insert `user_roles(admin)` for that id via a one-time secured server action (service role, run once). No other account gets `admin`.
+All reads/writes go through `SECURITY DEFINER` RPCs that re-check `has_role(auth.uid(),'admin')` and raise `Forbidden`, matching the existing admin RPC pattern. No new broad RLS grants to `anon`/`authenticated`.
 
-## Phase 3 — Server functions (`src/lib/admin.functions.ts`)
-All use `requireSupabaseAuth` + verify `has_role(admin)` server-side (never trust the client):
-- `adminDashboardStatsQuery`, `adminTimeseriesQuery`, `adminDistributionQuery`, `adminRecentActivityQuery`, `adminSystemHealthQuery` (pings DB/realtime/storage/auth), `adminSearch({ q })`, `logAdminAction`.
-- Public read shape via `queryOptions` + `ensureQueryData` in loaders, `useSuspenseQuery` in components.
+New migration adds:
+- `admin_list_users(_search, _filters jsonb, _sort, _limit, _offset)` → paginated rows with: profile photo (primary), full_name, phone, gender, age (from `date_of_birth`), college name, department name, semester, graduation_year, created_at, last_login_at, account_status, verification_status, discovery (`settings.discovery_enabled`), profile completion %, matches count, chats count, reports-received count, device count, online status (`last_login_at > now()-5min`), plus `total_count` for server pagination.
+- `admin_user_detail(_user_id)` → full profile, account info, settings, photos, interests.
+- `admin_user_stats(_user_id)` → swipes, likes given/received, passes, matches, messages sent, media uploaded, reports received/submitted, blocks, unmatches, notifications count.
+- `admin_user_matches(_user_id)`, `admin_user_reports(_user_id)`, `admin_user_devices(_user_id)` (from `device_sessions`/`device_tokens`), `admin_user_timeline(_user_id)` (derived chronological events from existing tables + `admin_logs`).
+- Moderation writes: `admin_set_account_status(_user_id, _status, _reason)` (active/suspended/banned/deleted — soft), `admin_set_verification(_user_id, _status)`, `admin_reset_discovery(_user_id)`, `admin_force_logout(_user_id)` (revoke `device_sessions`), `admin_clear_reports(_user_id)`. Each writes an `admin_logs` row (admin_id, action, target, metadata) inside the same transaction and blocks self-targeting (can't ban yourself) and invalid transitions (e.g. restore an active user).
+- Realtime: add `profiles`, `reports` (if not already) to `supabase_realtime` publication so status/verification changes push live.
 
-## Phase 4 — Routes
-- **`src/routes/admin.tsx`** — pathless-style admin layout wrapper (Coligo background, admin top bar). Public parent so `/admin/login` is reachable.
-- **`src/routes/admin.login.tsx`** — phone (`PhoneField`) + 6-digit PIN field with show/hide toggle, security notice, submit. Validates Indian mobile + 6-digit PIN with zod. On submit: check client-side rate limit, `signInWithPassword(alias, pin)`, then verify `has_role(admin)`; if not admin → `signOut()` + generic error ("Invalid credentials" — never reveal which field). Records attempt; locks out after N failures in a window. Redirects authed admins to dashboard.
-- **`src/routes/admin.dashboard.tsx`** — guarded (redirects to `/admin/login` if not authenticated or not admin), loader prefetches stats. Contains: overview stat-card grid, charts, recent activity feed, quick actions, system status, search, notifications.
+Indexes: on `profiles(account_status)`, `profiles(created_at)`, `profiles(last_login_at)` to keep list queries fast.
 
-Guarding: a `beforeLoad`/component check calling `has_role(admin)`; non-admins and students are redirected to `/admin/login`. Student sessions can authenticate but fail the admin-role check, so they never see admin data (RLS + RPC role checks enforce this even if the UI is bypassed).
+## Phase 2 — Server functions layer
 
-## Phase 5 — Dashboard UI (reuse `/ui` primitives)
-- **Overview cards**: `StatCard` grid (`src/components/ds/card.tsx`), responsive `grid-cols-2 md:grid-cols-4`, skeletons while loading.
-- **Charts**: add `recharts` (client-only) wrapped in small themed components using design tokens — line/bar/area for signups, matches, messages, active users, college growth, storage; donut/bar for gender & department distribution; `ProgressBar` for profile completion. Reduced-motion respected.
-- **Recent activity feed**: list using existing card/avatar/badge components.
-- **Quick actions**: `SettingsItem`/card links (Users, Colleges, Reports, Chats, Analytics, Settings, Logs) → point to `/admin/dashboard` until those modules exist.
-- **System status**: live badges (Supabase, realtime, storage, auth, DB health) from `adminSystemHealthQuery`.
-- **Search**: `SearchBar` with debounced instant `adminSearch` across users/colleges/reports.
-- **Notifications**: pending reports + system alerts; clicking routes to the relevant (future) module.
+Extend `src/lib/admin.functions.ts` (or a new `src/lib/admin-users.functions.ts`) with `createServerFn` wrappers + `queryOptions` for every RPC above, all under `.middleware([requireSupabaseAuth])`. Typed inputs via zod (search string, filter object, sort enum, pagination, userId uuid). Moderation actions are `POST` fns that invalidate the relevant query keys on the client.
 
-## Phase 6 — Realtime
-- `src/lib/use-admin-realtime.ts`: one channel subscribing to INSERT/UPDATE on profiles, matches, messages, reports, blocks → invalidates the dashboard queries (throttled) so cards/charts/feed refresh instantly. Presence count for "Users online" via existing presence util. Cleanup on unmount.
+## Phase 3 — Reusable admin table primitives
 
-## Phase 7 — States, a11y, verify
-- Loading skeletons for cards/charts/tables; no layout shift. Error components with retry; offline/realtime-disconnected banners. Keyboard nav, ARIA labels, semantic headings, visible focus, accessible chart summaries.
-- Verify: typecheck, run migrations, confirm RLS/role gating (student token cannot read admin RPCs), confirm realtime updates, confirm login lockout + generic errors.
+Small composables under `src/components/admin/` built ONLY from existing `ui`/`ds` pieces:
+- `UserTable` (desktop) using `ui/table.tsx`; collapses to stacked cards (`ds/card.tsx`) on mobile.
+- `UserFilters` (chips/selects), `UserSearch` (debounced `TextField`), `Pagination` (`ui/pagination.tsx`), `EmptyState` (`ds/empty-state.tsx`), loading `Skeleton`s, bulk-select checkboxes with cross-page persisted selection.
+
+## Phase 4 — `/admin/users` list page
+
+Route `src/routes/admin.users.tsx`. Admin guard via `adminGuardQuery` (same pattern as dashboard; redirect non-admins to `/admin/login`). Server-paginated, debounced search, multi-filter, sorting — all state kept in URL search params so failures/reloads preserve filters/pagination/selection. Realtime subscription invalidates the list on profile/report changes. Bulk actions (suspend/ban/verify/restore/delete) route to a dedicated in-page confirmation step (not a popup) and run transactionally, reporting partial failures.
+
+## Phase 5 — `/admin/users/:userId` detail page
+
+Route `src/routes/admin.users.$userId.tsx` with `errorComponent` + `notFoundComponent` (invalid/deleted user handled gracefully). Tabbed sections (`ui/tabs.tsx`): Profile, Account Info, Statistics (charts via existing `components/admin/charts.tsx`), Activity Timeline, Devices, Photos (gallery → `ds/image-viewer.tsx`), Matches, Reports. An Admin Actions panel with dedicated confirmation screens for each moderation action, each writing an audit log and updating live.
+
+## Phase 6 — Realtime, failure handling, verification
+
+Wire a `useAdminUsersRealtime` hook (mirrors existing `use-admin-realtime.ts`) to invalidate queries on `profiles`/`reports`/`matches` changes. Graceful handling for every failure case (invalid id, missing records, expired session, network/Supabase down, partial bulk failure) with clear messages + retry, preserving admin state. Verify with typecheck and a Playwright pass logged in as the admin account.
 
 ---
+
+## Explicitly deferred (no real backing data today — will NOT be faked)
+
+These are noted in the UI as "coming soon"/hidden rather than shown with mock data:
+- Username, warnings table, per-device OS/browser/IP, storage-bytes used, CSV/XLSX export generation, tags/labels, announcements, premium/payments, AI moderation, fraud/risk scoring, appeals. Each can be added later without redesign.
+
+If you'd like any deferred item pulled into scope (e.g. a real `warnings` table, or CSV export), tell me and I'll fold it into the relevant phase before building.
 
 ## Technical notes
-- **No new auth system / no email**: admin = phone-alias auth user + `user_roles.admin`; PIN is the bcrypt auth password.
-- **New dependency**: `recharts` (client-side charts). Everything else reuses existing DS + Supabase.
-- **New tables**: `admin_logs`, `admin_login_attempts`. **New RPCs**: the `admin_*` functions above. **Realtime**: publication additions.
-- **Not building yet** (future modules, per scope): the full Users/Colleges/Reports/Chats/Analytics/Settings/Logs management pages — only their dashboard entry points.
-- I will request the admin phone + PIN right after you approve, before creating the account.
+- Every table creation includes GRANTs + RLS per project rules; admin reads go only through `SECURITY DEFINER` RPCs.
+- No email auth anywhere; admin identity stays phone+PIN as already set up.
+- No changes to student `_authenticated` area; `/admin/*` stays a separate guarded surface.
