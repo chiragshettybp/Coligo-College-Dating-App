@@ -86,7 +86,7 @@ function CollegeDetailPage() {
   const { collegeId } = Route.useParams();
   const { data } = useSuspenseQuery(collegeDetailQuery(collegeId));
   const { data: me } = useSuspenseQuery(myProfileQuery());
-  const online = useOnlinePresence(me?.id ?? null, collegeId);
+  const online = useOnlinePresence(me?.id ?? null, me?.collegeId ?? null, collegeId);
 
   const college = data as CollegeDetail; // loader guarantees non-null
 
