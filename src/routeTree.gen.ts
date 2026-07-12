@@ -11,6 +11,7 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as UiRouteImport } from './routes/ui'
 import { Route as PublicRouteRouteImport } from './routes/_public/route'
+import { Route as PublicIndexRouteImport } from './routes/_public/index'
 
 const UiRoute = UiRouteImport.update({
   id: '/ui',
@@ -21,30 +22,36 @@ const PublicRouteRoute = PublicRouteRouteImport.update({
   id: '/_public',
   getParentRoute: () => rootRouteImport,
 } as any)
+const PublicIndexRoute = PublicIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => PublicRouteRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
-  '/': typeof PublicRouteRoute
+  '/': typeof PublicIndexRoute
   '/ui': typeof UiRoute
 }
 export interface FileRoutesByTo {
-  '/': typeof PublicRouteRoute
   '/ui': typeof UiRoute
+  '/': typeof PublicIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
-  '/_public': typeof PublicRouteRoute
+  '/_public': typeof PublicRouteRouteWithChildren
   '/ui': typeof UiRoute
+  '/_public/': typeof PublicIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths: '/' | '/ui'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/ui'
-  id: '__root__' | '/_public' | '/ui'
+  to: '/ui' | '/'
+  id: '__root__' | '/_public' | '/ui' | '/_public/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
-  PublicRouteRoute: typeof PublicRouteRoute
+  PublicRouteRoute: typeof PublicRouteRouteWithChildren
   UiRoute: typeof UiRoute
 }
 
@@ -64,11 +71,30 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PublicRouteRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/_public/': {
+      id: '/_public/'
+      path: '/'
+      fullPath: '/'
+      preLoaderRoute: typeof PublicIndexRouteImport
+      parentRoute: typeof PublicRouteRoute
+    }
   }
 }
 
+interface PublicRouteRouteChildren {
+  PublicIndexRoute: typeof PublicIndexRoute
+}
+
+const PublicRouteRouteChildren: PublicRouteRouteChildren = {
+  PublicIndexRoute: PublicIndexRoute,
+}
+
+const PublicRouteRouteWithChildren = PublicRouteRoute._addFileChildren(
+  PublicRouteRouteChildren,
+)
+
 const rootRouteChildren: RootRouteChildren = {
-  PublicRouteRoute: PublicRouteRoute,
+  PublicRouteRoute: PublicRouteRouteWithChildren,
   UiRoute: UiRoute,
 }
 export const routeTree = rootRouteImport
