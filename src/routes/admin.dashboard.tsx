@@ -46,7 +46,7 @@ import {
   type ActivityEvent,
 } from "@/lib/admin.functions";
 import { useAdminRealtime } from "@/lib/use-admin-realtime";
-import { Text, Button, Badge, Skeleton, Avatar } from "@/components/ds/glass";
+import { Text, Button, Badge, Skeleton } from "@/components/ds/glass";
 import { Card, StatCard, SettingsCard, SettingsRow } from "@/components/ds/card";
 import { TopBar, SearchBar } from "@/components/ds/navigation";
 import { AreaTrend, BarSeries, Donut } from "@/components/admin/charts";
