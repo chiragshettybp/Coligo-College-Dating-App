@@ -1218,12 +1218,14 @@ function SwipeControl({
   size = 52,
   tint,
   primary = false,
+  hapticToken,
 }: {
   children: React.ReactNode;
   label?: string;
   size?: number;
   tint: string;
   primary?: boolean;
+  hapticToken?: HapticToken;
 }) {
   // Layered depth: ceramic surface, soft inner highlight, hairline border,
   // soft ambient + contact shadow, tiny directional specular highlight.
