@@ -739,31 +739,60 @@ function UIShowcase() {
         </Section>
 
         {/* Navigation */}
-        <Section title="Navigation" description="Bottom tab bar and top bar patterns.">
+        <Section
+          title="Navigation"
+          description="A complete navigation system — large title, glass top bar, segmented + scrollable tabs, floating tab bar and FAB."
+        >
           <div className="space-y-4">
-            <GlassPanel style={{ padding: `${spacing[2]}px ${spacing[4]}px` }}>
+            {/* Large-title top bar */}
+            <GlassPanel style={{ padding: `${spacing[3]}px ${spacing[4]}px ${spacing[4]}px` }}>
+              <div className="flex items-start justify-between">
+                <div className="min-w-0">
+                  <div style={{ ...type.caption, color: colors.primary }}>Sunday, July 12</div>
+                  <h3 style={{ ...type.displaySm, color: "#fff", marginTop: 2 }}>Discover</h3>
+                </div>
+                <div className="flex shrink-0 items-center" style={{ gap: spacing[1] }}>
+                  <NavAction label="Search"><Search style={{ width: 19, height: 19 }} /></NavAction>
+                  <NavAction label="Notifications" badge={3}>
+                    <Bell style={{ width: 19, height: 19 }} />
+                  </NavAction>
+                  <button aria-label="Profile" className="rounded-full" style={{ marginLeft: 2 }}>
+                    <Avatar src={ana} size="sm" status="online" />
+                  </button>
+                </div>
+              </div>
+            </GlassPanel>
+
+            {/* Compact glass top bar with back + centered title */}
+            <GlassPanel style={{ padding: `${spacing[2]}px ${spacing[3]}px` }}>
               <div className="flex items-center justify-between">
-                <div className="flex items-center" style={{ gap: spacing[2] }}>
-                  <Avatar src={ana} size="sm" />
-                  <span style={{ color: "#fff", fontWeight: 700 }}>Discover</span>
-                </div>
-                <div className="flex items-center" style={{ gap: spacing[1] }}>
-                  <IconButton size={44}><Search style={{ width: 18, height: 18 }} /></IconButton>
-                  <IconButton size={44}><Bell style={{ width: 18, height: 18 }} /></IconButton>
-                </div>
+                <NavAction label="Back"><ChevronLeft style={{ width: 22, height: 22 }} /></NavAction>
+                <span style={{ ...type.titleMd, color: "#fff" }}>Profile</span>
+                <NavAction label="More"><Plus style={{ width: 20, height: 20 }} /></NavAction>
               </div>
             </GlassPanel>
-            <GlassPanel style={{ padding: `${spacing[1]}px ${spacing[1]}px` }}>
-              <div className="flex items-center justify-around">
-                <TabIcon icon={<Home style={{ width: 22, height: 22 }} />} active />
-                <TabIcon icon={<Search style={{ width: 22, height: 22 }} />} />
-                <TabIcon icon={<Heart style={{ width: 22, height: 22 }} />} />
-                <TabIcon icon={<MessageCircle style={{ width: 22, height: 22 }} />} />
-                <TabIcon icon={<User style={{ width: 22, height: 22 }} />} />
-              </div>
-            </GlassPanel>
+
+            {/* Segmented control */}
+            <Segmented
+              options={["Nearby", "Popular", "New"]}
+              value={segment}
+              onChange={setSegment}
+            />
+
+            {/* Scrollable tabs */}
+            <ScrollTabs
+              options={["For You", "Trending", "Music", "Sports", "Art", "Travel", "Food"]}
+              value={scrollTab}
+              onChange={setScrollTab}
+            />
+
+            {/* Floating bottom tab bar */}
+            <div style={{ position: "relative", paddingTop: spacing[2] }}>
+              <FloatingTabBar active={activeTab} onChange={setActiveTab} />
+            </div>
           </div>
         </Section>
+
 
         <footer
           className="flex items-center gap-2"
