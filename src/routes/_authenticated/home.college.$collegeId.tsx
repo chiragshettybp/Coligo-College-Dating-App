@@ -58,8 +58,22 @@ function DistributionBar({ items }: { items: { label: string; count: number }[] 
               {it.count}
             </Text>
           </div>
-          <div style={{ height: 8, borderRadius: radii.pill, background: "rgba(120,120,128,0.12)", overflow: "hidden" }}>
-            <div style={{ width: `${(it.count / max) * 100}%`, height: "100%", borderRadius: radii.pill, background: gradients.primaryButton }} />
+          <div
+            style={{
+              height: 8,
+              borderRadius: radii.pill,
+              background: "rgba(120,120,128,0.12)",
+              overflow: "hidden",
+            }}
+          >
+            <div
+              style={{
+                width: `${(it.count / max) * 100}%`,
+                height: "100%",
+                borderRadius: radii.pill,
+                background: gradients.primaryButton,
+              }}
+            />
           </div>
         </div>
       ))}
@@ -81,23 +95,67 @@ function CollegeDetailPage() {
     .map(([label, count]) => ({ label: label.charAt(0).toUpperCase() + label.slice(1), count }));
 
   return (
-    <div style={{ minHeight: "100vh", background: APP_BACKGROUND, backgroundAttachment: "fixed", fontFamily: FONT_FAMILY }}>
-      <div style={{ maxWidth: 560, margin: "0 auto", padding: `${spacing[4]}px ${spacing[4]}px ${spacing[8]}px`, display: "flex", flexDirection: "column", gap: spacing[4] }}>
+    <div
+      style={{
+        minHeight: "100vh",
+        background: APP_BACKGROUND,
+        backgroundAttachment: "fixed",
+        fontFamily: FONT_FAMILY,
+      }}
+    >
+      <div
+        style={{
+          maxWidth: 560,
+          margin: "0 auto",
+          padding: `${spacing[4]}px ${spacing[4]}px ${spacing[8]}px`,
+          display: "flex",
+          flexDirection: "column",
+          gap: spacing[4],
+        }}
+      >
         <TopBar title="College" onBack={() => router.history.back()} />
 
         {/* Banner + identity */}
         <Card padding={0}>
-          <div style={{ position: "relative", height: 120, background: college.bannerUrl ? undefined : gradients.primaryButton }}>
+          <div
+            style={{
+              position: "relative",
+              height: 120,
+              background: college.bannerUrl ? undefined : gradients.primaryButton,
+            }}
+          >
             {college.bannerUrl && (
-              <img src={college.bannerUrl} alt="" loading="lazy" style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }} />
+              <img
+                src={college.bannerUrl}
+                alt=""
+                loading="lazy"
+                style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }}
+              />
             )}
           </div>
           <div style={{ padding: spacing[4], marginTop: -44 }}>
-            <div style={{ width: 72, height: 72, borderRadius: radii.lg, overflow: "hidden", border: "3px solid #fff", background: "#fff", boxShadow: "0 4px 12px rgba(0,0,0,0.08)" }}>
+            <div
+              style={{
+                width: 72,
+                height: 72,
+                borderRadius: radii.lg,
+                overflow: "hidden",
+                border: "3px solid #fff",
+                background: "#fff",
+                boxShadow: "0 4px 12px rgba(0,0,0,0.08)",
+              }}
+            >
               {college.logoUrl ? (
-                <img src={college.logoUrl} alt="" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+                <img
+                  src={college.logoUrl}
+                  alt=""
+                  style={{ width: "100%", height: "100%", objectFit: "cover" }}
+                />
               ) : (
-                <span className="inline-flex h-full w-full items-center justify-center" style={{ background: "rgba(10,132,255,0.10)", color: colors.primary }}>
+                <span
+                  className="inline-flex h-full w-full items-center justify-center"
+                  style={{ background: "rgba(10,132,255,0.10)", color: colors.primary }}
+                >
                   <GraduationCap style={{ width: 34, height: 34 }} />
                 </span>
               )}
@@ -110,7 +168,10 @@ function CollegeDetailPage() {
                 {college.city}
               </Text>
             )}
-            <div className="flex flex-wrap items-center" style={{ gap: spacing[1], marginTop: spacing[3] }}>
+            <div
+              className="flex flex-wrap items-center"
+              style={{ gap: spacing[1], marginTop: spacing[3] }}
+            >
               {college.rank != null && (
                 <Badge tone="warning">
                   <Trophy style={{ width: 12, height: 12 }} /> Rank #{college.rank}
@@ -130,8 +191,16 @@ function CollegeDetailPage() {
 
         {/* Key stats */}
         <div className="grid" style={{ gridTemplateColumns: "1fr 1fr", gap: spacing[3] }}>
-          <StatCard label="Verified students" value={nfmt(college.memberCount)} icon={<Users style={{ width: 18, height: 18 }} />} />
-          <StatCard label="Departments" value={nfmt(college.departmentCount)} icon={<Building2 style={{ width: 18, height: 18 }} />} />
+          <StatCard
+            label="Verified students"
+            value={nfmt(college.memberCount)}
+            icon={<Users style={{ width: 18, height: 18 }} />}
+          />
+          <StatCard
+            label="Departments"
+            value={nfmt(college.departmentCount)}
+            icon={<Building2 style={{ width: 18, height: 18 }} />}
+          />
         </div>
 
         {/* Gender split */}
@@ -149,7 +218,9 @@ function CollegeDetailPage() {
           <Card>
             <CardHeader title="Departments" />
             <div style={{ marginTop: spacing[3] }}>
-              <DistributionBar items={college.departments.map((d) => ({ label: d.name, count: d.count }))} />
+              <DistributionBar
+                items={college.departments.map((d) => ({ label: d.name, count: d.count }))}
+              />
             </div>
           </Card>
         )}
@@ -159,7 +230,9 @@ function CollegeDetailPage() {
           <Card>
             <CardHeader title="Graduation years" />
             <div style={{ marginTop: spacing[3] }}>
-              <DistributionBar items={college.gradYears.map((g) => ({ label: String(g.year), count: g.count }))} />
+              <DistributionBar
+                items={college.gradYears.map((g) => ({ label: String(g.year), count: g.count }))}
+              />
             </div>
           </Card>
         )}
@@ -167,7 +240,10 @@ function CollegeDetailPage() {
         {/* Top interests */}
         {college.topInterests.length > 0 && (
           <Card>
-            <CardHeader title="Top interests" leading={<Sparkles style={{ width: 20, height: 20, color: colors.primary }} />} />
+            <CardHeader
+              title="Top interests"
+              leading={<Sparkles style={{ width: 20, height: 20, color: colors.primary }} />}
+            />
             <div className="flex flex-wrap" style={{ gap: spacing[1], marginTop: spacing[3] }}>
               {college.topInterests.map((it) => (
                 <Chip key={it.name}>
@@ -195,8 +271,24 @@ function CollegeDetailPage() {
 
 function Shell({ children }: { children: React.ReactNode }) {
   return (
-    <div style={{ minHeight: "100vh", background: APP_BACKGROUND, backgroundAttachment: "fixed", fontFamily: FONT_FAMILY }}>
-      <div style={{ maxWidth: 560, margin: "0 auto", padding: spacing[4], display: "flex", flexDirection: "column", gap: spacing[4] }}>
+    <div
+      style={{
+        minHeight: "100vh",
+        background: APP_BACKGROUND,
+        backgroundAttachment: "fixed",
+        fontFamily: FONT_FAMILY,
+      }}
+    >
+      <div
+        style={{
+          maxWidth: 560,
+          margin: "0 auto",
+          padding: spacing[4],
+          display: "flex",
+          flexDirection: "column",
+          gap: spacing[4],
+        }}
+      >
         {children}
       </div>
     </div>

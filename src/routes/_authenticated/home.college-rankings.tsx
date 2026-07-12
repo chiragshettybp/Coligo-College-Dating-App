@@ -21,7 +21,10 @@ export const Route = createFileRoute("/_authenticated/home/college-rankings")({
   head: () => ({
     meta: [
       { title: "College Rankings — CampusMatch" },
-      { name: "description", content: "See how colleges rank by verified student community on CampusMatch." },
+      {
+        name: "description",
+        content: "See how colleges rank by verified student community on CampusMatch.",
+      },
     ],
   }),
   component: RankingsPage,
@@ -48,7 +51,8 @@ function RankingsPage() {
 
   const query = useInfiniteQuery({
     queryKey: ["home", "rankings-list", search],
-    queryFn: ({ pageParam }) => getCollegeRankings({ data: { search, limit: PAGE, offset: pageParam } }),
+    queryFn: ({ pageParam }) =>
+      getCollegeRankings({ data: { search, limit: PAGE, offset: pageParam } }),
     initialPageParam: 0,
     getNextPageParam: (last, pages) => (last.hasMore ? pages.length * PAGE : undefined),
     staleTime: 30_000,
@@ -76,7 +80,14 @@ function RankingsPage() {
   }, [query.hasNextPage, query.isFetchingNextPage, query]);
 
   return (
-    <div style={{ minHeight: "100vh", background: APP_BACKGROUND, backgroundAttachment: "fixed", fontFamily: FONT_FAMILY }}>
+    <div
+      style={{
+        minHeight: "100vh",
+        background: APP_BACKGROUND,
+        backgroundAttachment: "fixed",
+        fontFamily: FONT_FAMILY,
+      }}
+    >
       <div
         style={{
           maxWidth: 560,
@@ -88,7 +99,12 @@ function RankingsPage() {
         }}
       >
         <TopBar title="College rankings" onBack={() => router.history.back()} />
-        <SearchBar value={rawSearch} onChange={setRawSearch} placeholder="Search colleges" icon={<Search style={{ width: 18, height: 18 }} />} />
+        <SearchBar
+          value={rawSearch}
+          onChange={setRawSearch}
+          placeholder="Search colleges"
+          icon={<Search style={{ width: 18, height: 18 }} />}
+        />
         <SegmentControl options={[...SORTS]} value={sort} onChange={setSort} />
 
         {query.isError ? (
@@ -104,14 +120,18 @@ function RankingsPage() {
             scene="search"
             tone="slate"
             title={search ? "No colleges found" : "No colleges yet"}
-            description={search ? "Try a different name or city." : "Colleges appear here as students join."}
+            description={
+              search ? "Try a different name or city." : "Colleges appear here as students join."
+            }
           />
         ) : (
           <Card padding={0}>
             {rows.map((r, i) => (
               <button
                 key={r.id}
-                onClick={() => navigate({ to: "/home/college/$collegeId", params: { collegeId: r.id } })}
+                onClick={() =>
+                  navigate({ to: "/home/college/$collegeId", params: { collegeId: r.id } })
+                }
                 className="ds-press flex w-full items-center"
                 style={{
                   gap: spacing[2],
@@ -121,7 +141,12 @@ function RankingsPage() {
                   textAlign: "left",
                 }}
               >
-                <Text variant="headingSm" color={r.rank === 1 ? colors.warning : colors.textMuted} style={{ width: 32 }} numeric>
+                <Text
+                  variant="headingSm"
+                  color={r.rank === 1 ? colors.warning : colors.textMuted}
+                  style={{ width: 32 }}
+                  numeric
+                >
                   {r.rank}
                 </Text>
                 {r.logoUrl ? (
@@ -130,7 +155,14 @@ function RankingsPage() {
                   <span
                     aria-hidden
                     className="inline-flex items-center justify-center"
-                    style={{ width: 40, height: 40, borderRadius: radii.md, background: "rgba(10,132,255,0.10)", color: colors.primary, flexShrink: 0 }}
+                    style={{
+                      width: 40,
+                      height: 40,
+                      borderRadius: radii.md,
+                      background: "rgba(10,132,255,0.10)",
+                      color: colors.primary,
+                      flexShrink: 0,
+                    }}
                   >
                     <GraduationCap style={{ width: 20, height: 20 }} />
                   </span>
@@ -144,11 +176,23 @@ function RankingsPage() {
                   </Text>
                 </div>
                 <div style={{ textAlign: "right" }}>
-                  <span className="inline-flex items-center" style={{ gap: 3, color: colors.textSecondary, fontSize: 13, fontWeight: 600 }}>
+                  <span
+                    className="inline-flex items-center"
+                    style={{ gap: 3, color: colors.textSecondary, fontSize: 13, fontWeight: 600 }}
+                  >
                     <Users style={{ width: 14, height: 14 }} /> {nfmt(r.memberCount)}
                   </span>
                   {r.growth30d > 0 && (
-                    <div className="inline-flex items-center" style={{ gap: 2, color: colors.success, fontSize: 12, fontWeight: 600, marginTop: 2 }}>
+                    <div
+                      className="inline-flex items-center"
+                      style={{
+                        gap: 2,
+                        color: colors.success,
+                        fontSize: 12,
+                        fontWeight: 600,
+                        marginTop: 2,
+                      }}
+                    >
                       <TrendingUp style={{ width: 12, height: 12 }} /> +{nfmt(r.growth30d)}
                     </div>
                   )}

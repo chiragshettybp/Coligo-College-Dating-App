@@ -43,7 +43,12 @@ import {
 } from "@/lib/ds";
 import { Text, Avatar, Button, Badge, Skeleton } from "@/components/ds/glass";
 import { Card, CardHeader, StatCard } from "@/components/ds/card";
-import { BottomNav, BottomSheet, NavIconButton, type BottomNavItem } from "@/components/ds/navigation";
+import {
+  BottomNav,
+  BottomSheet,
+  NavIconButton,
+  type BottomNavItem,
+} from "@/components/ds/navigation";
 import { EmptyStateFromPreset } from "@/components/ds/empty-state";
 
 export const Route = createFileRoute("/_authenticated/home/")({
@@ -82,7 +87,15 @@ function nfmt(n: number): string {
 
 /* ------------------------------------------------------------ section head - */
 
-function SectionHead({ title, actionLabel, onAction }: { title: string; actionLabel?: string; onAction?: () => void }) {
+function SectionHead({
+  title,
+  actionLabel,
+  onAction,
+}: {
+  title: string;
+  actionLabel?: string;
+  onAction?: () => void;
+}) {
   return (
     <div className="flex items-center justify-between" style={{ marginBottom: spacing[2] }}>
       <Text variant="headingSm" color={colors.textPrimary}>
@@ -92,7 +105,13 @@ function SectionHead({ title, actionLabel, onAction }: { title: string; actionLa
         <button
           onClick={onAction}
           className="ds-press inline-flex items-center"
-          style={{ gap: 2, color: colors.primary, background: "transparent", fontWeight: 600, fontSize: 14 }}
+          style={{
+            gap: 2,
+            color: colors.primary,
+            background: "transparent",
+            fontWeight: 600,
+            fontSize: 14,
+          }}
         >
           {actionLabel}
           <ChevronRight style={{ width: 16, height: 16 }} />
@@ -146,7 +165,14 @@ function HomeDashboardPage() {
   const gs = data.college ? genderSummary(data.college.gender) : null;
 
   return (
-    <div style={{ minHeight: "100vh", background: APP_BACKGROUND, backgroundAttachment: "fixed", fontFamily: FONT_FAMILY }}>
+    <div
+      style={{
+        minHeight: "100vh",
+        background: APP_BACKGROUND,
+        backgroundAttachment: "fixed",
+        fontFamily: FONT_FAMILY,
+      }}
+    >
       <main
         style={{
           maxWidth: 560,
@@ -195,9 +221,16 @@ function HomeDashboardPage() {
           interactive
           padding={0}
           onClick={() => setComingSoon("Discovery")}
-          style={{ background: gradients.primaryButton, boxShadow: shadows.primaryGlow, border: "1px solid transparent" }}
+          style={{
+            background: gradients.primaryButton,
+            boxShadow: shadows.primaryGlow,
+            border: "1px solid transparent",
+          }}
         >
-          <div className="flex items-center justify-between" style={{ padding: spacing[5], gap: spacing[3] }}>
+          <div
+            className="flex items-center justify-between"
+            style={{ padding: spacing[5], gap: spacing[3] }}
+          >
             <div style={{ minWidth: 0 }}>
               <Text variant="overline" style={{ color: "rgba(255,255,255,0.8)" }}>
                 Ready to connect
@@ -205,14 +238,24 @@ function HomeDashboardPage() {
               <Text variant="displaySm" color="#fff" style={{ marginTop: 2 }}>
                 Start swiping
               </Text>
-              <Text variant="bodySm" style={{ color: "rgba(255,255,255,0.85)", marginTop: spacing[1] }}>
+              <Text
+                variant="bodySm"
+                style={{ color: "rgba(255,255,255,0.85)", marginTop: spacing[1] }}
+              >
                 Discover verified students near you.
               </Text>
             </div>
             <span
               aria-hidden
               className="inline-flex items-center justify-center"
-              style={{ width: 56, height: 56, borderRadius: radii.pill, background: "rgba(255,255,255,0.2)", color: "#fff", flexShrink: 0 }}
+              style={{
+                width: 56,
+                height: 56,
+                borderRadius: radii.pill,
+                background: "rgba(255,255,255,0.2)",
+                color: "#fff",
+                flexShrink: 0,
+              }}
             >
               <Zap style={{ width: 28, height: 28 }} fill="currentColor" />
             </span>
@@ -223,7 +266,15 @@ function HomeDashboardPage() {
         <section>
           <SectionHead title="Your college" />
           {data.college ? (
-            <Card interactive onClick={() => navigate({ to: "/home/college/$collegeId", params: { collegeId: data.college!.id } })}>
+            <Card
+              interactive
+              onClick={() =>
+                navigate({
+                  to: "/home/college/$collegeId",
+                  params: { collegeId: data.college!.id },
+                })
+              }
+            >
               <CardHeader
                 leading={
                   data.college.logoUrl ? (
@@ -232,7 +283,13 @@ function HomeDashboardPage() {
                     <span
                       aria-hidden
                       className="inline-flex items-center justify-center"
-                      style={{ width: 68, height: 68, borderRadius: radii.lg, background: "rgba(10,132,255,0.10)", color: colors.primary }}
+                      style={{
+                        width: 68,
+                        height: 68,
+                        borderRadius: radii.lg,
+                        background: "rgba(10,132,255,0.10)",
+                        color: colors.primary,
+                      }}
                     >
                       <GraduationCap style={{ width: 32, height: 32 }} />
                     </span>
@@ -240,25 +297,35 @@ function HomeDashboardPage() {
                 }
                 title={data.college.name}
                 subtitle={data.college.city ?? undefined}
-                trailing={<ChevronRight style={{ width: 20, height: 20, color: colors.textMuted }} />}
+                trailing={
+                  <ChevronRight style={{ width: 20, height: 20, color: colors.textMuted }} />
+                }
               />
-              <div className="flex flex-wrap items-center" style={{ gap: spacing[1], marginTop: spacing[3] }}>
+              <div
+                className="flex flex-wrap items-center"
+                style={{ gap: spacing[1], marginTop: spacing[3] }}
+              >
                 {data.college.rank != null && (
                   <Badge tone="warning">
                     <Trophy style={{ width: 12, height: 12 }} /> Rank #{data.college.rank}
                   </Badge>
                 )}
                 <Badge tone="primary">
-                  <Users style={{ width: 12, height: 12 }} /> {nfmt(data.college.memberCount)} students
+                  <Users style={{ width: 12, height: 12 }} /> {nfmt(data.college.memberCount)}{" "}
+                  students
                 </Badge>
                 <Badge tone="neutral">
-                  <Building2 style={{ width: 12, height: 12 }} /> {data.college.departmentCount} departments
+                  <Building2 style={{ width: 12, height: 12 }} /> {data.college.departmentCount}{" "}
+                  departments
                 </Badge>
                 {gs && gs.parts.length > 0 && <Badge tone="accent">{gs.label}</Badge>}
               </div>
             </Card>
           ) : (
-            <EmptyStateFromPreset preset="noCollege" onPrimary={() => navigate({ to: "/onboarding" })} />
+            <EmptyStateFromPreset
+              preset="noCollege"
+              onPrimary={() => navigate({ to: "/onboarding" })}
+            />
           )}
         </section>
 
@@ -271,11 +338,17 @@ function HomeDashboardPage() {
             deltaTone={online.connected ? "up" : "neutral"}
             icon={<Users style={{ width: 18, height: 18 }} />}
           />
-          <div onClick={() => setComingSoon("Matches")} className="ds-press" style={{ cursor: "pointer" }}>
+          <div
+            onClick={() => setComingSoon("Matches")}
+            className="ds-press"
+            style={{ cursor: "pointer" }}
+          >
             <StatCard
               label="Matches today"
               value={nfmt(data.matches.total)}
-              delta={data.matches.mine > 0 ? `${data.matches.mine} of them yours` : "Make your first"}
+              delta={
+                data.matches.mine > 0 ? `${data.matches.mine} of them yours` : "Make your first"
+              }
               deltaTone={data.matches.mine > 0 ? "up" : "neutral"}
               icon={<Heart style={{ width: 18, height: 18 }} />}
             />
@@ -284,13 +357,19 @@ function HomeDashboardPage() {
 
         {/* Rankings preview */}
         <section>
-          <SectionHead title="College rankings" actionLabel="View all" onAction={() => navigate({ to: "/home/college-rankings" })} />
+          <SectionHead
+            title="College rankings"
+            actionLabel="View all"
+            onAction={() => navigate({ to: "/home/college-rankings" })}
+          />
           {data.rankingsPreview.length > 0 ? (
             <Card padding={0}>
               {data.rankingsPreview.map((r, i) => (
                 <button
                   key={r.id}
-                  onClick={() => navigate({ to: "/home/college/$collegeId", params: { collegeId: r.id } })}
+                  onClick={() =>
+                    navigate({ to: "/home/college/$collegeId", params: { collegeId: r.id } })
+                  }
                   className="ds-press flex w-full items-center"
                   style={{
                     gap: spacing[2],
@@ -300,7 +379,12 @@ function HomeDashboardPage() {
                     textAlign: "left",
                   }}
                 >
-                  <Text variant="headingSm" color={i === 0 ? colors.warning : colors.textMuted} style={{ width: 28 }} numeric>
+                  <Text
+                    variant="headingSm"
+                    color={i === 0 ? colors.warning : colors.textMuted}
+                    style={{ width: 28 }}
+                    numeric
+                  >
                     {r.rank}
                   </Text>
                   <div className="min-w-0 flex-1">
@@ -312,7 +396,10 @@ function HomeDashboardPage() {
                     </Text>
                   </div>
                   {r.growth30d > 0 && (
-                    <span className="inline-flex items-center" style={{ gap: 2, color: colors.success, fontSize: 13, fontWeight: 600 }}>
+                    <span
+                      className="inline-flex items-center"
+                      style={{ gap: 2, color: colors.success, fontSize: 13, fontWeight: 600 }}
+                    >
                       <TrendingUp style={{ width: 14, height: 14 }} /> +{nfmt(r.growth30d)}
                     </span>
                   )}
@@ -332,7 +419,10 @@ function HomeDashboardPage() {
         <section>
           <SectionHead title="New members" />
           {data.newMembers.length > 0 ? (
-            <div className="flex overflow-x-auto" style={{ gap: spacing[3], scrollbarWidth: "none", padding: "2px" }}>
+            <div
+              className="flex overflow-x-auto"
+              style={{ gap: spacing[3], scrollbarWidth: "none", padding: "2px" }}
+            >
               {data.newMembers.map((m) => (
                 <button
                   key={m.id}
@@ -340,8 +430,18 @@ function HomeDashboardPage() {
                   className="ds-press flex flex-col items-center shrink-0"
                   style={{ width: 76, background: "transparent" }}
                 >
-                  <Avatar src={m.avatarUrl ?? undefined} initials={(m.name ?? "?").slice(0, 1).toUpperCase()} size="lg" ring />
-                  <Text variant="caption" color={colors.textPrimary} truncate style={{ marginTop: spacing[1], maxWidth: 76 }}>
+                  <Avatar
+                    src={m.avatarUrl ?? undefined}
+                    initials={(m.name ?? "?").slice(0, 1).toUpperCase()}
+                    size="lg"
+                    ring
+                  />
+                  <Text
+                    variant="caption"
+                    color={colors.textPrimary}
+                    truncate
+                    style={{ marginTop: spacing[1], maxWidth: 76 }}
+                  >
                     {m.name?.split(" ")[0] ?? "Member"}
                   </Text>
                 </button>
@@ -360,10 +460,26 @@ function HomeDashboardPage() {
         <section>
           <SectionHead title="On CampusMatch" />
           <div className="grid" style={{ gridTemplateColumns: "1fr 1fr", gap: spacing[3] }}>
-            <StatCard label="Verified students" value={nfmt(data.platform.totalStudents)} icon={<GraduationCap style={{ width: 18, height: 18 }} />} />
-            <StatCard label="Colleges" value={nfmt(data.platform.participatingColleges)} icon={<Building2 style={{ width: 18, height: 18 }} />} />
-            <StatCard label="Active today" value={nfmt(data.platform.activeUsers)} icon={<Zap style={{ width: 18, height: 18 }} />} />
-            <StatCard label="Matches today" value={nfmt(data.platform.matchesToday)} icon={<Heart style={{ width: 18, height: 18 }} />} />
+            <StatCard
+              label="Verified students"
+              value={nfmt(data.platform.totalStudents)}
+              icon={<GraduationCap style={{ width: 18, height: 18 }} />}
+            />
+            <StatCard
+              label="Colleges"
+              value={nfmt(data.platform.participatingColleges)}
+              icon={<Building2 style={{ width: 18, height: 18 }} />}
+            />
+            <StatCard
+              label="Active today"
+              value={nfmt(data.platform.activeUsers)}
+              icon={<Zap style={{ width: 18, height: 18 }} />}
+            />
+            <StatCard
+              label="Matches today"
+              value={nfmt(data.platform.matchesToday)}
+              icon={<Heart style={{ width: 18, height: 18 }} />}
+            />
           </div>
         </section>
 
@@ -379,7 +495,13 @@ function HomeDashboardPage() {
                       <span
                         aria-hidden
                         className="inline-flex items-center justify-center"
-                        style={{ width: 40, height: 40, borderRadius: radii.md, background: "rgba(10,132,255,0.10)", color: colors.primary }}
+                        style={{
+                          width: 40,
+                          height: 40,
+                          borderRadius: radii.md,
+                          background: "rgba(10,132,255,0.10)",
+                          color: colors.primary,
+                        }}
                       >
                         <Megaphone style={{ width: 20, height: 20 }} />
                       </span>
@@ -392,8 +514,14 @@ function HomeDashboardPage() {
                         {a.isPinned && <Badge tone="warning">Pinned</Badge>}
                       </div>
                     }
-                    subtitle={<Text variant="bodySm" tone="secondary" clamp={1}>{a.body}</Text>}
-                    trailing={<ChevronRight style={{ width: 18, height: 18, color: colors.textMuted }} />}
+                    subtitle={
+                      <Text variant="bodySm" tone="secondary" clamp={1}>
+                        {a.body}
+                      </Text>
+                    }
+                    trailing={
+                      <ChevronRight style={{ width: 18, height: 18, color: colors.textMuted }} />
+                    }
                   />
                 </Card>
               ))}
@@ -409,7 +537,17 @@ function HomeDashboardPage() {
       </main>
 
       {/* Bottom navigation */}
-      <div style={{ position: "fixed", left: 0, right: 0, bottom: 0, padding: `0 ${spacing[4]}px ${spacing[3]}px`, zIndex: 30, pointerEvents: "none" }}>
+      <div
+        style={{
+          position: "fixed",
+          left: 0,
+          right: 0,
+          bottom: 0,
+          padding: `0 ${spacing[4]}px ${spacing[3]}px`,
+          zIndex: 30,
+          pointerEvents: "none",
+        }}
+      >
         <div style={{ maxWidth: 560, margin: "0 auto", pointerEvents: "auto" }}>
           <BottomNav
             items={navItems}
@@ -425,20 +563,39 @@ function HomeDashboardPage() {
 
       {/* Announcement detail */}
       <BottomSheet open={openAnn != null} onClose={() => setOpenAnn(null)} title={openAnn?.title}>
-        <Text variant="body" tone="secondary" style={{ whiteSpace: "pre-wrap", marginTop: spacing[2] }}>
+        <Text
+          variant="body"
+          tone="secondary"
+          style={{ whiteSpace: "pre-wrap", marginTop: spacing[2] }}
+        >
           {openAnn?.body}
         </Text>
-        <Button variant="secondary" fullWidth style={{ marginTop: spacing[5] }} onClick={() => setOpenAnn(null)}>
+        <Button
+          variant="secondary"
+          fullWidth
+          style={{ marginTop: spacing[5] }}
+          onClick={() => setOpenAnn(null)}
+        >
           Close
         </Button>
       </BottomSheet>
 
       {/* Coming-soon for modules not yet built */}
-      <BottomSheet open={comingSoon != null} onClose={() => setComingSoon(null)} title={`${comingSoon ?? ""} — coming soon`}>
+      <BottomSheet
+        open={comingSoon != null}
+        onClose={() => setComingSoon(null)}
+        title={`${comingSoon ?? ""} — coming soon`}
+      >
         <Text variant="body" tone="secondary" style={{ marginTop: spacing[2] }}>
-          The {comingSoon} experience is on its way. It will plug into this dashboard using your current session.
+          The {comingSoon} experience is on its way. It will plug into this dashboard using your
+          current session.
         </Text>
-        <Button variant="primary" fullWidth style={{ marginTop: spacing[5] }} onClick={() => setComingSoon(null)}>
+        <Button
+          variant="primary"
+          fullWidth
+          style={{ marginTop: spacing[5] }}
+          onClick={() => setComingSoon(null)}
+        >
           Got it
         </Button>
       </BottomSheet>
@@ -450,8 +607,24 @@ function HomeDashboardPage() {
 
 function Shell({ children }: { children: React.ReactNode }) {
   return (
-    <div style={{ minHeight: "100vh", background: APP_BACKGROUND, backgroundAttachment: "fixed", fontFamily: FONT_FAMILY }}>
-      <div style={{ maxWidth: 560, margin: "0 auto", padding: spacing[4], display: "flex", flexDirection: "column", gap: spacing[4] }}>
+    <div
+      style={{
+        minHeight: "100vh",
+        background: APP_BACKGROUND,
+        backgroundAttachment: "fixed",
+        fontFamily: FONT_FAMILY,
+      }}
+    >
+      <div
+        style={{
+          maxWidth: 560,
+          margin: "0 auto",
+          padding: spacing[4],
+          display: "flex",
+          flexDirection: "column",
+          gap: spacing[4],
+        }}
+      >
         {children}
       </div>
     </div>
