@@ -67,7 +67,7 @@ function LoginPage() {
       } catch {
         /* non-blocking */
       }
-      navigate({ to: "/app", replace: true });
+      navigate({ to: "/system/splash", replace: true });
     } catch (err) {
       haptic("medium");
       setError(friendlyAuthError(err instanceof Error ? err.message : undefined));
