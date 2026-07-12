@@ -57,31 +57,31 @@ export const colors = {
   textMuted: "rgba(60,60,67,0.5)",
 } as const;
 
-/** Gradients. */
+/** Gradients — restrained. Solid-leaning surfaces, minimal color. */
 export const gradients = {
   blueGloss:
-    "radial-gradient(120% 90% at 50% -10%, #57b0f6 0%, #3ea0f2 34%, #2f83e6 72%, #2a75dd 100%)",
+    "linear-gradient(180deg, #0a84ff 0%, #0060df 100%)",
   primaryButton:
-    "linear-gradient(160deg, rgba(74,166,248,0.92) 0%, rgba(47,131,232,0.92) 55%, rgba(38,115,222,0.92) 100%)",
+    "linear-gradient(180deg, #0a84ff 0%, #0071e3 100%)",
   glassCard:
-    "linear-gradient(160deg, rgba(28,37,69,0.72) 0%, rgba(19,26,54,0.72) 42%, rgba(14,20,48,0.72) 100%)",
+    "linear-gradient(180deg, rgba(255,255,255,0.86) 0%, rgba(255,255,255,0.72) 100%)",
   glassButton:
-    "linear-gradient(160deg, rgba(255,255,255,0.12) 0%, rgba(255,255,255,0.04) 100%)",
+    "linear-gradient(180deg, rgba(255,255,255,0.9) 0%, rgba(255,255,255,0.7) 100%)",
   pink:
-    "radial-gradient(120% 120% at 30% 20%, #f3c6dd 0%, #ea6fa6 45%, #d0418a 100%)",
+    "linear-gradient(180deg, #ff6482 0%, #ff375f 100%)",
   success:
-    "radial-gradient(120% 120% at 30% 20%, #a8f0d6 0%, #43d9a3 45%, #1fae7e 100%)",
+    "linear-gradient(180deg, #5cd679 0%, #34c759 100%)",
 } as const;
 
-/** Surface / glass fills. */
+/** Surface / glass fills — solid, layered elevation on off-white. */
 export const surfaces = {
-  glass: gradients.glassCard,
-  glassSoft: "rgba(38,50,96,0.42)",
-  glassPill: "rgba(18,52,120,0.42)",
-  overlay: "rgba(4,8,20,0.6)",
-  border: "rgba(255,255,255,0.12)",
-  borderSoft: "rgba(255,255,255,0.08)",
-  borderStrong: "rgba(255,255,255,0.28)",
+  glass: "rgba(255,255,255,0.72)",
+  glassSoft: "#ffffff",
+  glassPill: "rgba(255,255,255,0.7)",
+  overlay: "rgba(20,20,25,0.28)",
+  border: "rgba(0,0,0,0.08)",
+  borderSoft: "rgba(0,0,0,0.05)",
+  borderStrong: "rgba(0,0,0,0.14)",
 } as const;
 
 /** Border radius scale (px). */
