@@ -11,6 +11,7 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as UiRouteImport } from './routes/ui'
 import { Route as AuthRouteImport } from './routes/auth'
+import { Route as AdminRouteImport } from './routes/admin'
 import { Route as R500RouteImport } from './routes/500'
 import { Route as R404RouteImport } from './routes/404'
 import { Route as OnboardingRouteRouteImport } from './routes/onboarding/route'
@@ -18,6 +19,7 @@ import { Route as PublicRouteRouteImport } from './routes/_public/route'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as OnboardingIndexRouteImport } from './routes/onboarding/index'
 import { Route as AuthIndexRouteImport } from './routes/auth.index'
+import { Route as AdminIndexRouteImport } from './routes/admin.index'
 import { Route as PublicIndexRouteImport } from './routes/_public/index'
 import { Route as SystemSplashRouteImport } from './routes/system.splash'
 import { Route as SystemMaintenanceRouteImport } from './routes/system.maintenance'
@@ -38,6 +40,8 @@ import { Route as AuthSignupRouteImport } from './routes/auth.signup'
 import { Route as AuthResetPasswordRouteImport } from './routes/auth.reset-password'
 import { Route as AuthLoginRouteImport } from './routes/auth.login'
 import { Route as AuthForgotPasswordRouteImport } from './routes/auth.forgot-password'
+import { Route as AdminLoginRouteImport } from './routes/admin.login'
+import { Route as AdminDashboardRouteImport } from './routes/admin.dashboard'
 import { Route as PublicTermsRouteImport } from './routes/_public/terms'
 import { Route as PublicPrivacyRouteImport } from './routes/_public/privacy'
 import { Route as PublicContactRouteImport } from './routes/_public/contact'
@@ -103,6 +107,11 @@ const AuthRoute = AuthRouteImport.update({
   path: '/auth',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AdminRoute = AdminRouteImport.update({
+  id: '/admin',
+  path: '/admin',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const R500Route = R500RouteImport.update({
   id: '/500',
   path: '/500',
@@ -135,6 +144,11 @@ const AuthIndexRoute = AuthIndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => AuthRoute,
+} as any)
+const AdminIndexRoute = AdminIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => AdminRoute,
 } as any)
 const PublicIndexRoute = PublicIndexRouteImport.update({
   id: '/',
@@ -236,6 +250,16 @@ const AuthForgotPasswordRoute = AuthForgotPasswordRouteImport.update({
   id: '/forgot-password',
   path: '/forgot-password',
   getParentRoute: () => AuthRoute,
+} as any)
+const AdminLoginRoute = AdminLoginRouteImport.update({
+  id: '/login',
+  path: '/login',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminDashboardRoute = AdminDashboardRouteImport.update({
+  id: '/dashboard',
+  path: '/dashboard',
+  getParentRoute: () => AdminRoute,
 } as any)
 const PublicTermsRoute = PublicTermsRouteImport.update({
   id: '/terms',
@@ -554,6 +578,7 @@ export interface FileRoutesByFullPath {
   '/onboarding': typeof OnboardingRouteRouteWithChildren
   '/404': typeof R404Route
   '/500': typeof R500Route
+  '/admin': typeof AdminRouteWithChildren
   '/auth': typeof AuthRouteWithChildren
   '/ui': typeof UiRoute
   '/chat': typeof AuthenticatedChatRouteWithChildren
@@ -565,6 +590,8 @@ export interface FileRoutesByFullPath {
   '/contact': typeof PublicContactRoute
   '/privacy': typeof PublicPrivacyRoute
   '/terms': typeof PublicTermsRoute
+  '/admin/dashboard': typeof AdminDashboardRoute
+  '/admin/login': typeof AdminLoginRoute
   '/auth/forgot-password': typeof AuthForgotPasswordRoute
   '/auth/login': typeof AuthLoginRoute
   '/auth/reset-password': typeof AuthResetPasswordRoute
@@ -584,6 +611,7 @@ export interface FileRoutesByFullPath {
   '/onboarding/semester': typeof OnboardingSemesterRoute
   '/system/maintenance': typeof SystemMaintenanceRoute
   '/system/splash': typeof SystemSplashRoute
+  '/admin/': typeof AdminIndexRoute
   '/auth/': typeof AuthIndexRoute
   '/onboarding/': typeof OnboardingIndexRoute
   '/chat/$chatId': typeof AuthenticatedChatChatIdRouteWithChildren
@@ -642,6 +670,8 @@ export interface FileRoutesByTo {
   '/contact': typeof PublicContactRoute
   '/privacy': typeof PublicPrivacyRoute
   '/terms': typeof PublicTermsRoute
+  '/admin/dashboard': typeof AdminDashboardRoute
+  '/admin/login': typeof AdminLoginRoute
   '/auth/forgot-password': typeof AuthForgotPasswordRoute
   '/auth/login': typeof AuthLoginRoute
   '/auth/reset-password': typeof AuthResetPasswordRoute
@@ -661,6 +691,7 @@ export interface FileRoutesByTo {
   '/onboarding/semester': typeof OnboardingSemesterRoute
   '/system/maintenance': typeof SystemMaintenanceRoute
   '/system/splash': typeof SystemSplashRoute
+  '/admin': typeof AdminIndexRoute
   '/auth': typeof AuthIndexRoute
   '/onboarding': typeof OnboardingIndexRoute
   '/chat/$chatId': typeof AuthenticatedChatChatIdRouteWithChildren
@@ -716,6 +747,7 @@ export interface FileRoutesById {
   '/onboarding': typeof OnboardingRouteRouteWithChildren
   '/404': typeof R404Route
   '/500': typeof R500Route
+  '/admin': typeof AdminRouteWithChildren
   '/auth': typeof AuthRouteWithChildren
   '/ui': typeof UiRoute
   '/_authenticated/chat': typeof AuthenticatedChatRouteWithChildren
@@ -727,6 +759,8 @@ export interface FileRoutesById {
   '/_public/contact': typeof PublicContactRoute
   '/_public/privacy': typeof PublicPrivacyRoute
   '/_public/terms': typeof PublicTermsRoute
+  '/admin/dashboard': typeof AdminDashboardRoute
+  '/admin/login': typeof AdminLoginRoute
   '/auth/forgot-password': typeof AuthForgotPasswordRoute
   '/auth/login': typeof AuthLoginRoute
   '/auth/reset-password': typeof AuthResetPasswordRoute
@@ -747,6 +781,7 @@ export interface FileRoutesById {
   '/system/maintenance': typeof SystemMaintenanceRoute
   '/system/splash': typeof SystemSplashRoute
   '/_public/': typeof PublicIndexRoute
+  '/admin/': typeof AdminIndexRoute
   '/auth/': typeof AuthIndexRoute
   '/onboarding/': typeof OnboardingIndexRoute
   '/_authenticated/chat/$chatId': typeof AuthenticatedChatChatIdRouteWithChildren
@@ -802,6 +837,7 @@ export interface FileRouteTypes {
     | '/onboarding'
     | '/404'
     | '/500'
+    | '/admin'
     | '/auth'
     | '/ui'
     | '/chat'
@@ -813,6 +849,8 @@ export interface FileRouteTypes {
     | '/contact'
     | '/privacy'
     | '/terms'
+    | '/admin/dashboard'
+    | '/admin/login'
     | '/auth/forgot-password'
     | '/auth/login'
     | '/auth/reset-password'
@@ -832,6 +870,7 @@ export interface FileRouteTypes {
     | '/onboarding/semester'
     | '/system/maintenance'
     | '/system/splash'
+    | '/admin/'
     | '/auth/'
     | '/onboarding/'
     | '/chat/$chatId'
@@ -890,6 +929,8 @@ export interface FileRouteTypes {
     | '/contact'
     | '/privacy'
     | '/terms'
+    | '/admin/dashboard'
+    | '/admin/login'
     | '/auth/forgot-password'
     | '/auth/login'
     | '/auth/reset-password'
@@ -909,6 +950,7 @@ export interface FileRouteTypes {
     | '/onboarding/semester'
     | '/system/maintenance'
     | '/system/splash'
+    | '/admin'
     | '/auth'
     | '/onboarding'
     | '/chat/$chatId'
@@ -963,6 +1005,7 @@ export interface FileRouteTypes {
     | '/onboarding'
     | '/404'
     | '/500'
+    | '/admin'
     | '/auth'
     | '/ui'
     | '/_authenticated/chat'
@@ -974,6 +1017,8 @@ export interface FileRouteTypes {
     | '/_public/contact'
     | '/_public/privacy'
     | '/_public/terms'
+    | '/admin/dashboard'
+    | '/admin/login'
     | '/auth/forgot-password'
     | '/auth/login'
     | '/auth/reset-password'
@@ -994,6 +1039,7 @@ export interface FileRouteTypes {
     | '/system/maintenance'
     | '/system/splash'
     | '/_public/'
+    | '/admin/'
     | '/auth/'
     | '/onboarding/'
     | '/_authenticated/chat/$chatId'
@@ -1049,6 +1095,7 @@ export interface RootRouteChildren {
   OnboardingRouteRoute: typeof OnboardingRouteRouteWithChildren
   R404Route: typeof R404Route
   R500Route: typeof R500Route
+  AdminRoute: typeof AdminRouteWithChildren
   AuthRoute: typeof AuthRouteWithChildren
   UiRoute: typeof UiRoute
   SystemMaintenanceRoute: typeof SystemMaintenanceRoute
@@ -1070,6 +1117,13 @@ declare module '@tanstack/react-router' {
       path: '/auth'
       fullPath: '/auth'
       preLoaderRoute: typeof AuthRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin': {
+      id: '/admin'
+      path: '/admin'
+      fullPath: '/admin'
+      preLoaderRoute: typeof AdminRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/500': {
@@ -1120,6 +1174,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/auth/'
       preLoaderRoute: typeof AuthIndexRouteImport
       parentRoute: typeof AuthRoute
+    }
+    '/admin/': {
+      id: '/admin/'
+      path: '/'
+      fullPath: '/admin/'
+      preLoaderRoute: typeof AdminIndexRouteImport
+      parentRoute: typeof AdminRoute
     }
     '/_public/': {
       id: '/_public/'
@@ -1260,6 +1321,20 @@ declare module '@tanstack/react-router' {
       fullPath: '/auth/forgot-password'
       preLoaderRoute: typeof AuthForgotPasswordRouteImport
       parentRoute: typeof AuthRoute
+    }
+    '/admin/login': {
+      id: '/admin/login'
+      path: '/login'
+      fullPath: '/admin/login'
+      preLoaderRoute: typeof AdminLoginRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/dashboard': {
+      id: '/admin/dashboard'
+      path: '/dashboard'
+      fullPath: '/admin/dashboard'
+      preLoaderRoute: typeof AdminDashboardRouteImport
+      parentRoute: typeof AdminRoute
     }
     '/_public/terms': {
       id: '/_public/terms'
@@ -1906,6 +1981,20 @@ const OnboardingRouteRouteWithChildren = OnboardingRouteRoute._addFileChildren(
   OnboardingRouteRouteChildren,
 )
 
+interface AdminRouteChildren {
+  AdminDashboardRoute: typeof AdminDashboardRoute
+  AdminLoginRoute: typeof AdminLoginRoute
+  AdminIndexRoute: typeof AdminIndexRoute
+}
+
+const AdminRouteChildren: AdminRouteChildren = {
+  AdminDashboardRoute: AdminDashboardRoute,
+  AdminLoginRoute: AdminLoginRoute,
+  AdminIndexRoute: AdminIndexRoute,
+}
+
+const AdminRouteWithChildren = AdminRoute._addFileChildren(AdminRouteChildren)
+
 interface AuthRouteChildren {
   AuthForgotPasswordRoute: typeof AuthForgotPasswordRoute
   AuthLoginRoute: typeof AuthLoginRoute
@@ -1932,6 +2021,7 @@ const rootRouteChildren: RootRouteChildren = {
   OnboardingRouteRoute: OnboardingRouteRouteWithChildren,
   R404Route: R404Route,
   R500Route: R500Route,
+  AdminRoute: AdminRouteWithChildren,
   AuthRoute: AuthRouteWithChildren,
   UiRoute: UiRoute,
   SystemMaintenanceRoute: SystemMaintenanceRoute,
