@@ -793,6 +793,88 @@ export type Database = {
           },
         ]
       }
+      moderation_actions: {
+        Row: {
+          action: string
+          admin_id: string
+          created_at: string
+          id: string
+          metadata: Json
+          new_status: string | null
+          previous_status: string | null
+          reason: string | null
+          report_id: string | null
+          target_user_id: string | null
+        }
+        Insert: {
+          action: string
+          admin_id: string
+          created_at?: string
+          id?: string
+          metadata?: Json
+          new_status?: string | null
+          previous_status?: string | null
+          reason?: string | null
+          report_id?: string | null
+          target_user_id?: string | null
+        }
+        Update: {
+          action?: string
+          admin_id?: string
+          created_at?: string
+          id?: string
+          metadata?: Json
+          new_status?: string | null
+          previous_status?: string | null
+          reason?: string | null
+          report_id?: string | null
+          target_user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "moderation_actions_report_id_fkey"
+            columns: ["report_id"]
+            isOneToOne: false
+            referencedRelation: "reports"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      moderation_notes: {
+        Row: {
+          author_id: string
+          body: string
+          created_at: string
+          id: string
+          report_id: string
+          updated_at: string
+        }
+        Insert: {
+          author_id: string
+          body: string
+          created_at?: string
+          id?: string
+          report_id: string
+          updated_at?: string
+        }
+        Update: {
+          author_id?: string
+          body?: string
+          created_at?: string
+          id?: string
+          report_id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "moderation_notes_report_id_fkey"
+            columns: ["report_id"]
+            isOneToOne: false
+            referencedRelation: "reports"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       notification_preferences: {
         Row: {
           category: string
@@ -979,33 +1061,98 @@ export type Database = {
           },
         ]
       }
+      report_evidence: {
+        Row: {
+          content: string | null
+          created_at: string
+          id: string
+          kind: string
+          metadata: Json
+          report_id: string
+          storage_path: string | null
+        }
+        Insert: {
+          content?: string | null
+          created_at?: string
+          id?: string
+          kind?: string
+          metadata?: Json
+          report_id: string
+          storage_path?: string | null
+        }
+        Update: {
+          content?: string | null
+          created_at?: string
+          id?: string
+          kind?: string
+          metadata?: Json
+          report_id?: string
+          storage_path?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "report_evidence_report_id_fkey"
+            columns: ["report_id"]
+            isOneToOne: false
+            referencedRelation: "reports"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       reports: {
         Row: {
+          action_taken: string | null
+          assigned_to: string | null
+          category: string | null
           created_at: string
           details: string | null
           id: string
+          priority: string
           reason: string
           reported_id: string
           reporter_id: string
+          resolution: string | null
+          resolved_at: string | null
+          reviewed_at: string | null
+          source_module: string
           status: string
+          updated_at: string
         }
         Insert: {
+          action_taken?: string | null
+          assigned_to?: string | null
+          category?: string | null
           created_at?: string
           details?: string | null
           id?: string
+          priority?: string
           reason: string
           reported_id: string
           reporter_id: string
+          resolution?: string | null
+          resolved_at?: string | null
+          reviewed_at?: string | null
+          source_module?: string
           status?: string
+          updated_at?: string
         }
         Update: {
+          action_taken?: string | null
+          assigned_to?: string | null
+          category?: string | null
           created_at?: string
           details?: string | null
           id?: string
+          priority?: string
           reason?: string
           reported_id?: string
           reporter_id?: string
+          resolution?: string | null
+          resolved_at?: string | null
+          reviewed_at?: string | null
+          source_module?: string
           status?: string
+          updated_at?: string
         }
         Relationships: []
       }
@@ -1160,6 +1307,14 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      admin_add_moderation_note: {
+        Args: { _body: string; _report_id: string }
+        Returns: Json
+      }
+      admin_assign_report: {
+        Args: { _moderator_id: string; _report_id: string }
+        Returns: Json
+      }
       admin_clear_reports: { Args: { _user_id: string }; Returns: Json }
       admin_college_detail: { Args: { _id: string }; Returns: Json }
       admin_college_stats: { Args: { _id: string }; Returns: Json }
@@ -1240,6 +1395,37 @@ export type Database = {
           name: string
         }[]
       }
+      admin_list_reports: {
+        Args: {
+          _filters?: Json
+          _limit?: number
+          _offset?: number
+          _search?: string
+          _sort?: string
+        }
+        Returns: {
+          action_taken: string
+          assigned_name: string
+          assigned_to: string
+          category: string
+          college_name: string
+          created_at: string
+          evidence_count: number
+          id: string
+          previous_reports: number
+          priority: string
+          reason: string
+          reported_avatar: string
+          reported_id: string
+          reported_name: string
+          reporter_id: string
+          reporter_name: string
+          source_module: string
+          status: string
+          total_count: number
+          updated_at: string
+        }[]
+      }
       admin_list_users: {
         Args: {
           _filters?: Json
@@ -1284,7 +1470,21 @@ export type Database = {
         Returns: string
       }
       admin_recent_activity: { Args: { _limit?: number }; Returns: Json }
+      admin_report_actions: { Args: { _report_id: string }; Returns: Json }
+      admin_report_analytics: { Args: never; Returns: Json }
+      admin_report_detail: { Args: { _report_id: string }; Returns: Json }
+      admin_report_notes: { Args: { _report_id: string }; Returns: Json }
+      admin_report_stats: { Args: never; Returns: Json }
       admin_reset_discovery: { Args: { _user_id: string }; Returns: Json }
+      admin_resolve_report: {
+        Args: {
+          _action: string
+          _report_id: string
+          _resolution: string
+          _target_status?: string
+        }
+        Returns: Json
+      }
       admin_search: { Args: { _q: string }; Returns: Json }
       admin_set_account_status: {
         Args: { _reason?: string; _status: string; _user_id: string }
@@ -1300,6 +1500,14 @@ export type Database = {
       }
       admin_set_department_status: {
         Args: { _active: boolean; _id: string }
+        Returns: Json
+      }
+      admin_set_report_priority: {
+        Args: { _priority: string; _report_id: string }
+        Returns: Json
+      }
+      admin_set_report_status: {
+        Args: { _reason?: string; _report_id: string; _status: string }
         Returns: Json
       }
       admin_set_verification: {
