@@ -191,7 +191,7 @@ function MatchesPage() {
       {matches.length === 0 ? (
         <div style={{ flex: 1, display: "flex", alignItems: "center", paddingTop: spacing[6] }}>
           <EmptyStateFromPreset
-            preset="matches"
+            preset="noMatches"
             onPrimary={() => navigate({ to: "/discover" })}
             onSecondary={() => navigate({ to: "/home" })}
           />
