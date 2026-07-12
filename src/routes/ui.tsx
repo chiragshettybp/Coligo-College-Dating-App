@@ -2249,19 +2249,19 @@ function Banner({
   const c = feedbackColor[tone];
   return (
     <div
-      className="ds-feedback flex items-center gap-3 backdrop-blur-xl"
+      className="ds-feedback flex items-center gap-3"
       style={{
         borderRadius: radii.md,
         padding: "10px 12px 10px 14px",
-        background: `linear-gradient(165deg, ${c}1c, rgba(14,20,48,0.6))`,
-        border: `1px solid ${c}33`,
-        boxShadow: shadows.medium,
+        background: `${c}12`,
+        border: `1px solid ${c}22`,
+        boxShadow: "none",
       }}
     >
       <span aria-hidden style={{ color: c, display: "flex" }}>
         {icon}
       </span>
-      <span className="min-w-0 flex-1" style={{ color: "#fff", fontSize: 13.5, fontWeight: 600 }}>
+      <span className="min-w-0 flex-1" style={{ color: colors.textPrimary, fontSize: 13.5, fontWeight: 600 }}>
         {title}
       </span>
       {action && (
