@@ -4,10 +4,11 @@
 // and persistent legal links. Mobile-first, centered, one-handed friendly.
 // ============================================================================
 import { createFileRoute, Outlet, Link, useRouter } from "@tanstack/react-router";
-import { Heart, ArrowLeft } from "lucide-react";
+import { ArrowLeft } from "lucide-react";
 
 import { Text, Button } from "@/components/ds/glass";
-import { APP_BACKGROUND, FONT_FAMILY, colors, spacing, radii, gradients } from "@/lib/ds";
+import { BrandLogo } from "@/components/brand/BrandLogo";
+import { APP_BACKGROUND, FONT_FAMILY, colors, spacing } from "@/lib/ds";
 
 export const Route = createFileRoute("/auth")({
   component: AuthLayout,
