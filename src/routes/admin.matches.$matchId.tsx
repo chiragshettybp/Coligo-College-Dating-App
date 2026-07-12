@@ -314,16 +314,18 @@ function ConversationTab({ d }: { d: AdminMatchDetail }) {
 }
 
 function TimelineTab({ d, actions }: { d: AdminMatchDetail; actions: { id: string; action: string; reason: string | null; adminName: string | null; createdAt: string }[] }) {
-  const events: { at: string | null; label: string }[] = [
-    { at: d.firstLikeAt, label: "First like" },
-    { at: d.mutualLikeAt, label: "Match created" },
-    { at: d.firstNote?.timestamp ?? null, label: "First note sent" },
-    { at: d.conversation?.firstAt ?? null, label: "Conversation started" },
-    { at: d.conversation?.lastAt ?? null, label: "Last message" },
-    { at: d.unmatchedAt, label: "Unmatched" },
-    { at: d.archivedAt, label: "Archived" },
-    { at: d.deletedAt, label: "Deleted" },
-  ].filter((e) => e.at) as { at: string; label: string }[];
+  const events = (
+    [
+      { at: d.firstLikeAt, label: "First like" },
+      { at: d.mutualLikeAt, label: "Match created" },
+      { at: d.firstNote?.timestamp ?? null, label: "First note sent" },
+      { at: d.conversation?.firstAt ?? null, label: "Conversation started" },
+      { at: d.conversation?.lastAt ?? null, label: "Last message" },
+      { at: d.unmatchedAt, label: "Unmatched" },
+      { at: d.archivedAt, label: "Archived" },
+      { at: d.deletedAt, label: "Deleted" },
+    ] as { at: string | null; label: string }[]
+  ).filter((e): e is { at: string; label: string } => !!e.at);
 
   return (
     <>
