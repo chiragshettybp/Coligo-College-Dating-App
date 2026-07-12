@@ -26,18 +26,18 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "Wallet Balance — Design Showcase" },
+      { title: "CampusMatch — Dating for verified college students" },
       {
         name: "description",
         content:
-          "A glassmorphic wallet balance card UI showcase featuring balance, contacts, transactions and quick actions.",
+          "CampusMatch is the exclusive dating app for verified college students in India. Match and chat with students from your campus.",
       },
-      { name: "author", content: "memento___studios" },
-      { property: "og:title", content: "Wallet Balance — Design Showcase" },
+      { name: "author", content: "CampusMatch" },
+      { property: "og:title", content: "CampusMatch — Dating for verified college students" },
       {
         property: "og:description",
         content:
-          "A glassmorphic wallet balance card UI showcase featuring balance, contacts, transactions and quick actions.",
+          "CampusMatch is the exclusive dating app for verified college students in India. Match and chat with students from your campus.",
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
