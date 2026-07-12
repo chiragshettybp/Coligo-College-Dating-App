@@ -396,9 +396,12 @@ function UIShowcase() {
                 <IconButton primary>
                   <Plus style={{ width: 22, height: 22 }} />
                 </IconButton>
-                <IconButton size={64} primary style={{ boxShadow: shadows.glow }}>
-                  <Heart style={{ width: 28, height: 28 }} />
-                </IconButton>
+                <Fab aria-label="New">
+                  <Plus style={{ width: 26, height: 26 }} />
+                </Fab>
+                <Fab label="Compose">
+                  <Plus style={{ width: 22, height: 22 }} />
+                </Fab>
               </Row>
             </div>
             <Button fullWidth variant="primary" size="lg">
