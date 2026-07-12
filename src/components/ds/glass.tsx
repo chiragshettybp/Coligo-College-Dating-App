@@ -15,6 +15,7 @@ import {
   surfaces,
 } from "@/lib/ds";
 import { cn } from "@/lib/utils";
+import { haptic, type HapticToken } from "@/lib/haptics";
 
 const transition = `all ${motion.base} ${motion.easing}`;
 
