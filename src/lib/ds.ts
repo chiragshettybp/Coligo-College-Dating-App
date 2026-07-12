@@ -8,9 +8,9 @@
 
 /** App background: deep-blue radial glow + linear gradient (from the poster). */
 export const APP_BACKGROUND =
-  "radial-gradient(75% 65% at 16% 80%, rgba(56,104,240,0.55) 0%, rgba(56,104,240,0) 60%)," +
-  "radial-gradient(70% 60% at 55% 112%, rgba(40,60,210,0.5) 0%, rgba(40,60,210,0) 55%)," +
-  "linear-gradient(215deg, #010208 0%, #04102f 32%, #0c2270 66%, #14309a 100%)";
+  "radial-gradient(90% 55% at 50% -12%, rgba(60,120,246,0.10) 0%, rgba(60,120,246,0) 62%)," +
+  "radial-gradient(80% 50% at 50% 112%, rgba(46,70,200,0.08) 0%, rgba(46,70,200,0) 58%)," +
+  "linear-gradient(180deg, #05070f 0%, #070b1a 48%, #05070f 100%)";
 
 export const FONT_FAMILY =
   "Nunito, ui-sans-serif, system-ui, sans-serif";
