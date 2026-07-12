@@ -29,7 +29,7 @@ export type AppConfig = {
   estimatedCompletion: string | null;
   supportEmail: string;
   minAppVersion: string | null;
-  featureFlags: Record<string, { enabled: boolean; payload: unknown }>;
+  featureFlags: Record<string, { enabled: boolean; payload: Json }>;
   latestVersion: {
     version: string;
     minSupported: string | null;
