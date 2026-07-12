@@ -317,9 +317,18 @@ const statusColor: Record<AvatarStatus, string> = {
 /** Dark gap tone that matches the app background behind avatars. */
 const AVATAR_GAP = "#0a1120";
 
-/** Original premium story ring — a warm-to-cool sweep, not Instagram's. */
-const STORY_RING =
-  "conic-gradient(from 210deg, #57b0f6 0deg, #8b7cf6 110deg, #ea6fa6 210deg, #43d9a3 320deg, #57b0f6 360deg)";
+/**
+ * Signature luminous halo — a soft white conic sweep with one bright specular
+ * arc that slowly travels around the ring, like light on polished glass.
+ */
+const HALO_SWEEP =
+  "conic-gradient(from 0deg," +
+  " rgba(255,255,255,0.16) 0deg," +
+  " rgba(255,255,255,0.10) 70deg," +
+  " rgba(255,255,255,0.95) 120deg," +
+  " rgba(255,255,255,0.55) 150deg," +
+  " rgba(255,255,255,0.12) 210deg," +
+  " rgba(255,255,255,0.16) 360deg)";
 
 export function Avatar({
   src,
