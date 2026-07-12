@@ -2,7 +2,7 @@
 // Onboarding layout — gated shell for every /onboarding/* screen.
 // ssr:false (session lives in localStorage). Verifies session, diverts on
 // maintenance, loads onboarding state, then renders brand + progress + Back +
-// the active step. Completed users are sent to /app; users cannot jump ahead of
+// the active step. Completed users are sent to /home; users cannot jump ahead of
 // their saved progress (resume / anti-skip guard).
 // ============================================================================
 import {
