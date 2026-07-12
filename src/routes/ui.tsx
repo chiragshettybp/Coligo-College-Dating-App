@@ -87,17 +87,17 @@ function Section({
   children: React.ReactNode;
 }) {
   return (
-    <section style={{ marginBottom: spacing[8] }}>
+    <section style={{ marginBottom: spacing[6] }}>
       <h2
         className="text-white"
-        style={{ fontSize: 26, fontWeight: 800, letterSpacing: "-0.02em", lineHeight: 1.2 }}
+        style={{ fontSize: 22, fontWeight: 800, letterSpacing: "-0.02em", lineHeight: 1.2 }}
       >
         {title}
       </h2>
-      <p style={{ color: colors.textSecondary, fontSize: 15, lineHeight: 1.5, marginTop: spacing[1] }}>
+      <p style={{ color: colors.textSecondary, fontSize: 14, lineHeight: 1.45, marginTop: spacing[0] }}>
         {description}
       </p>
-      <div style={{ marginTop: spacing[4] }}>{children}</div>
+      <div style={{ marginTop: spacing[3] }}>{children}</div>
     </section>
   );
 }
