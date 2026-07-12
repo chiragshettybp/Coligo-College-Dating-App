@@ -152,6 +152,7 @@ export const Route = createFileRoute("/api/public/seed-students")({
           return new Response("Unauthorized", { status: 401 });
         }
 
+        try {
         const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
 
         // --- reference data -------------------------------------------------
@@ -325,6 +326,12 @@ export const Route = createFileRoute("/api/public/seed-students")({
         }
 
         return Response.json({ ok: true, count: results.length, results });
+        } catch (err) {
+          const message = err instanceof Error ? err.message : String(err);
+          const stack = err instanceof Error ? err.stack : undefined;
+          console.error("[seed-students] failed:", message, stack);
+          return Response.json({ ok: false, error: message, stack }, { status: 500 });
+        }
       },
     },
   },
