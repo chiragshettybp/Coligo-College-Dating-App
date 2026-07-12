@@ -319,13 +319,15 @@ function MatchRow({
         border: `1px solid ${surfaces.borderSoft}`,
       }}
     >
-      <Avatar
-        src={other.photo ?? undefined}
-        initials={name.slice(0, 1).toUpperCase()}
-        size="lg"
-        status={online ? "online" : undefined}
-        verified
-      />
+      <span className="shrink-0">
+        <Avatar
+          src={other.photo ?? undefined}
+          initials={name.slice(0, 1).toUpperCase()}
+          size="lg"
+          status={online ? "online" : undefined}
+          verified
+        />
+      </span>
       <div style={{ flex: 1, minWidth: 0 }}>
         <div className="flex items-center" style={{ gap: spacing[1], justifyContent: "space-between" }}>
           <Text variant="headingSm" color={colors.textPrimary} truncate style={{ flex: 1, minWidth: 0 }}>
