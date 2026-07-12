@@ -439,7 +439,7 @@ function RecentActivity({ events, loading }: { events?: ActivityEvent[]; loading
 const ACTIONS: { label: string; icon: React.ReactNode; badge?: boolean; to?: string }[] = [
   { label: "Manage Users", icon: <Users style={I} />, to: "/admin/users" },
   { label: "Manage Colleges", icon: <Building2 style={I} />, to: "/admin/colleges" },
-  { label: "Manage Reports", icon: <Flag style={I} />, badge: true },
+  { label: "Manage Reports", icon: <Flag style={I} />, badge: true, to: "/admin/reports" },
   { label: "Manage Chats", icon: <MessagesSquare style={I} /> },
   { label: "Analytics", icon: <Activity style={I} /> },
   { label: "Audit Logs", icon: <ShieldAlert style={I} /> },
