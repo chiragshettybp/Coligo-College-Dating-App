@@ -437,7 +437,7 @@ export function MatchCelebration({
             <div
               style={{
                 ...reveal(4 + indicators.length),
-                marginTop: spacing[5],
+                marginTop: "clamp(12px, 2.4vh, 24px)",
                 width: "100%",
               }}
             >
