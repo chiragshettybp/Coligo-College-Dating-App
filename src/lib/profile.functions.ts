@@ -27,7 +27,7 @@ export const getMyProfile = createServerFn({ method: "GET" })
     const { data, error } = await supabase
       .from("profiles")
       .select(
-        "id, phone, display_name, avatar_url, verification_status, onboarding_completed, account_status, last_login_at",
+        "id, phone, display_name, avatar_url, college_id, verification_status, onboarding_completed, account_status, last_login_at",
       )
       .eq("id", userId)
       .maybeSingle();
