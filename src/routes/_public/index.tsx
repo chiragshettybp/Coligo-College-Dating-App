@@ -136,12 +136,12 @@ function Hero() {
           className="flex flex-wrap items-center justify-center"
           style={{ gap: spacing[2], marginTop: spacing[5] }}
         >
-          <Link to="/auth" style={{ textDecoration: "none" }}>
+          <Link to="/auth/signup" style={{ textDecoration: "none" }}>
             <Button variant="primary" size="lg" pill rightIcon={<ArrowRight style={{ width: 18, height: 18 }} />}>
               Get Started
             </Button>
           </Link>
-          <Link to="/auth" style={{ textDecoration: "none" }}>
+          <Link to="/auth/login" style={{ textDecoration: "none" }}>
             <Button variant="secondary" size="lg" pill>
               Log in
             </Button>
@@ -401,7 +401,7 @@ function CtaSection() {
             Join thousands of verified students already connecting on CampusMatch.
           </Text>
           <div style={{ marginTop: spacing[5], display: "inline-flex" }}>
-            <Link to="/auth" style={{ textDecoration: "none" }}>
+            <Link to="/auth/signup" style={{ textDecoration: "none" }}>
               <Button variant="glass" size="lg" pill rightIcon={<ArrowRight style={{ width: 18, height: 18 }} />}>
                 Create your profile
               </Button>
