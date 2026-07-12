@@ -73,10 +73,10 @@ function GlassPill({ children }: { children: React.ReactNode }) {
         fontSize: 12,
         fontWeight: 700,
         letterSpacing: "-0.005em",
-        color: "#fff",
-        background: "rgba(6,10,24,0.42)",
+        color: colors.textPrimary,
+        background: "rgba(255,255,255,0.72)",
         border: `1px solid ${surfaces.border}`,
-        boxShadow: "inset 0 1px 0 rgba(255,255,255,0.12)",
+        boxShadow: "0 1px 2px rgba(0,0,0,0.04), inset 0 1px 0 rgba(255,255,255,0.6)",
       }}
     >
       {children}
@@ -280,16 +280,16 @@ export function MatchCelebration({
       className="fixed inset-0 flex items-center justify-center"
       style={{ zIndex: 80, padding: spacing[5] }}
     >
-      {/* Backdrop — deep navy depth + gentle warm bloom, softly blurred. */}
+      {/* Backdrop — bright frosted light + gentle warm bloom, softly blurred. */}
       <div
         onClick={onClose}
         className="absolute inset-0 backdrop-blur-2xl"
         style={{
           background:
-            "radial-gradient(70% 50% at 50% 32%, rgba(120,150,255,0.16) 0%, rgba(10,16,38,0) 60%)," +
-            "radial-gradient(90% 60% at 50% 30%, rgba(255,236,210,0.10) 0%, rgba(10,16,38,0) 58%)," +
-            "radial-gradient(120% 90% at 50% 120%, rgba(46,70,200,0.12) 0%, rgba(6,10,24,0) 62%)," +
-            "linear-gradient(180deg, rgba(4,7,16,0.88) 0%, rgba(6,9,22,0.94) 100%)",
+            "radial-gradient(70% 50% at 50% 30%, rgba(120,150,255,0.22) 0%, rgba(255,255,255,0) 58%)," +
+            "radial-gradient(90% 60% at 50% 28%, rgba(255,210,160,0.22) 0%, rgba(255,255,255,0) 56%)," +
+            "radial-gradient(120% 90% at 50% 122%, rgba(10,132,255,0.12) 0%, rgba(255,255,255,0) 60%)," +
+            "linear-gradient(180deg, rgba(255,255,255,0.97) 0%, rgba(246,247,250,0.98) 100%)",
         }}
       />
 
@@ -305,8 +305,8 @@ export function MatchCelebration({
                 top: `${p.top}%`,
                 width: p.size,
                 height: p.size,
-                background: "rgba(255,255,255,0.9)",
-                boxShadow: "0 0 8px rgba(255,255,255,0.6)",
+                background: "rgba(10,132,255,0.5)",
+                boxShadow: "0 0 8px rgba(120,150,255,0.5)",
                 opacity: chat ? 0.3 : 1,
                 transition: `opacity 0.5s ${EASE}`,
                 "--p-opacity": p.opacity,
@@ -328,7 +328,7 @@ export function MatchCelebration({
               width: 240,
               height: 240,
               background:
-                "radial-gradient(circle at 50% 50%, rgba(255,255,255,0.44) 0%, rgba(255,255,255,0.12) 34%, rgba(255,255,255,0) 68%)",
+                "radial-gradient(circle at 50% 50%, rgba(120,150,255,0.30) 0%, rgba(255,214,170,0.16) 34%, rgba(255,255,255,0) 68%)",
               filter: "blur(8px)",
               pointerEvents: "none",
               opacity: chat ? 0.5 : 1,
@@ -370,7 +370,7 @@ export function MatchCelebration({
         {!chat && (
           <>
             <div style={reveal(0)}>
-              <span style={{ ...type.overline, color: "#a9c6ff" }}>You connected</span>
+              <span style={{ ...type.overline, color: colors.primary }}>You connected</span>
             </div>
             <h2
               style={{
@@ -380,7 +380,7 @@ export function MatchCelebration({
                 lineHeight: 1.02,
                 letterSpacing: "-0.03em",
                 marginTop: 6,
-                background: "linear-gradient(120deg,#ffffff 0%,#bcd4ff 100%)",
+                background: "linear-gradient(120deg,#1c1c1e 0%,#0a84ff 100%)",
                 WebkitBackgroundClip: "text",
                 backgroundClip: "text",
                 color: "transparent",
@@ -388,8 +388,8 @@ export function MatchCelebration({
             >
               It’s a match
             </h2>
-            <p style={{ ...reveal(2), ...type.bodyLg, color: "rgba(255,255,255,0.72)", marginTop: 8 }}>
-              You and <span style={{ color: "#fff", fontWeight: 600 }}>{right.name}</span> liked each other
+            <p style={{ ...reveal(2), ...type.bodyLg, color: colors.textSecondary, marginTop: 8 }}>
+              You and <span style={{ color: colors.textPrimary, fontWeight: 600 }}>{right.name}</span> liked each other
             </p>
 
             {/* Connection indicators — reveal progressively, never all at once. */}
@@ -400,7 +400,7 @@ export function MatchCelebration({
               {indicators.map((it, i) => (
                 <div key={it.label} style={reveal(3 + i)}>
                   <GlassPill>
-                    <span style={{ color: "#a9c6ff", display: "inline-flex" }}>{it.icon}</span>
+                    <span style={{ color: colors.primary, display: "inline-flex" }}>{it.icon}</span>
                     {it.label}
                   </GlassPill>
                 </div>
@@ -410,7 +410,7 @@ export function MatchCelebration({
             {/* Shared interests — the real thing, each chip revealed in turn. */}
             {shared.interests.length > 0 && (
               <div style={{ ...reveal(3 + indicators.length), marginTop: spacing[3], width: "100%" }}>
-                <span style={{ ...type.caption, color: "rgba(255,255,255,0.55)" }}>You both like</span>
+                <span style={{ ...type.caption, color: colors.textMuted }}>You both like</span>
                 <div className="flex flex-wrap items-center justify-center" style={{ gap: spacing[1], marginTop: spacing[2] }}>
                   {shared.interests.map((interest) => (
                     <span
@@ -420,9 +420,9 @@ export function MatchCelebration({
                         borderRadius: radii.pill,
                         padding: "6px 12px",
                         ...type.badgeLabel,
-                        color: "#dfe9ff",
-                        background: "rgba(120,150,255,0.16)",
-                        border: "1px solid rgba(150,175,255,0.28)",
+                        color: colors.primaryDeep,
+                        background: "rgba(10,132,255,0.10)",
+                        border: "1px solid rgba(10,132,255,0.22)",
                       }}
                     >
                       <Sparkles style={{ width: 13, height: 13 }} />
@@ -442,20 +442,21 @@ export function MatchCelebration({
               }}
             >
               <div
-                className="flex items-start gap-2 text-left backdrop-blur-xl"
+                className="flex items-start gap-2 text-left"
                 style={{
                   borderRadius: radii.lg,
                   padding: spacing[3],
-                  background: "rgba(255,255,255,0.06)",
+                  background: "rgba(255,255,255,0.7)",
                   border: `1px solid ${surfaces.border}`,
+                  boxShadow: "0 1px 2px rgba(0,0,0,0.05)",
                 }}
               >
-                <span style={{ color: "#a9c6ff", display: "inline-flex", marginTop: 1 }}>
+                <span style={{ color: colors.primary, display: "inline-flex", marginTop: 1 }}>
                   <Sparkles style={{ width: 16, height: 16 }} />
                 </span>
                 <div>
-                  <span style={{ ...type.caption, color: "rgba(255,255,255,0.6)" }}>Conversation starter</span>
-                  <p style={{ ...type.body, color: "#fff", marginTop: 2 }}>{shared.conversationStarter}</p>
+                  <span style={{ ...type.caption, color: colors.textMuted }}>Conversation starter</span>
+                  <p style={{ ...type.body, color: colors.textPrimary, marginTop: 2 }}>{shared.conversationStarter}</p>
                 </div>
               </div>
             </div>
@@ -487,8 +488,8 @@ export function MatchCelebration({
         {chat && (
           <div className="w-full">
             <div style={chatIn(0)}>
-              <p style={{ ...type.headingSm, color: "#fff" }}>{right.name}</p>
-              <p style={{ ...type.caption, color: "rgba(255,255,255,0.55)", marginTop: 2 }}>
+              <p style={{ ...type.headingSm, color: colors.textPrimary }}>{right.name}</p>
+              <p style={{ ...type.caption, color: colors.textMuted, marginTop: 2 }}>
                 You matched just now · {shared.college}
               </p>
             </div>
@@ -502,9 +503,10 @@ export function MatchCelebration({
                   maxWidth: "84%",
                   borderRadius: `${radii.lg}px ${radii.lg}px ${radii.lg}px ${radii.sm}px`,
                   padding: `${spacing[2]}px ${spacing[3]}px`,
-                  background: "rgba(255,255,255,0.08)",
+                  background: "rgba(255,255,255,0.8)",
                   border: `1px solid ${surfaces.border}`,
-                  color: "rgba(255,255,255,0.92)",
+                  boxShadow: "0 1px 2px rgba(0,0,0,0.05)",
+                  color: colors.textPrimary,
                   ...type.body,
                 }}
               >
@@ -522,12 +524,13 @@ export function MatchCelebration({
               }}
             >
               <div
-                className="flex items-center gap-2 backdrop-blur-xl"
+                className="flex items-center gap-2"
                 style={{
                   borderRadius: radii.pill,
                   padding: `6px 6px 6px ${spacing[4]}px`,
-                  background: "rgba(255,255,255,0.1)",
+                  background: "rgba(255,255,255,0.9)",
                   border: `1px solid ${surfaces.border}`,
+                  boxShadow: "0 1px 2px rgba(0,0,0,0.05)",
                 }}
               >
                 <input
@@ -541,7 +544,7 @@ export function MatchCelebration({
                   className="flex-1 bg-transparent outline-none"
                   style={{
                     ...type.inputText,
-                    color: "#fff",
+                    color: colors.textPrimary,
                     minWidth: 0,
                   }}
                 />
@@ -567,7 +570,7 @@ export function MatchCelebration({
                 style={{
                   ...type.caption,
                   marginTop: spacing[3],
-                  color: "rgba(255,255,255,0.55)",
+                  color: colors.textMuted,
                   background: "transparent",
                 }}
               >
@@ -588,9 +591,10 @@ export function MatchCelebration({
           right: spacing[4],
           width: 40,
           height: 40,
-          background: "rgba(6,10,24,0.5)",
+          background: "rgba(255,255,255,0.72)",
           border: `1px solid ${surfaces.border}`,
-          color: "#fff",
+          boxShadow: "0 1px 2px rgba(0,0,0,0.05)",
+          color: colors.textPrimary,
         }}
       >
         <X style={{ width: 20, height: 20 }} />
