@@ -120,17 +120,27 @@ export const shadows = {
 } as const;
 
 /**
- * Motion — one unified language. `easing` is the standard ease-out for
- * transitions; `spring` settles interactive/enter states with a soft
- * overshoot; `standard`/`snappy` are the shared cubic-beziers for CSS.
+ * Motion — one unified language. Re-exported from the dedicated motion token
+ * system so every screen inherits the same durations, springs, easings and
+ * motion types. Import `motion` (or the granular tokens) from here or
+ * "@/lib/motion" — never hardcode animation values.
  */
-export const motion = {
-  easing: "cubic-bezier(0.22, 1, 0.36, 1)",
-  spring: "cubic-bezier(0.34, 1.56, 0.64, 1)",
-  standard: "cubic-bezier(0.4, 0, 0.2, 1)",
-  snappy: "cubic-bezier(0.22, 1, 0.36, 1)",
-  fast: "0.16s",
-  base: "0.24s",
-  slow: "0.4s",
-} as const;
+export {
+  motion,
+  duration,
+  durationMs,
+  easing,
+  spring,
+  motionType,
+  transition,
+  prefersReducedMotion,
+  resolveDuration,
+} from "./motion";
+export type {
+  DurationToken,
+  EasingToken,
+  SpringToken,
+  MotionTypeToken,
+} from "./motion";
+
 
