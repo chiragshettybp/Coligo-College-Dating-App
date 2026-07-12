@@ -20,7 +20,8 @@ import {
   type SplashState,
 } from "@/lib/system";
 import { Button, Text, GlassPanel, ProgressBar } from "@/components/ds/glass";
-import { APP_BACKGROUND, FONT_FAMILY, colors, spacing, radii, gradients } from "@/lib/ds";
+import { BrandLogo } from "@/components/brand/BrandLogo";
+import { APP_BACKGROUND, FONT_FAMILY, colors, spacing, radii } from "@/lib/ds";
 
 export const Route = createFileRoute("/system/splash")({
   ssr: false,
