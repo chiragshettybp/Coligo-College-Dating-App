@@ -41,7 +41,7 @@ export const Route = createFileRoute("/system/splash")({
     links: [
       // Preload the intro video + poster for instant, flash-free startup.
       { rel: "preload", as: "video", href: introVideo.url, type: "video/mp4" },
-      { rel: "preload", as: "image", href: introPoster.url, fetchpriority: "high" },
+      { rel: "preload", as: "image", href: introPoster.url, fetchPriority: "high" },
     ],
   }),
   component: SplashPage,
