@@ -58,6 +58,7 @@ import { Route as ApiPublicPushRouteImport } from './routes/api/public/push'
 import { Route as AuthenticatedSettingsSecurityRouteImport } from './routes/_authenticated/settings.security'
 import { Route as AuthenticatedSettingsPrivacyRouteImport } from './routes/_authenticated/settings.privacy'
 import { Route as AuthenticatedSettingsNotificationsRouteImport } from './routes/_authenticated/settings.notifications'
+import { Route as AuthenticatedSettingsBlockedUsersRouteImport } from './routes/_authenticated/settings.blocked-users'
 import { Route as AuthenticatedSettingsAccountRouteImport } from './routes/_authenticated/settings.account'
 import { Route as AuthenticatedProfilePreviewRouteImport } from './routes/_authenticated/profile.preview'
 import { Route as AuthenticatedProfilePreferencesRouteImport } from './routes/_authenticated/profile.preferences'
@@ -336,6 +337,12 @@ const AuthenticatedSettingsNotificationsRoute =
     path: '/settings/notifications',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
+const AuthenticatedSettingsBlockedUsersRoute =
+  AuthenticatedSettingsBlockedUsersRouteImport.update({
+    id: '/settings/blocked-users',
+    path: '/settings/blocked-users',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const AuthenticatedSettingsAccountRoute =
   AuthenticatedSettingsAccountRouteImport.update({
     id: '/settings/account',
@@ -528,6 +535,7 @@ export interface FileRoutesByFullPath {
   '/profile/preferences': typeof AuthenticatedProfilePreferencesRoute
   '/profile/preview': typeof AuthenticatedProfilePreviewRoute
   '/settings/account': typeof AuthenticatedSettingsAccountRoute
+  '/settings/blocked-users': typeof AuthenticatedSettingsBlockedUsersRoute
   '/settings/notifications': typeof AuthenticatedSettingsNotificationsRoute
   '/settings/privacy': typeof AuthenticatedSettingsPrivacyRoute
   '/settings/security': typeof AuthenticatedSettingsSecurityRoute
@@ -595,6 +603,7 @@ export interface FileRoutesByTo {
   '/profile/preferences': typeof AuthenticatedProfilePreferencesRoute
   '/profile/preview': typeof AuthenticatedProfilePreviewRoute
   '/settings/account': typeof AuthenticatedSettingsAccountRoute
+  '/settings/blocked-users': typeof AuthenticatedSettingsBlockedUsersRoute
   '/settings/notifications': typeof AuthenticatedSettingsNotificationsRoute
   '/settings/privacy': typeof AuthenticatedSettingsPrivacyRoute
   '/settings/security': typeof AuthenticatedSettingsSecurityRoute
@@ -671,6 +680,7 @@ export interface FileRoutesById {
   '/_authenticated/profile/preferences': typeof AuthenticatedProfilePreferencesRoute
   '/_authenticated/profile/preview': typeof AuthenticatedProfilePreviewRoute
   '/_authenticated/settings/account': typeof AuthenticatedSettingsAccountRoute
+  '/_authenticated/settings/blocked-users': typeof AuthenticatedSettingsBlockedUsersRoute
   '/_authenticated/settings/notifications': typeof AuthenticatedSettingsNotificationsRoute
   '/_authenticated/settings/privacy': typeof AuthenticatedSettingsPrivacyRoute
   '/_authenticated/settings/security': typeof AuthenticatedSettingsSecurityRoute
@@ -746,6 +756,7 @@ export interface FileRouteTypes {
     | '/profile/preferences'
     | '/profile/preview'
     | '/settings/account'
+    | '/settings/blocked-users'
     | '/settings/notifications'
     | '/settings/privacy'
     | '/settings/security'
@@ -813,6 +824,7 @@ export interface FileRouteTypes {
     | '/profile/preferences'
     | '/profile/preview'
     | '/settings/account'
+    | '/settings/blocked-users'
     | '/settings/notifications'
     | '/settings/privacy'
     | '/settings/security'
@@ -888,6 +900,7 @@ export interface FileRouteTypes {
     | '/_authenticated/profile/preferences'
     | '/_authenticated/profile/preview'
     | '/_authenticated/settings/account'
+    | '/_authenticated/settings/blocked-users'
     | '/_authenticated/settings/notifications'
     | '/_authenticated/settings/privacy'
     | '/_authenticated/settings/security'
@@ -1271,6 +1284,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedSettingsNotificationsRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/settings/blocked-users': {
+      id: '/_authenticated/settings/blocked-users'
+      path: '/settings/blocked-users'
+      fullPath: '/settings/blocked-users'
+      preLoaderRoute: typeof AuthenticatedSettingsBlockedUsersRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/settings/account': {
       id: '/_authenticated/settings/account'
       path: '/settings/account'
@@ -1578,6 +1598,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedProfilePreferencesRoute: typeof AuthenticatedProfilePreferencesRoute
   AuthenticatedProfilePreviewRoute: typeof AuthenticatedProfilePreviewRoute
   AuthenticatedSettingsAccountRoute: typeof AuthenticatedSettingsAccountRoute
+  AuthenticatedSettingsBlockedUsersRoute: typeof AuthenticatedSettingsBlockedUsersRoute
   AuthenticatedSettingsNotificationsRoute: typeof AuthenticatedSettingsNotificationsRoute
   AuthenticatedSettingsPrivacyRoute: typeof AuthenticatedSettingsPrivacyRoute
   AuthenticatedSettingsSecurityRoute: typeof AuthenticatedSettingsSecurityRoute
@@ -1600,6 +1621,8 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedProfilePreferencesRoute: AuthenticatedProfilePreferencesRoute,
   AuthenticatedProfilePreviewRoute: AuthenticatedProfilePreviewRoute,
   AuthenticatedSettingsAccountRoute: AuthenticatedSettingsAccountRoute,
+  AuthenticatedSettingsBlockedUsersRoute:
+    AuthenticatedSettingsBlockedUsersRoute,
   AuthenticatedSettingsNotificationsRoute:
     AuthenticatedSettingsNotificationsRoute,
   AuthenticatedSettingsPrivacyRoute: AuthenticatedSettingsPrivacyRoute,
