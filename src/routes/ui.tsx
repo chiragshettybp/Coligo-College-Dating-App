@@ -54,6 +54,9 @@ import { haptic, type HapticToken } from "@/lib/haptics";
 import {
   Avatar,
   Badge,
+  IdentityBadge,
+  PresenceBadge,
+  CompatibilityBadge,
   Button,
   Chip,
   GlassPanel,
@@ -651,33 +654,38 @@ function UIShowcase() {
         {/* Badges */}
         <Section
           title="Badges"
-          description="Identity, status and metadata tokens — one glass recipe, color-independent cues, elegant enough to feel collectible."
+          description="One identity system — soft surfaces, hairline borders, restrained color. Every badge communicates meaning, never decoration."
         >
-          <Label>Status</Label>
+          <Label>Presence</Label>
           <Row>
-            <Badge tone="success" dot pulse>Online</Badge>
-            <Badge tone="warning" dot>Away</Badge>
-            <Badge tone="neutral" dot>Offline</Badge>
-            <Badge tone="info" dot pulse>Typing…</Badge>
+            <PresenceBadge online />
+            <PresenceBadge online={false} />
           </Row>
           <div style={{ height: spacing[3] }} />
           <Label>Identity</Label>
           <Row>
-            <Badge tone="success"><ShieldCheck style={{ width: 12, height: 12 }} /> Verified</Badge>
-            <Badge tone="primary"><Sparkles style={{ width: 12, height: 12 }} /> Premium</Badge>
-            <Badge tone="info">New</Badge>
-            <Badge tone="warning"><Flame style={{ width: 12, height: 12 }} /> Trending</Badge>
-            <Badge tone="neutral"><GraduationCap style={{ width: 12, height: 12 }} /> CS · Year 2</Badge>
+            <IdentityBadge type="verified" />
+            <IdentityBadge type="premium" />
+            <IdentityBadge type="new" />
+            <IdentityBadge type="popular" />
+            <IdentityBadge type="trending" />
           </Row>
           <div style={{ height: spacing[3] }} />
-          <Label>Match</Label>
+          <Label>Context</Label>
           <Row>
-            <Badge tone="success"><Heart style={{ width: 12, height: 12 }} fill="currentColor" /> 96% match</Badge>
-            <Badge tone="primary"><MapPin style={{ width: 12, height: 12 }} /> Same campus</Badge>
-            <Badge tone="info"><Sparkles style={{ width: 12, height: 12 }} /> 3 shared interests</Badge>
-            <Badge tone="neutral" dot>Active recently</Badge>
+            <IdentityBadge type="sameCollege" />
+            <IdentityBadge type="sameDepartment" />
+            <IdentityBadge type="sameSemester" />
+            <IdentityBadge type="mutualInterests" label="3 mutual interests" />
+          </Row>
+          <div style={{ height: spacing[3] }} />
+          <Label>Compatibility</Label>
+          <Row>
+            <CompatibilityBadge value={96} />
+            <CompatibilityBadge value={82} label="compatible" />
           </Row>
         </Section>
+
 
         {/* Feedback: alerts, toasts, banners */}
         <Section
