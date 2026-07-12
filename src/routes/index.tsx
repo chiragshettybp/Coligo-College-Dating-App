@@ -166,7 +166,7 @@ function WalletCard() {
             lineHeight: 1,
           }}
         >
-          <span style={{ fontWeight: 500, marginRight: u(6) }}>$</span>
+          <span style={{ fontWeight: 500, marginRight: u(16) }}>$</span>
           52,002.50
         </div>
       </div>
