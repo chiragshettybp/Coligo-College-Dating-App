@@ -328,7 +328,7 @@ export function MatchCelebration({
               width: 240,
               height: 240,
               background:
-                "radial-gradient(circle at 50% 50%, rgba(255,255,255,0.44) 0%, rgba(255,255,255,0.12) 34%, rgba(255,255,255,0) 68%)",
+                "radial-gradient(circle at 50% 50%, rgba(120,150,255,0.30) 0%, rgba(255,214,170,0.16) 34%, rgba(255,255,255,0) 68%)",
               filter: "blur(8px)",
               pointerEvents: "none",
               opacity: chat ? 0.5 : 1,
