@@ -2038,11 +2038,10 @@ function FeedbackIcon({
       style={{
         width: size,
         height: size,
-        borderRadius: size / 2.6,
+        borderRadius: size / 2.8,
         color: c,
-        background: `linear-gradient(165deg, ${c}2e, ${c}12)`,
-        border: `1px solid ${c}40`,
-        boxShadow: `inset 0 1px 0 rgba(255,255,255,0.12), 0 0 16px ${c}22`,
+        background: `${c}18`,
+        border: `1px solid ${c}22`,
       }}
     >
       {icon}
