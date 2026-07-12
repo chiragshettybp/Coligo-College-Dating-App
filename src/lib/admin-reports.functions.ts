@@ -8,6 +8,8 @@ import { createServerFn } from "@tanstack/react-start";
 import { queryOptions } from "@tanstack/react-query";
 import { z } from "zod";
 
+type Json = string | number | boolean | null | { [k: string]: Json } | Json[];
+
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 import { signAdminPaths, resolveAdminUrl } from "@/lib/admin-users.server";
 
@@ -101,7 +103,7 @@ export type ReportEvidence = {
   kind: string;
   path: string | null;
   content: string | null;
-  metadata: Record<string, unknown>;
+  metadata: Record<string, Json>;
   createdAt: string;
 };
 
@@ -142,7 +144,7 @@ export type ModerationAction = {
   previousStatus: string | null;
   newStatus: string | null;
   adminName: string | null;
-  metadata: Record<string, unknown>;
+  metadata: Record<string, Json>;
   createdAt: string;
 };
 
