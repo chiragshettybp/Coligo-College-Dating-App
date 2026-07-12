@@ -15,7 +15,7 @@ import {
 } from "@tanstack/react-router";
 import { useEffect } from "react";
 import { useSuspenseQuery, useQueryClient } from "@tanstack/react-query";
-import { ArrowLeft, Heart } from "lucide-react";
+import { ArrowLeft } from "lucide-react";
 
 import { supabase } from "@/integrations/supabase/client";
 import { getAppConfig } from "@/lib/system.functions";
