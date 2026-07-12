@@ -82,10 +82,10 @@ const FEATURES = [
 function formatStat(value: number, suffix: string) {
   const compact =
     value >= 1000
-      ? new Intl.NumberFormat("en-IN", { notation: "compact", maximumFractionDigits: 1 }).format(
+      ? new Intl.NumberFormat("en-US", { notation: "compact", maximumFractionDigits: 1 }).format(
           value,
         )
-      : value.toLocaleString("en-IN");
+      : value.toLocaleString("en-US");
   return `${compact}${suffix}`;
 }
 
