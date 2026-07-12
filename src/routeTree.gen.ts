@@ -46,6 +46,7 @@ import { Route as PublicAboutRouteImport } from './routes/_public/about'
 import { Route as AuthenticatedMatchesRouteImport } from './routes/_authenticated/matches'
 import { Route as AuthenticatedHomeRouteImport } from './routes/_authenticated/home'
 import { Route as AuthenticatedDiscoverRouteImport } from './routes/_authenticated/discover'
+import { Route as AuthenticatedChatRouteImport } from './routes/_authenticated/chat'
 import { Route as AuthenticatedMatchesIndexRouteImport } from './routes/_authenticated/matches.index'
 import { Route as AuthenticatedHomeIndexRouteImport } from './routes/_authenticated/home.index'
 import { Route as AuthenticatedDiscoverIndexRouteImport } from './routes/_authenticated/discover.index'
@@ -246,6 +247,11 @@ const AuthenticatedDiscoverRoute = AuthenticatedDiscoverRouteImport.update({
   path: '/discover',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedChatRoute = AuthenticatedChatRouteImport.update({
+  id: '/chat',
+  path: '/chat',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
 const AuthenticatedMatchesIndexRoute =
   AuthenticatedMatchesIndexRouteImport.update({
     id: '/',
@@ -337,6 +343,7 @@ export interface FileRoutesByFullPath {
   '/500': typeof R500Route
   '/auth': typeof AuthRouteWithChildren
   '/ui': typeof UiRoute
+  '/chat': typeof AuthenticatedChatRoute
   '/discover': typeof AuthenticatedDiscoverRouteWithChildren
   '/home': typeof AuthenticatedHomeRouteWithChildren
   '/matches': typeof AuthenticatedMatchesRouteWithChildren
@@ -386,6 +393,7 @@ export interface FileRoutesByTo {
   '/404': typeof R404Route
   '/500': typeof R500Route
   '/ui': typeof UiRoute
+  '/chat': typeof AuthenticatedChatRoute
   '/about': typeof PublicAboutRoute
   '/community-guidelines': typeof PublicCommunityGuidelinesRoute
   '/contact': typeof PublicContactRoute
@@ -436,6 +444,7 @@ export interface FileRoutesById {
   '/500': typeof R500Route
   '/auth': typeof AuthRouteWithChildren
   '/ui': typeof UiRoute
+  '/_authenticated/chat': typeof AuthenticatedChatRoute
   '/_authenticated/discover': typeof AuthenticatedDiscoverRouteWithChildren
   '/_authenticated/home': typeof AuthenticatedHomeRouteWithChildren
   '/_authenticated/matches': typeof AuthenticatedMatchesRouteWithChildren
@@ -490,6 +499,7 @@ export interface FileRouteTypes {
     | '/500'
     | '/auth'
     | '/ui'
+    | '/chat'
     | '/discover'
     | '/home'
     | '/matches'
@@ -539,6 +549,7 @@ export interface FileRouteTypes {
     | '/404'
     | '/500'
     | '/ui'
+    | '/chat'
     | '/about'
     | '/community-guidelines'
     | '/contact'
@@ -588,6 +599,7 @@ export interface FileRouteTypes {
     | '/500'
     | '/auth'
     | '/ui'
+    | '/_authenticated/chat'
     | '/_authenticated/discover'
     | '/_authenticated/home'
     | '/_authenticated/matches'
@@ -907,6 +919,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedDiscoverRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/chat': {
+      id: '/_authenticated/chat'
+      path: '/chat'
+      fullPath: '/chat'
+      preLoaderRoute: typeof AuthenticatedChatRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/matches/': {
       id: '/_authenticated/matches/'
       path: '/'
@@ -1086,12 +1105,14 @@ const AuthenticatedMatchesRouteWithChildren =
   AuthenticatedMatchesRoute._addFileChildren(AuthenticatedMatchesRouteChildren)
 
 interface AuthenticatedRouteRouteChildren {
+  AuthenticatedChatRoute: typeof AuthenticatedChatRoute
   AuthenticatedDiscoverRoute: typeof AuthenticatedDiscoverRouteWithChildren
   AuthenticatedHomeRoute: typeof AuthenticatedHomeRouteWithChildren
   AuthenticatedMatchesRoute: typeof AuthenticatedMatchesRouteWithChildren
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
+  AuthenticatedChatRoute: AuthenticatedChatRoute,
   AuthenticatedDiscoverRoute: AuthenticatedDiscoverRouteWithChildren,
   AuthenticatedHomeRoute: AuthenticatedHomeRouteWithChildren,
   AuthenticatedMatchesRoute: AuthenticatedMatchesRouteWithChildren,
