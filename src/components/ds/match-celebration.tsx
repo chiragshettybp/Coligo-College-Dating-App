@@ -410,7 +410,7 @@ export function MatchCelebration({
             {/* Shared interests — the real thing, each chip revealed in turn. */}
             {shared.interests.length > 0 && (
               <div style={{ ...reveal(3 + indicators.length), marginTop: spacing[3], width: "100%" }}>
-                <span style={{ ...type.caption, color: "rgba(255,255,255,0.55)" }}>You both like</span>
+                <span style={{ ...type.caption, color: colors.textMuted }}>You both like</span>
                 <div className="flex flex-wrap items-center justify-center" style={{ gap: spacing[1], marginTop: spacing[2] }}>
                   {shared.interests.map((interest) => (
                     <span
@@ -420,9 +420,9 @@ export function MatchCelebration({
                         borderRadius: radii.pill,
                         padding: "6px 12px",
                         ...type.badgeLabel,
-                        color: "#dfe9ff",
-                        background: "rgba(120,150,255,0.16)",
-                        border: "1px solid rgba(150,175,255,0.28)",
+                        color: colors.primaryDeep,
+                        background: "rgba(10,132,255,0.10)",
+                        border: "1px solid rgba(10,132,255,0.22)",
                       }}
                     >
                       <Sparkles style={{ width: 13, height: 13 }} />
@@ -442,20 +442,21 @@ export function MatchCelebration({
               }}
             >
               <div
-                className="flex items-start gap-2 text-left backdrop-blur-xl"
+                className="flex items-start gap-2 text-left"
                 style={{
                   borderRadius: radii.lg,
                   padding: spacing[3],
-                  background: "rgba(255,255,255,0.06)",
+                  background: "rgba(255,255,255,0.7)",
                   border: `1px solid ${surfaces.border}`,
+                  boxShadow: "0 1px 2px rgba(0,0,0,0.05)",
                 }}
               >
-                <span style={{ color: "#a9c6ff", display: "inline-flex", marginTop: 1 }}>
+                <span style={{ color: colors.primary, display: "inline-flex", marginTop: 1 }}>
                   <Sparkles style={{ width: 16, height: 16 }} />
                 </span>
                 <div>
-                  <span style={{ ...type.caption, color: "rgba(255,255,255,0.6)" }}>Conversation starter</span>
-                  <p style={{ ...type.body, color: "#fff", marginTop: 2 }}>{shared.conversationStarter}</p>
+                  <span style={{ ...type.caption, color: colors.textMuted }}>Conversation starter</span>
+                  <p style={{ ...type.body, color: colors.textPrimary, marginTop: 2 }}>{shared.conversationStarter}</p>
                 </div>
               </div>
             </div>
