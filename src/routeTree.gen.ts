@@ -13,6 +13,7 @@ import { Route as UiRouteImport } from './routes/ui'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as R500RouteImport } from './routes/500'
 import { Route as R404RouteImport } from './routes/404'
+import { Route as OnboardingRouteRouteImport } from './routes/onboarding/route'
 import { Route as PublicRouteRouteImport } from './routes/_public/route'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as AuthIndexRouteImport } from './routes/auth.index'
@@ -49,6 +50,11 @@ const R500Route = R500RouteImport.update({
 const R404Route = R404RouteImport.update({
   id: '/404',
   path: '/404',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const OnboardingRouteRoute = OnboardingRouteRouteImport.update({
+  id: '/onboarding',
+  path: '/onboarding',
   getParentRoute: () => rootRouteImport,
 } as any)
 const PublicRouteRoute = PublicRouteRouteImport.update({
@@ -138,6 +144,7 @@ const AuthenticatedAppRoute = AuthenticatedAppRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof PublicIndexRoute
+  '/onboarding': typeof OnboardingRouteRoute
   '/404': typeof R404Route
   '/500': typeof R500Route
   '/auth': typeof AuthRouteWithChildren
@@ -159,6 +166,7 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/': typeof PublicIndexRoute
+  '/onboarding': typeof OnboardingRouteRoute
   '/404': typeof R404Route
   '/500': typeof R500Route
   '/ui': typeof UiRoute
@@ -181,6 +189,7 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
   '/_public': typeof PublicRouteRouteWithChildren
+  '/onboarding': typeof OnboardingRouteRoute
   '/404': typeof R404Route
   '/500': typeof R500Route
   '/auth': typeof AuthRouteWithChildren
@@ -205,6 +214,7 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/onboarding'
     | '/404'
     | '/500'
     | '/auth'
@@ -226,6 +236,7 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/onboarding'
     | '/404'
     | '/500'
     | '/ui'
@@ -247,6 +258,7 @@ export interface FileRouteTypes {
     | '__root__'
     | '/_authenticated'
     | '/_public'
+    | '/onboarding'
     | '/404'
     | '/500'
     | '/auth'
@@ -271,6 +283,7 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
   PublicRouteRoute: typeof PublicRouteRouteWithChildren
+  OnboardingRouteRoute: typeof OnboardingRouteRoute
   R404Route: typeof R404Route
   R500Route: typeof R500Route
   AuthRoute: typeof AuthRouteWithChildren
@@ -307,6 +320,13 @@ declare module '@tanstack/react-router' {
       path: '/404'
       fullPath: '/404'
       preLoaderRoute: typeof R404RouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/onboarding': {
+      id: '/onboarding'
+      path: '/onboarding'
+      fullPath: '/onboarding'
+      preLoaderRoute: typeof OnboardingRouteRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/_public': {
@@ -487,6 +507,7 @@ const AuthRouteWithChildren = AuthRoute._addFileChildren(AuthRouteChildren)
 const rootRouteChildren: RootRouteChildren = {
   AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
   PublicRouteRoute: PublicRouteRouteWithChildren,
+  OnboardingRouteRoute: OnboardingRouteRoute,
   R404Route: R404Route,
   R500Route: R500Route,
   AuthRoute: AuthRouteWithChildren,
