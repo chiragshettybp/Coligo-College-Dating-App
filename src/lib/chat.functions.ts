@@ -44,8 +44,12 @@ export type ChatMessage = {
   senderId: string;
   createdAt: string;
   readAt: string | null;
+  deliveredAt: string | null;
   kind: string;
   imageUrl: string | null;
+  audioUrl: string | null;
+  audioDurationMs: number | null;
+  reactions: Record<string, string[]>;
   replyTo: { id: string; body: string; senderId: string; kind: string } | null;
 };
 
