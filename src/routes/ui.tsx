@@ -903,6 +903,7 @@ function SharedGallery({ images }: { images: string[] }) {
   const open = (i: number) => {
     const el = thumbRefs.current[i];
     if (el) originRef.current = el.getBoundingClientRect();
+    haptic("light");
     setActive(i);
   };
 
