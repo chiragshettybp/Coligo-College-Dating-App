@@ -500,7 +500,10 @@ export function Toggle({
     <button
       role="switch"
       aria-checked={checked}
-      onClick={() => onChange(!checked)}
+      onClick={() => {
+        haptic("selection");
+        onChange(!checked);
+      }}
       className="relative shrink-0"
       style={{
         width: 52,
