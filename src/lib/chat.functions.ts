@@ -111,6 +111,55 @@ function resolveUrl(raw: string | null | undefined, signed: Map<string, string>)
   return signed.get(raw) ?? null;
 }
 
+function parseReactions(v: unknown): Record<string, string[]> {
+  if (!v || typeof v !== "object") return {};
+  const out: Record<string, string[]> = {};
+  for (const [k, val] of Object.entries(v as Record<string, unknown>)) {
+    if (Array.isArray(val)) out[k] = val.filter((x): x is string => typeof x === "string");
+  }
+  return out;
+}
+
+// Columns selected for a full chat message row.
+const MSG_COLS =
+  "id, body, sender_id, created_at, read_at, delivered_at, kind, image_path, audio_path, audio_duration_ms, reactions, reply_to";
+
+type MessageRow = {
+  id: string;
+  body: string | null;
+  sender_id: string;
+  created_at: string;
+  read_at: string | null;
+  delivered_at: string | null;
+  kind: string | null;
+  image_path: string | null;
+  audio_path: string | null;
+  audio_duration_ms: number | null;
+  reactions: unknown;
+  reply_to: string | null;
+};
+
+function mapMessageRow(
+  r: MessageRow,
+  parents: Map<string, { id: string; body: string; senderId: string; kind: string }>,
+  signed: Map<string, string>,
+): ChatMessage {
+  return {
+    id: r.id,
+    body: r.body ?? "",
+    senderId: r.sender_id,
+    createdAt: r.created_at,
+    readAt: r.read_at ?? null,
+    deliveredAt: r.delivered_at ?? null,
+    kind: r.kind ?? "text",
+    imageUrl: resolveUrl(r.image_path, signed),
+    audioUrl: resolveUrl(r.audio_path, signed),
+    audioDurationMs: r.audio_duration_ms ?? null,
+    reactions: parseReactions(r.reactions),
+    replyTo: r.reply_to ? parents.get(r.reply_to) ?? null : null,
+  };
+}
+
 // --------------------------------------------------------------- List --------
 export const getChatList = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
