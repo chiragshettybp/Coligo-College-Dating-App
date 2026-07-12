@@ -9,6 +9,8 @@ import { createServerFn } from "@tanstack/react-start";
 import { queryOptions } from "@tanstack/react-query";
 import { z } from "zod";
 
+import { phoneToAlias } from "@/lib/auth";
+
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 
 // ------------------------------------------------------------------ types
