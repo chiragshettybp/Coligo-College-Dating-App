@@ -1148,6 +1148,320 @@ function SharedGallery({ images }: { images: string[] }) {
   );
 }
 
+// ---------------------------------------------------------------------------
+// Match Celebration — the emotional climax
+// ---------------------------------------------------------------------------
+// Not a popup: a cinematic moment. Two avatars travel into a shared warm glow,
+// details reveal progressively, tiny light particles drift, and a soft chime +
+// success haptic land on the peak. Everything reuses the global motion tokens
+// and fully respects Reduce Motion (movement collapses, feedback preserved).
+
+/** A soft, refined success chime via WebAudio — no asset, never arcade. */
+function playMatchChime() {
+  try {
+    const Ctx =
+      window.AudioContext ||
+      (window as unknown as { webkitAudioContext?: typeof AudioContext }).webkitAudioContext;
+    if (!Ctx) return;
+    const ctx = new Ctx();
+    const now = ctx.currentTime;
+    const master = ctx.createGain();
+    master.gain.value = 0.0001;
+    master.connect(ctx.destination);
+    // Gentle rising two-note perfect fifth (A4 -> E5), soft sine bloom.
+    [880, 1318.5].forEach((freq, i) => {
+      const osc = ctx.createOscillator();
+      const g = ctx.createGain();
+      osc.type = "sine";
+      osc.frequency.value = freq;
+      const t0 = now + i * 0.12;
+      g.gain.setValueAtTime(0.0001, t0);
+      g.gain.exponentialRampToValueAtTime(0.11, t0 + 0.06);
+      g.gain.exponentialRampToValueAtTime(0.0001, t0 + 1.1);
+      osc.connect(g);
+      g.connect(master);
+      osc.start(t0);
+      osc.stop(t0 + 1.2);
+    });
+    master.gain.setValueAtTime(0.9, now);
+    setTimeout(() => ctx.close().catch(() => {}), 1600);
+  } catch {
+    /* audio unavailable — visuals + haptics still carry the moment */
+  }
+}
+
+type MatchProfile = { src: string; name: string };
+type MatchShared = {
+  college: string;
+  gradYear: string;
+  interests: string[];
+  clubs: string;
+  compatibility: number;
+};
+
+function MatchCelebration({
+  open,
+  left,
+  right,
+  shared,
+  onClose,
+  onMessage,
+}: {
+  open: boolean;
+  left: MatchProfile;
+  right: MatchProfile;
+  shared: MatchShared;
+  onClose: () => void;
+  onMessage: () => void;
+}) {
+  const [revealed, setRevealed] = useState(false);
+  const rootRef = useRef<HTMLDivElement | null>(null);
+  const leftRef = useRef<HTMLDivElement | null>(null);
+  const rightRef = useRef<HTMLDivElement | null>(null);
+
+  // Low-count, low-opacity ambient light particles — never confetti.
+  const particles = useMemo(
+    () =>
+      Array.from({ length: 12 }, (_, i) => ({
+        id: i,
+        left: 8 + Math.random() * 84,
+        size: 3 + Math.random() * 4,
+        opacity: 0.18 + Math.random() * 0.3,
+        delay: Math.random() * 4,
+        dur: 5 + Math.random() * 4,
+      })),
+    [],
+  );
+
+  useLayoutEffect(() => {
+    if (!open) {
+      setRevealed(false);
+      return;
+    }
+    const reduce = prefersReducedMotion();
+
+    // Backdrop + light settle in first.
+    rootRef.current?.animate([{ opacity: 0 }, { opacity: 1 }], {
+      duration: reduce ? 0 : 380,
+      easing: EASE,
+      fill: "both",
+    });
+
+    if (!reduce) {
+      // Avatars travel in from the sides with depth — never fade, never pop.
+      leftRef.current?.animate(
+        [
+          { transform: "translateX(-72px) translateY(6px) scale(0.66)", opacity: 0 },
+          { transform: "translateX(0) translateY(0) scale(1)", opacity: 1 },
+        ],
+        { duration: 760, easing: SPRING, fill: "both" },
+      );
+      rightRef.current?.animate(
+        [
+          { transform: "translateX(72px) translateY(6px) scale(0.66)", opacity: 0 },
+          { transform: "translateX(0) translateY(0) scale(1)", opacity: 1 },
+        ],
+        { duration: 760, easing: SPRING, fill: "both", delay: 70 },
+      );
+    }
+
+    // Peak: progressive reveal + warm haptic + soft chime.
+    const peak = window.setTimeout(
+      () => {
+        setRevealed(true);
+        haptic("strongSuccess");
+        playMatchChime();
+      },
+      reduce ? 0 : 540,
+    );
+    return () => window.clearTimeout(peak);
+  }, [open]);
+
+  // Escape to dismiss.
+  useEffect(() => {
+    if (!open) return;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") onClose();
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [open, onClose]);
+
+  if (!open) return null;
+
+  const reduce = prefersReducedMotion();
+  const reveal = (i: number): React.CSSProperties => ({
+    opacity: revealed ? 1 : 0,
+    transform: revealed ? "translateY(0)" : "translateY(12px)",
+    transition: reduce
+      ? "none"
+      : `opacity 0.5s ${EASE} ${0.04 + i * 0.09}s, transform 0.62s ${SPRING} ${0.04 + i * 0.09}s`,
+  });
+
+  const indicators = [
+    { icon: <GraduationCap style={{ width: 15, height: 15 }} />, label: shared.college },
+    { icon: <Star style={{ width: 15, height: 15 }} />, label: shared.gradYear },
+    { icon: <Sparkles style={{ width: 15, height: 15 }} />, label: `${shared.interests.length} shared interests` },
+    { icon: <Flame style={{ width: 15, height: 15 }} />, label: shared.clubs },
+    { icon: <Heart style={{ width: 15, height: 15 }} />, label: `${shared.compatibility}% compatibility` },
+  ];
+
+  return (
+    <div
+      ref={rootRef}
+      role="dialog"
+      aria-modal="true"
+      aria-label={`It's a match with ${right.name}`}
+      className="fixed inset-0 flex items-center justify-center"
+      style={{ zIndex: 80, padding: spacing[5] }}
+    >
+      {/* Backdrop — dark navy depth + gentle radial light, softly blurred. */}
+      <div
+        onClick={onClose}
+        className="absolute inset-0 backdrop-blur-2xl"
+        style={{
+          background:
+            "radial-gradient(70% 50% at 50% 34%, rgba(90,140,255,0.16) 0%, rgba(10,16,38,0) 60%)," +
+            "radial-gradient(120% 90% at 50% 120%, rgba(46,70,200,0.12) 0%, rgba(6,10,24,0) 62%)," +
+            "linear-gradient(180deg, rgba(4,7,16,0.86) 0%, rgba(6,9,22,0.92) 100%)",
+        }}
+      />
+
+      {/* Ambient light particles — minimal, low opacity, drifting upward. */}
+      <div className="absolute inset-0 overflow-hidden" style={{ pointerEvents: "none" }}>
+        {particles.map((p) => (
+          <span
+            key={p.id}
+            className="ds-match-particle absolute rounded-full"
+            style={
+              {
+                left: `${p.left}%`,
+                top: `${40 + Math.random() * 24}%`,
+                width: p.size,
+                height: p.size,
+                background: "rgba(255,255,255,0.9)",
+                boxShadow: "0 0 8px rgba(255,255,255,0.6)",
+                "--p-opacity": p.opacity,
+                "--p-delay": `${p.delay}s`,
+                "--p-dur": `${p.dur}s`,
+              } as React.CSSProperties
+            }
+          />
+        ))}
+      </div>
+
+      {/* Content */}
+      <div className="relative flex w-full flex-col items-center text-center" style={{ maxWidth: 380 }}>
+        {/* Avatars converging into a shared warm glow. */}
+        <div className="relative flex items-center justify-center" style={{ height: 168, marginBottom: spacing[5] }}>
+          <div
+            className="ds-match-halo absolute rounded-full"
+            style={{
+              width: 240,
+              height: 240,
+              background:
+                "radial-gradient(circle at 50% 50%, rgba(255,255,255,0.42) 0%, rgba(255,255,255,0.12) 34%, rgba(255,255,255,0) 68%)",
+              filter: "blur(8px)",
+              pointerEvents: "none",
+            }}
+          />
+          <div ref={leftRef} className="relative" style={{ marginRight: -22, zIndex: 2 }}>
+            <div className="ds-match-breathe">
+              <Avatar src={left.src} size="xl" ring />
+            </div>
+          </div>
+          <div ref={rightRef} className="relative" style={{ marginLeft: -22, zIndex: 1 }}>
+            <div className="ds-match-breathe" style={{ animationDelay: "0.4s" }}>
+              <Avatar src={right.src} size="xl" ring />
+            </div>
+          </div>
+        </div>
+
+        {/* Overline + title. */}
+        <div style={reveal(0)}>
+          <span style={{ ...type.overline, color: colors.primary }}>You connected</span>
+        </div>
+        <h2
+          style={{
+            ...reveal(1),
+            fontSize: "clamp(38px, 10vw, 52px)",
+            fontWeight: 800,
+            lineHeight: 1.02,
+            letterSpacing: "-0.03em",
+            marginTop: 6,
+            background: "linear-gradient(120deg,#ffffff 0%,#bcd4ff 100%)",
+            WebkitBackgroundClip: "text",
+            backgroundClip: "text",
+            color: "transparent",
+          }}
+        >
+          It’s a match
+        </h2>
+        <p style={{ ...reveal(2), ...type.bodyLg, color: colors.textSecondary, marginTop: 8 }}>
+          You and <span style={{ color: "#fff", fontWeight: 600 }}>{right.name}</span> liked each other
+        </p>
+
+        {/* Connection indicators — reveal progressively, never all at once. */}
+        <div
+          className="flex flex-wrap items-center justify-center"
+          style={{ gap: spacing[1], marginTop: spacing[4] }}
+        >
+          {indicators.map((it, i) => (
+            <div key={it.label} style={reveal(3 + i)}>
+              <GlassPill>
+                <span style={{ color: colors.primary, display: "inline-flex" }}>{it.icon}</span>
+                {it.label}
+              </GlassPill>
+            </div>
+          ))}
+        </div>
+
+        {/* Buttons emerge with a small spring lift. */}
+        <div className="w-full" style={{ marginTop: spacing[6] }}>
+          <div style={reveal(3 + indicators.length)}>
+            <Button
+              variant="primary"
+              size="lg"
+              pill
+              fullWidth
+              leftIcon={<MessageCircle style={{ width: 20, height: 20 }} />}
+              onClick={onMessage}
+            >
+              Send Message
+            </Button>
+          </div>
+          <div style={{ ...reveal(4 + indicators.length), marginTop: spacing[2] }}>
+            <Button variant="glass" size="lg" pill fullWidth onClick={onClose}>
+              Keep Swiping
+            </Button>
+          </div>
+        </div>
+      </div>
+
+      {/* Accessible close affordance. */}
+      <button
+        onClick={onClose}
+        aria-label="Close match celebration"
+        className="ds-press absolute flex items-center justify-center rounded-full backdrop-blur-xl"
+        style={{
+          top: `calc(${spacing[4]}px + env(safe-area-inset-top))`,
+          right: spacing[4],
+          width: 40,
+          height: 40,
+          background: "rgba(6,10,24,0.5)",
+          border: `1px solid ${surfaces.border}`,
+          color: "#fff",
+        }}
+      >
+        <X style={{ width: 20, height: 20 }} />
+      </button>
+    </div>
+  );
+}
+
+
+
+
 
 
 function SwipeCard({ overlay }: { overlay?: "LIKE" | "NOPE" | "SUPER" | "BOOST" }) {
