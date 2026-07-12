@@ -1253,6 +1253,7 @@ function SwipeControl({
     <div className="flex flex-col items-center" style={{ gap: spacing[2] }}>
       <button
         aria-label={label}
+        onPointerDown={() => haptic(hapticToken ?? (primary ? "softSuccess" : "selection"))}
         className="ds-swipe-btn relative flex shrink-0 items-center justify-center rounded-full will-change-transform"
         style={{
           width: size,
