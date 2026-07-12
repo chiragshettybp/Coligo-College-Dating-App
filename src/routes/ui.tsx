@@ -399,39 +399,106 @@ function UIShowcase() {
         {/* Avatars */}
         <Section
           title="Avatars"
-          description="Five sizes, status dots, story rings and stacked groups."
+          description="An identity system — premium depth, integrated status, verification, story rings, groups and placeholders."
         >
-          <div className="space-y-4">
-            <Row>
-              <Avatar src={ana} size="xs" />
-              <Avatar src={memoji1} size="sm" status="online" />
-              <Avatar src={memoji2} size="md" status="away" />
-              <Avatar src={memoji3} size="lg" status="offline" />
-              <Avatar src={memoji4} size="xl" ring />
-            </Row>
+          <div className="space-y-5">
+            {/* Sizes */}
             <div>
-              <Label>Stacked group</Label>
-              <div className="flex">
+              <Label>Sizes</Label>
+              <div className="mt-2 flex flex-wrap items-end" style={{ gap: spacing[3] }}>
+                <Avatar src={ana} size="xs" />
+                <Avatar src={memoji1} size="sm" />
+                <Avatar src={memoji2} size="md" />
+                <Avatar src={memoji3} size="lg" />
+                <Avatar src={memoji4} size="xl" />
+              </div>
+            </div>
+
+            {/* Status */}
+            <div>
+              <Label>Presence</Label>
+              <div className="mt-2 flex flex-wrap items-center" style={{ gap: spacing[3] }}>
+                <Avatar src={memoji1} size="lg" status="online" />
+                <Avatar src={memoji2} size="lg" status="away" />
+                <Avatar src={memoji3} size="lg" status="busy" />
+                <Avatar src={memoji4} size="lg" status="offline" />
+              </div>
+            </div>
+
+            {/* Verification + story rings */}
+            <div>
+              <Label>Verified & story rings</Label>
+              <div className="mt-2 flex flex-wrap items-center" style={{ gap: spacing[3] }}>
+                <Avatar src={ana} size="lg" verified />
+                <Avatar src={memoji5} size="lg" verified status="online" />
+                <Avatar src={memoji1} size="lg" ring />
+                <Avatar src={memoji2} size="lg" ring status="online" />
+              </div>
+            </div>
+
+            {/* Placeholders */}
+            <div>
+              <Label>Placeholders</Label>
+              <div className="mt-2 flex flex-wrap items-center" style={{ gap: spacing[3] }}>
+                <Avatar size="lg" initials="AR" />
+                <Avatar size="lg" initials="MJ" />
+                <Avatar size="lg" initials="?" />
+              </div>
+            </div>
+
+            {/* Group stack */}
+            <div>
+              <Label>Group stack</Label>
+              <div className="mt-2 flex">
                 {avatars.map((src, i) => (
-                  <div key={i} style={{ marginLeft: i === 0 ? 0 : -14 }}>
+                  <div key={i} style={{ marginLeft: i === 0 ? 0 : -16, zIndex: avatars.length - i }}>
                     <Avatar src={src} size="md" />
                   </div>
                 ))}
                 <div
                   className="flex items-center justify-center rounded-full text-white"
                   style={{
-                    marginLeft: -14,
+                    marginLeft: -16,
                     width: 52,
                     height: 52,
                     fontSize: 14,
                     fontWeight: 700,
                     background: surfaces.glassSoft,
-                    border: "2px solid rgba(255,255,255,0.92)",
+                    boxShadow:
+                      "inset 0 0 0 1px rgba(255,255,255,0.16), 0 8px 20px rgba(0,0,0,0.4)",
                   }}
                 >
                   +9
                 </div>
               </div>
+            </div>
+
+            {/* Profile header + match pair */}
+            <div className="grid gap-4" style={{ gridTemplateColumns: "repeat(auto-fit,minmax(200px,1fr))" }}>
+              <GlassPanel style={{ padding: spacing[5], textAlign: "center" }}>
+                <Label>Profile header</Label>
+                <div className="mt-3 flex justify-center">
+                  <Avatar src={ana} size="hero" ring verified />
+                </div>
+                <div style={{ color: "#fff", fontSize: 20, fontWeight: 800, marginTop: spacing[3], letterSpacing: "-0.02em" }}>
+                  Maya Chen
+                </div>
+                <div style={{ color: colors.textSecondary, fontSize: 13, fontWeight: 500, marginTop: 2 }}>
+                  Design · Class of '27
+                </div>
+              </GlassPanel>
+              <GlassPanel glow style={{ padding: spacing[5], textAlign: "center" }}>
+                <Label>Match pair</Label>
+                <div className="mt-3 flex justify-center">
+                  <div style={{ marginRight: -18, zIndex: 2 }}>
+                    <Avatar src={ana} size="xl" ring />
+                  </div>
+                  <Avatar src={memoji2} size="xl" ring />
+                </div>
+                <div style={{ color: "#fff", fontSize: 16, fontWeight: 700, marginTop: spacing[3] }}>
+                  You & Maya
+                </div>
+              </GlassPanel>
             </div>
           </div>
         </Section>
