@@ -54,6 +54,8 @@ import { Route as AuthenticatedHomeIndexRouteImport } from './routes/_authentica
 import { Route as AuthenticatedDiscoverIndexRouteImport } from './routes/_authenticated/discover.index'
 import { Route as AuthenticatedChatIndexRouteImport } from './routes/_authenticated/chat.index'
 import { Route as ApiPublicPushRouteImport } from './routes/api/public/push'
+import { Route as AuthenticatedProfileEditRouteImport } from './routes/_authenticated/profile.edit'
+import { Route as AuthenticatedProfileBioRouteImport } from './routes/_authenticated/profile.bio'
 import { Route as AuthenticatedNotificationsNotificationIdRouteImport } from './routes/_authenticated/notifications.$notificationId'
 import { Route as AuthenticatedMatchesMatchIdRouteImport } from './routes/_authenticated/matches.$matchId'
 import { Route as AuthenticatedHomeCollegeRankingsRouteImport } from './routes/_authenticated/home.college-rankings'
@@ -301,6 +303,17 @@ const ApiPublicPushRoute = ApiPublicPushRouteImport.update({
   path: '/api/public/push',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AuthenticatedProfileEditRoute =
+  AuthenticatedProfileEditRouteImport.update({
+    id: '/profile/edit',
+    path: '/profile/edit',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedProfileBioRoute = AuthenticatedProfileBioRouteImport.update({
+  id: '/profile/bio',
+  path: '/profile/bio',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
 const AuthenticatedNotificationsNotificationIdRoute =
   AuthenticatedNotificationsNotificationIdRouteImport.update({
     id: '/notifications/$notificationId',
@@ -445,6 +458,8 @@ export interface FileRoutesByFullPath {
   '/home/college-rankings': typeof AuthenticatedHomeCollegeRankingsRoute
   '/matches/$matchId': typeof AuthenticatedMatchesMatchIdRouteWithChildren
   '/notifications/$notificationId': typeof AuthenticatedNotificationsNotificationIdRouteWithChildren
+  '/profile/bio': typeof AuthenticatedProfileBioRoute
+  '/profile/edit': typeof AuthenticatedProfileEditRoute
   '/api/public/push': typeof ApiPublicPushRoute
   '/chat/': typeof AuthenticatedChatIndexRoute
   '/discover/': typeof AuthenticatedDiscoverIndexRoute
@@ -501,6 +516,8 @@ export interface FileRoutesByTo {
   '/home/college-rankings': typeof AuthenticatedHomeCollegeRankingsRoute
   '/matches/$matchId': typeof AuthenticatedMatchesMatchIdRouteWithChildren
   '/notifications/$notificationId': typeof AuthenticatedNotificationsNotificationIdRouteWithChildren
+  '/profile/bio': typeof AuthenticatedProfileBioRoute
+  '/profile/edit': typeof AuthenticatedProfileEditRoute
   '/api/public/push': typeof ApiPublicPushRoute
   '/chat': typeof AuthenticatedChatIndexRoute
   '/discover': typeof AuthenticatedDiscoverIndexRoute
@@ -566,6 +583,8 @@ export interface FileRoutesById {
   '/_authenticated/home/college-rankings': typeof AuthenticatedHomeCollegeRankingsRoute
   '/_authenticated/matches/$matchId': typeof AuthenticatedMatchesMatchIdRouteWithChildren
   '/_authenticated/notifications/$notificationId': typeof AuthenticatedNotificationsNotificationIdRouteWithChildren
+  '/_authenticated/profile/bio': typeof AuthenticatedProfileBioRoute
+  '/_authenticated/profile/edit': typeof AuthenticatedProfileEditRoute
   '/api/public/push': typeof ApiPublicPushRoute
   '/_authenticated/chat/': typeof AuthenticatedChatIndexRoute
   '/_authenticated/discover/': typeof AuthenticatedDiscoverIndexRoute
@@ -630,6 +649,8 @@ export interface FileRouteTypes {
     | '/home/college-rankings'
     | '/matches/$matchId'
     | '/notifications/$notificationId'
+    | '/profile/bio'
+    | '/profile/edit'
     | '/api/public/push'
     | '/chat/'
     | '/discover/'
@@ -686,6 +707,8 @@ export interface FileRouteTypes {
     | '/home/college-rankings'
     | '/matches/$matchId'
     | '/notifications/$notificationId'
+    | '/profile/bio'
+    | '/profile/edit'
     | '/api/public/push'
     | '/chat'
     | '/discover'
@@ -750,6 +773,8 @@ export interface FileRouteTypes {
     | '/_authenticated/home/college-rankings'
     | '/_authenticated/matches/$matchId'
     | '/_authenticated/notifications/$notificationId'
+    | '/_authenticated/profile/bio'
+    | '/_authenticated/profile/edit'
     | '/api/public/push'
     | '/_authenticated/chat/'
     | '/_authenticated/discover/'
@@ -1101,6 +1126,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiPublicPushRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/_authenticated/profile/edit': {
+      id: '/_authenticated/profile/edit'
+      path: '/profile/edit'
+      fullPath: '/profile/edit'
+      preLoaderRoute: typeof AuthenticatedProfileEditRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/profile/bio': {
+      id: '/_authenticated/profile/bio'
+      path: '/profile/bio'
+      fullPath: '/profile/bio'
+      preLoaderRoute: typeof AuthenticatedProfileBioRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/notifications/$notificationId': {
       id: '/_authenticated/notifications/$notificationId'
       path: '/notifications/$notificationId'
@@ -1352,6 +1391,8 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedHomeRoute: typeof AuthenticatedHomeRouteWithChildren
   AuthenticatedMatchesRoute: typeof AuthenticatedMatchesRouteWithChildren
   AuthenticatedNotificationsNotificationIdRoute: typeof AuthenticatedNotificationsNotificationIdRouteWithChildren
+  AuthenticatedProfileBioRoute: typeof AuthenticatedProfileBioRoute
+  AuthenticatedProfileEditRoute: typeof AuthenticatedProfileEditRoute
   AuthenticatedNotificationsIndexRoute: typeof AuthenticatedNotificationsIndexRoute
   AuthenticatedProfileIndexRoute: typeof AuthenticatedProfileIndexRoute
 }
@@ -1363,6 +1404,8 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedMatchesRoute: AuthenticatedMatchesRouteWithChildren,
   AuthenticatedNotificationsNotificationIdRoute:
     AuthenticatedNotificationsNotificationIdRouteWithChildren,
+  AuthenticatedProfileBioRoute: AuthenticatedProfileBioRoute,
+  AuthenticatedProfileEditRoute: AuthenticatedProfileEditRoute,
   AuthenticatedNotificationsIndexRoute: AuthenticatedNotificationsIndexRoute,
   AuthenticatedProfileIndexRoute: AuthenticatedProfileIndexRoute,
 }
