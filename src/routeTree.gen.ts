@@ -43,6 +43,7 @@ import { Route as PublicPrivacyRouteImport } from './routes/_public/privacy'
 import { Route as PublicContactRouteImport } from './routes/_public/contact'
 import { Route as PublicCommunityGuidelinesRouteImport } from './routes/_public/community-guidelines'
 import { Route as PublicAboutRouteImport } from './routes/_public/about'
+import { Route as AuthenticatedMatchesRouteImport } from './routes/_authenticated/matches'
 import { Route as AuthenticatedHomeRouteImport } from './routes/_authenticated/home'
 import { Route as AuthenticatedDiscoverRouteImport } from './routes/_authenticated/discover'
 import { Route as AuthenticatedHomeIndexRouteImport } from './routes/_authenticated/home.index'
@@ -223,6 +224,11 @@ const PublicAboutRoute = PublicAboutRouteImport.update({
   path: '/about',
   getParentRoute: () => PublicRouteRoute,
 } as any)
+const AuthenticatedMatchesRoute = AuthenticatedMatchesRouteImport.update({
+  id: '/matches',
+  path: '/matches',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
 const AuthenticatedHomeRoute = AuthenticatedHomeRouteImport.update({
   id: '/home',
   path: '/home',
@@ -284,6 +290,7 @@ export interface FileRoutesByFullPath {
   '/ui': typeof UiRoute
   '/discover': typeof AuthenticatedDiscoverRouteWithChildren
   '/home': typeof AuthenticatedHomeRouteWithChildren
+  '/matches': typeof AuthenticatedMatchesRoute
   '/about': typeof PublicAboutRoute
   '/community-guidelines': typeof PublicCommunityGuidelinesRoute
   '/contact': typeof PublicContactRoute
@@ -323,6 +330,7 @@ export interface FileRoutesByTo {
   '/404': typeof R404Route
   '/500': typeof R500Route
   '/ui': typeof UiRoute
+  '/matches': typeof AuthenticatedMatchesRoute
   '/about': typeof PublicAboutRoute
   '/community-guidelines': typeof PublicCommunityGuidelinesRoute
   '/contact': typeof PublicContactRoute
@@ -368,6 +376,7 @@ export interface FileRoutesById {
   '/ui': typeof UiRoute
   '/_authenticated/discover': typeof AuthenticatedDiscoverRouteWithChildren
   '/_authenticated/home': typeof AuthenticatedHomeRouteWithChildren
+  '/_authenticated/matches': typeof AuthenticatedMatchesRoute
   '/_public/about': typeof PublicAboutRoute
   '/_public/community-guidelines': typeof PublicCommunityGuidelinesRoute
   '/_public/contact': typeof PublicContactRoute
@@ -414,6 +423,7 @@ export interface FileRouteTypes {
     | '/ui'
     | '/discover'
     | '/home'
+    | '/matches'
     | '/about'
     | '/community-guidelines'
     | '/contact'
@@ -453,6 +463,7 @@ export interface FileRouteTypes {
     | '/404'
     | '/500'
     | '/ui'
+    | '/matches'
     | '/about'
     | '/community-guidelines'
     | '/contact'
@@ -497,6 +508,7 @@ export interface FileRouteTypes {
     | '/ui'
     | '/_authenticated/discover'
     | '/_authenticated/home'
+    | '/_authenticated/matches'
     | '/_public/about'
     | '/_public/community-guidelines'
     | '/_public/contact'
@@ -785,6 +797,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PublicAboutRouteImport
       parentRoute: typeof PublicRouteRoute
     }
+    '/_authenticated/matches': {
+      id: '/_authenticated/matches'
+      path: '/matches'
+      fullPath: '/matches'
+      preLoaderRoute: typeof AuthenticatedMatchesRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/home': {
       id: '/_authenticated/home'
       path: '/home'
@@ -892,11 +911,13 @@ const AuthenticatedHomeRouteWithChildren =
 interface AuthenticatedRouteRouteChildren {
   AuthenticatedDiscoverRoute: typeof AuthenticatedDiscoverRouteWithChildren
   AuthenticatedHomeRoute: typeof AuthenticatedHomeRouteWithChildren
+  AuthenticatedMatchesRoute: typeof AuthenticatedMatchesRoute
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedDiscoverRoute: AuthenticatedDiscoverRouteWithChildren,
   AuthenticatedHomeRoute: AuthenticatedHomeRouteWithChildren,
+  AuthenticatedMatchesRoute: AuthenticatedMatchesRoute,
 }
 
 const AuthenticatedRouteRouteWithChildren =
