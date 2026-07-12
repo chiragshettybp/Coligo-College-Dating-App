@@ -466,6 +466,10 @@ export const SwipeDeck = forwardRef<
     [top, leaving, busy, reduce, onDecision],
   );
 
+  useImperativeHandle(ref, () => ({ swipe: (action) => commit(action) }), [commit]);
+
+
+
   // keyboard shortcuts
   useEffect(() => {
     const h = (e: KeyboardEvent) => {
