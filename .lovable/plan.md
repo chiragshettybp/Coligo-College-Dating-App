@@ -1,76 +1,68 @@
-# System Module — Implementation Plan
+# Onboarding Module — Implementation Plan
 
-The System module becomes the app's startup + infrastructure layer: a real splash/initialization engine, Supabase-controlled maintenance mode, and production 404/500 recovery. Everything reuses the existing `src/components/ds` design system and `src/lib/ds.ts` tokens — no redesign, no new visual language.
+Builds the 12-screen `/onboarding` flow as a real, Supabase-backed experience that plugs into the existing Auth + Splash pipeline. Reuses the established design system (`src/components/ds/*`, tokens in `src/lib/ds.ts`) — no redesign, no new interaction patterns.
 
-## What exists today (reused, not rebuilt)
-- Design system: `Button`, `Text`, `GlassPanel`, `Skeleton`, `ProgressBar`, `Avatar` in `src/components/ds/glass.tsx`; tokens (`APP_BACKGROUND`, `colors`, `spacing`, `gradients`, `FONT_FAMILY`) in `src/lib/ds.ts`.
-- Auth module: `profiles` (with `onboarding_completed`), `settings`, `user_roles` + `has_role()`, `handle_new_user()` trigger, `_authenticated/route.tsx` gate, session wiring in `__root.tsx`.
-- A root `NotFoundComponent` + `errorComponent` already live in `__root.tsx` (will be redirected to the new pages).
+## Current state (verified)
+- `profiles` exists: `id, phone, display_name, avatar_url, verification_status, onboarding_completed, account_status, last_login_at`. **No onboarding fields yet.**
+- Only `featured_colleges` exists (marketing table). **No `colleges`, `departments`, `interests`, `user_interests`, `photos` tables, no storage bucket.**
+- Splash's `resolveDestination` already branches on `onboardingCompleted` but currently sends everyone to `/app`. It will be pointed at `/onboarding` when incomplete.
+- Design system provides: `GlassPanel, Button, Text, TextField, Chip, ProgressBar, Skeleton, Avatar, Toggle, IconButton` + `card`, `empty-state`, `navigation`.
 
 ---
 
-## Phase 1 — Database & Security (one migration)
-Add profile account-state column and six system tables. Every `public` table gets GRANTs → RLS → policies.
+## Phase 1 — Database & Storage (one migration)
+Extend `profiles` with onboarding columns:
+`full_name, gender, date_of_birth (date), college_id (fk), graduation_year (int), semester (int), department_id (fk), looking_for, bio (text), onboarding_step (text, default 'name')`.
 
-1. `profiles.account_status` — enum `account_status` (`active`, `suspended`, `deleted`), default `active`, not null. Splash reads it.
-2. `application_settings` — single-row config: `maintenance_enabled bool`, `maintenance_title`, `maintenance_message`, `estimated_completion timestamptz`, `support_email`, `min_app_version`, timestamps. Public `SELECT TO anon, authenticated`; write only via `has_role(auth.uid(),'admin')`. Seed one row.
-3. `feature_flags` — `key` unique, `enabled bool`, `payload jsonb`. Public read, admin write.
-4. `app_versions` — `version`, `platform`, `min_supported`, `force_update bool`, `released_at`. Public read, admin write.
-5. `system_logs` — analytics for unknown routes: `event_type`, `path`, `referrer`, `user_id nullable`, `metadata jsonb`, `created_at`. INSERT allowed to `anon`+`authenticated`; SELECT admin-only (no PII leak).
-6. `error_reports` — `error_id` unique, `route`, `message`, `stack` (server-only), `user_id nullable`, `session_id`, `device_info jsonb`, `status`, `created_at`. INSERT to `anon`+`authenticated`; SELECT admin-only.
-7. `device_sessions` — `user_id`, `device_token`, `platform`, `last_seen_at`, `revoked bool`. Owner-scoped RLS (`auth.uid() = user_id`).
-8. Realtime: `ALTER PUBLICATION supabase_realtime ADD TABLE public.application_settings;` so maintenance toggles push instantly.
-9. `update_updated_at_column` triggers on the mutable tables.
+New tables (each with GRANTs → `authenticated`/`service_role`, RLS, `updated_at` trigger):
+- `colleges` (name, city, is_active) — public `anon`+`authenticated` SELECT.
+- `departments` (name, is_active) — public SELECT.
+- `interests` (name, category, is_active) — public SELECT.
+- `user_interests` (user_id, interest_id, unique pair) — owner-scoped RLS.
+- `photos` (user_id, storage_path, position int, is_primary bool) — owner-scoped RLS.
 
-## Phase 2 — Server functions & client helpers
-- `src/lib/system.functions.ts` (`createServerFn`, anon publishable client for reads):
-  - `getAppConfig` — returns `application_settings` + active `feature_flags` + latest `app_versions` in one call.
-  - `logUnknownRoute({ path, referrer })` — inserts a `system_logs` row (fire-and-forget).
-  - `reportError({ route, message, stack, sessionId, deviceInfo })` — inserts `error_reports`, returns generated `error_id`.
-  - `createSupportTicket({ errorId, message })` — inserts a `contact_messages`/ticket row linked to the error (reuses existing contact table).
-- `src/lib/system.ts` (client-safe): TanStack Query options (`appConfigQuery`), device-info collector, `resolveDestination(state)` pure function implementing the redirect matrix, session-id helper.
-- `src/lib/profile.functions.ts`: extend `myProfileQuery` result to include `accountStatus` (already fetches profile).
+Enums (extensible): `gender_option`, `looking_for_option`.
+Storage: private bucket `profile-photos` + `storage.objects` RLS so a user reads/writes only files under their own `user_id/` prefix.
+Realtime: add `profiles`, `user_interests`, `photos`, `interests` to `supabase_realtime`.
+Seed reference data (`colleges`, `departments`, `interests`) via the migration so lists are never empty (no hardcoding in the client).
 
-## Phase 3 — Splash screen (`/system/splash`)
-New route `src/routes/system.splash.tsx` (public route — it runs the auth check itself; `ssr:false` to read the browser session).
-- Sequential-but-parallelized init pipeline, each task with a timeout wrapper and progress messaging driven by `ProgressBar`/`Skeleton`:
-  1. connect Supabase + `supabase.auth.getUser()` (refreshes token automatically)
-  2. if no user → redirect Landing (`/`)
-  3. load profile + settings via `myProfileQuery`
-  4. `getAppConfig`
-  5. branch via `resolveDestination`:
-     - `maintenance_enabled` → `/system/maintenance`
-     - `account_status = suspended|deleted` → `supabase.auth.signOut()` → `/`
-     - onboarding incomplete → onboarding route (falls back to `/app` until Onboarding module ships)
-     - else → Home (`/app`)
-  6. register device token into `device_sessions`, subscribe realtime.
-- Network failure → inline retry with auto-retry backoff (no blank screen). Reduced-motion respected. Loop-guard: splash never redirects to itself; a `?from=` guard prevents flicker.
-- Logo animation reuses existing brand mark + `gradients.primaryButton`.
+## Phase 2 — Server functions (`src/lib/onboarding.functions.ts`, `requireSupabaseAuth`)
+All writes are server-side + Zod-validated (client validates too):
+- `getOnboardingState()` — returns profile onboarding fields + selected interests + photos for resume.
+- `saveOnboardingStep({ step, values })` — validates per-step, updates `profiles`, advances `onboarding_step`.
+- `listColleges/listDepartments/listInterests` — public read fns (server publishable client, `TO anon`).
+- `setInterests({ ids })` — min/max enforced, replaces `user_interests`.
+- `createPhotoUploadTarget` / `savePhoto` / `deletePhoto` / `reorderPhotos` / `setPrimaryPhoto` — manage `photos` rows + storage paths; enforce 2–6 photos.
+- `completeOnboarding()` — server-side verifies ALL required fields + ≥2 photos + ≥ min interests, sets `onboarding_completed=true` atomically, idempotent (prevents duplicate completion).
 
-## Phase 4 — Maintenance page (`/system/maintenance`)
-`src/routes/system.maintenance.tsx` — public route.
-- Reads `appConfigQuery`; shows `maintenance_title`, `maintenance_message`, `estimated_completion` (relative), `support_email` contact link, and a **Retry** button.
-- Realtime subscription on `application_settings`: when `maintenance_enabled` flips false, auto-continue to `/system/splash`. Manual Retry re-fetches; auto-retry every few minutes.
-- If opened while maintenance is OFF, immediately bounce to `/system/splash` (prevents dead-end).
+## Phase 3 — Shared onboarding shell
+- `src/routes/onboarding/route.tsx` — layout under **`_authenticated`-style gate**: verifies session (redirect `/auth/login`), diverts on maintenance, loads onboarding state once. Renders persistent `ProgressBar` (step N of 12) + Back button + `<Outlet/>`.
+- `src/lib/onboarding.ts` — step order array, per-step Zod schemas, age calc, next/prev helpers, guard that blocks skipping ahead of `onboarding_step`.
+- Reusable `OnboardingScreen` wrapper (title, subtitle, body, sticky Continue) + `SelectableCard`/`SelectableChip` built from existing `Chip`/`card` — used by all choice screens.
 
-## Phase 5 — 404 & 500 pages
-- `src/routes/404.tsx` + wire `__root.tsx` `notFoundComponent` to render it. Content: friendly copy, **Home** (auth-aware: `/app` vs `/`), **Back** (history, fallback Home), **Contact support**. On mount, calls `logUnknownRoute` with path/referrer/user.
-- `src/routes/500.tsx` + wire `__root.tsx` `errorComponent` + router `defaultErrorComponent` to render it. Content: friendly copy, **Retry** (`router.invalidate()` + `reset()`), **Home**, **Report Issue** (calls `reportError` → shows `error_id`, then optional `createSupportTicket`). Stack captured server-side only, never shown to users. Integrates with existing `error-capture.ts`/`lovable-error-reporting.ts`.
-- Direct routes `/404` and `/500` also exist for explicit navigation/testing.
+## Phase 4 — Text/選択 steps
+`name` (text, trim, 2–50), `gender` (cards), `date-of-birth` (native date, ≥18 rejection, timezone-safe), `graduation-year` (dynamic year range), `semester` (1–8 cards), `looking-for` (cards), `bio` (multiline + counter, ≤500). Each: live validation, disabled Continue until valid, save on Continue, advance.
 
-## Phase 6 — Integration & wiring
-- Auth handoff: after login / signup / password reset / session restore, redirect to `/system/splash` (instead of `/app`) so splash becomes the single routing engine. Update `auth.login.tsx`, `auth.signup.tsx`, `auth.reset-password.tsx`, and the `_authenticated` post-auth path.
-- `_authenticated/route.tsx`: on gate entry, if `application_settings.maintenance_enabled` (from cached config) → redirect maintenance, preserving the session. Root realtime listener already in `__root.tsx` extended to invalidate config on maintenance change so any authenticated screen can react.
-- Landing "Get started" / CTAs unchanged (still → `/auth`).
+## Phase 5 — Searchable relational steps
+`college` and `department` — instant client-side search over Supabase-loaded lists, store FK id, skeleton loaders, empty-state, network-failure retry. `interests` — searchable chips, multi-select with min (e.g. 3) / max (e.g. 10) counter, realtime insert of new admin-added interests, saves to `user_interests`.
 
-## Phase 7 — Verification
-- `tsgo --noEmit` clean.
-- Playwright end-to-end: splash redirect matrix (guest→landing, authed→home), toggle `maintenance_enabled` in DB → confirm realtime redirect, visit unknown URL → 404 logs a `system_logs` row, force a thrown error → 500 writes an `error_reports` row and returns an `error_id`. Screenshot each page at mobile (375px) and desktop widths.
+## Phase 6 — Photos
+Grid of up to 6 slots. Client: validate type/size, compress (canvas) before upload, per-file progress, upload to `profile-photos/{userId}/`, persist `photos` row. Replace/delete/reorder (drag where supported, arrow controls fallback), first photo = primary → mirrored to `profiles.avatar_url`. Handles failure/cancel/duplicate with preserved state; min 2 to continue.
+
+## Phase 7 — Complete + wiring
+`complete` — success animation (reuse motion tokens), calls `completeOnboarding()`, prevents duplicate submits, on success navigates to `/app` (Home handoff). Update `resolveDestination` + splash so incomplete users resume at their saved `onboarding_step` and completed users skip onboarding. `/app` handoff copy updated to reflect real completion.
+
+## Phase 8 — Verification
+`tsgo` typecheck + production build clean; Playwright mobile (390×844) walkthrough of the full flow against live Supabase (create → save each step → upload → complete → land on `/app`); confirm resume-after-refresh, back-nav, guard against skipping, and DB rows written. Cleanup any test data.
 
 ---
 
 ## Technical notes
-- All reads use an anon publishable-key server client + narrow `TO anon` SELECT policies; writes to logs/errors are INSERT-only for anon (no read-back). Admin-only tables never expose stack traces or PII to non-admins.
-- Splash and maintenance are `ssr:false` public routes because they depend on the browser Supabase session.
-- No mock data, no fake timers: every delay is a real awaited init task with timeout protection.
-- Extension points kept open for forced updates (`app_versions.force_update`), feature-flag rollouts, and an Admin dashboard — no redesign needed later.
+- Every screen mobile-first, one-handed; large screens only widen/space.
+- No mock data, no fake delays — reference lists and all writes are live Supabase.
+- Photos bucket is **private** (dating PII); discovery will later use signed URLs. Confirm if you'd prefer public.
+- Accessibility: semantic inputs, ARIA labels, focus states, reduced-motion, keyboard nav on all cards/chips.
+
+## Open choices (defaults if you don't specify)
+- Min interests = 3, max = 10; bio max = 500; min age = 18; photos 2–6.
+- Seed a starter set of colleges/departments/interests (India-relevant) that admins can extend later.

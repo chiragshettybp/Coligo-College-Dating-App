@@ -80,6 +80,33 @@ export type Database = {
         }
         Relationships: []
       }
+      colleges: {
+        Row: {
+          city: string | null
+          created_at: string
+          id: string
+          is_active: boolean
+          name: string
+          updated_at: string
+        }
+        Insert: {
+          city?: string | null
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          name: string
+          updated_at?: string
+        }
+        Update: {
+          city?: string | null
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          name?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       company_information: {
         Row: {
           body: string
@@ -158,6 +185,30 @@ export type Database = {
           subject?: string
           updated_at?: string
           user_agent?: string | null
+        }
+        Relationships: []
+      }
+      departments: {
+        Row: {
+          created_at: string
+          id: string
+          is_active: boolean
+          name: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          name: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          name?: string
+          updated_at?: string
         }
         Relationships: []
       }
@@ -386,6 +437,33 @@ export type Database = {
         }
         Relationships: []
       }
+      interests: {
+        Row: {
+          category: string | null
+          created_at: string
+          id: string
+          is_active: boolean
+          name: string
+          updated_at: string
+        }
+        Insert: {
+          category?: string | null
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          name: string
+          updated_at?: string
+        }
+        Update: {
+          category?: string | null
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          name?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       landing_statistics: {
         Row: {
           created_at: string
@@ -455,44 +533,119 @@ export type Database = {
         }
         Relationships: []
       }
+      photos: {
+        Row: {
+          created_at: string
+          id: string
+          is_primary: boolean
+          position: number
+          storage_path: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          is_primary?: boolean
+          position?: number
+          storage_path: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          is_primary?: boolean
+          position?: number
+          storage_path?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           account_status: Database["public"]["Enums"]["account_status"]
           avatar_url: string | null
+          bio: string | null
+          college_id: string | null
           created_at: string
+          date_of_birth: string | null
+          department_id: string | null
           display_name: string | null
+          full_name: string | null
+          gender: Database["public"]["Enums"]["gender_option"] | null
+          graduation_year: number | null
           id: string
           last_login_at: string | null
+          looking_for: Database["public"]["Enums"]["looking_for_option"] | null
           onboarding_completed: boolean
+          onboarding_step: string
           phone: string | null
+          semester: number | null
           updated_at: string
           verification_status: string
         }
         Insert: {
           account_status?: Database["public"]["Enums"]["account_status"]
           avatar_url?: string | null
+          bio?: string | null
+          college_id?: string | null
           created_at?: string
+          date_of_birth?: string | null
+          department_id?: string | null
           display_name?: string | null
+          full_name?: string | null
+          gender?: Database["public"]["Enums"]["gender_option"] | null
+          graduation_year?: number | null
           id: string
           last_login_at?: string | null
+          looking_for?: Database["public"]["Enums"]["looking_for_option"] | null
           onboarding_completed?: boolean
+          onboarding_step?: string
           phone?: string | null
+          semester?: number | null
           updated_at?: string
           verification_status?: string
         }
         Update: {
           account_status?: Database["public"]["Enums"]["account_status"]
           avatar_url?: string | null
+          bio?: string | null
+          college_id?: string | null
           created_at?: string
+          date_of_birth?: string | null
+          department_id?: string | null
           display_name?: string | null
+          full_name?: string | null
+          gender?: Database["public"]["Enums"]["gender_option"] | null
+          graduation_year?: number | null
           id?: string
           last_login_at?: string | null
+          looking_for?: Database["public"]["Enums"]["looking_for_option"] | null
           onboarding_completed?: boolean
+          onboarding_step?: string
           phone?: string | null
+          semester?: number | null
           updated_at?: string
           verification_status?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "profiles_college_id_fkey"
+            columns: ["college_id"]
+            isOneToOne: false
+            referencedRelation: "colleges"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "profiles_department_id_fkey"
+            columns: ["department_id"]
+            isOneToOne: false
+            referencedRelation: "departments"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       settings: {
         Row: {
@@ -551,6 +704,35 @@ export type Database = {
         }
         Relationships: []
       }
+      user_interests: {
+        Row: {
+          created_at: string
+          id: string
+          interest_id: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          interest_id: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          interest_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_interests_interest_id_fkey"
+            columns: ["interest_id"]
+            isOneToOne: false
+            referencedRelation: "interests"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       user_roles: {
         Row: {
           created_at: string
@@ -593,6 +775,8 @@ export type Database = {
     Enums: {
       account_status: "active" | "suspended" | "deleted"
       app_role: "user" | "moderator" | "admin"
+      gender_option: "woman" | "man" | "nonbinary" | "other"
+      looking_for_option: "women" | "men" | "everyone"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -722,6 +906,8 @@ export const Constants = {
     Enums: {
       account_status: ["active", "suspended", "deleted"],
       app_role: ["user", "moderator", "admin"],
+      gender_option: ["woman", "man", "nonbinary", "other"],
+      looking_for_option: ["women", "men", "everyone"],
     },
   },
 } as const
