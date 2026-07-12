@@ -130,13 +130,8 @@ function OnboardingLayout() {
               <ArrowLeft style={{ width: 18, height: 18 }} />
             </button>
           ) : (
-            <span
-              aria-hidden
-              className="inline-flex items-center justify-center shrink-0"
-              style={{ width: 40, height: 40, borderRadius: radii.sm, background: gradients.primaryButton, color: "#fff" }}
-            >
-              <Heart style={{ width: 20, height: 20, fill: "currentColor" }} />
-            </span>
+            <BrandLogo size={40} showWordmark={false} eager className="shrink-0" />
+
           )}
 
           <div style={{ flex: 1 }}>
