@@ -25,6 +25,13 @@ export const Route = createFileRoute("/_authenticated/profile/preferences")({
   component: PreferencesPage,
 });
 
+type PrefsPatch = {
+  looking_for?: "women" | "men" | "everyone";
+  discovery_enabled?: boolean;
+  push_enabled?: boolean;
+  email_enabled?: boolean;
+};
+
 function PreferencesPage() {
   const navigate = useNavigate();
   const qc = useQueryClient();
