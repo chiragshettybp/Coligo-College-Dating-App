@@ -142,3 +142,36 @@
     color: var(--color-foreground);
   }
 }
+
+/* Design-system motion utilities (shared across all screens). */
+@keyframes ds-shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+.ds-shimmer {
+  background: linear-gradient(
+    100deg,
+    rgba(255, 255, 255, 0.04) 0%,
+    rgba(255, 255, 255, 0.14) 50%,
+    rgba(255, 255, 255, 0.04) 100%
+  );
+  background-size: 200% 100%;
+  animation: ds-shimmer 1.4s ease-in-out infinite;
+}
+
+@keyframes ds-float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-8px); }
+}
+.ds-float { animation: ds-float 4s ease-in-out infinite; }
+
+@keyframes ds-glow-pulse {
+  0%, 100% { opacity: 0.55; }
+  50% { opacity: 1; }
+}
+.ds-glow-pulse { animation: ds-glow-pulse 2.4s ease-in-out infinite; }
+
+@keyframes ds-typing {
+  0%, 60%, 100% { transform: translateY(0); opacity: 0.4; }
+  30% { transform: translateY(-4px); opacity: 1; }
+}
