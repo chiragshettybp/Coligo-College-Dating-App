@@ -1,5 +1,5 @@
 // ============================================================================
-// Protected landing / post-auth handoff (/app).
+// Protected landing / post-auth handoff (/home).
 // This is where authentication ends and the next modules (Onboarding, Splash,
 // Home) will take over. It confirms a live session and branches on whether the
 // member has finished onboarding.
@@ -14,7 +14,7 @@ import { Button, Text, GlassPanel } from "@/components/ds/glass";
 import { APP_BACKGROUND, FONT_FAMILY, colors, spacing, radii, gradients } from "@/lib/ds";
 import { formatPhoneIN } from "@/lib/auth";
 
-export const Route = createFileRoute("/_authenticated/app")({
+export const Route = createFileRoute("/_authenticated/home")({
   loader: async ({ context }) => {
     const profile = await context.queryClient.ensureQueryData(myProfileQuery());
     // Members who haven't finished onboarding belong in the Onboarding module.
