@@ -54,6 +54,8 @@ import { Route as AuthenticatedHomeIndexRouteImport } from './routes/_authentica
 import { Route as AuthenticatedDiscoverIndexRouteImport } from './routes/_authenticated/discover.index'
 import { Route as AuthenticatedChatIndexRouteImport } from './routes/_authenticated/chat.index'
 import { Route as ApiPublicPushRouteImport } from './routes/api/public/push'
+import { Route as AuthenticatedProfilePreferencesRouteImport } from './routes/_authenticated/profile.preferences'
+import { Route as AuthenticatedProfilePhotosRouteImport } from './routes/_authenticated/profile.photos'
 import { Route as AuthenticatedProfileInterestsRouteImport } from './routes/_authenticated/profile.interests'
 import { Route as AuthenticatedProfileEditRouteImport } from './routes/_authenticated/profile.edit'
 import { Route as AuthenticatedProfileBioRouteImport } from './routes/_authenticated/profile.bio'
@@ -304,6 +306,18 @@ const ApiPublicPushRoute = ApiPublicPushRouteImport.update({
   path: '/api/public/push',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AuthenticatedProfilePreferencesRoute =
+  AuthenticatedProfilePreferencesRouteImport.update({
+    id: '/profile/preferences',
+    path: '/profile/preferences',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedProfilePhotosRoute =
+  AuthenticatedProfilePhotosRouteImport.update({
+    id: '/profile/photos',
+    path: '/profile/photos',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const AuthenticatedProfileInterestsRoute =
   AuthenticatedProfileInterestsRouteImport.update({
     id: '/profile/interests',
@@ -468,6 +482,8 @@ export interface FileRoutesByFullPath {
   '/profile/bio': typeof AuthenticatedProfileBioRoute
   '/profile/edit': typeof AuthenticatedProfileEditRoute
   '/profile/interests': typeof AuthenticatedProfileInterestsRoute
+  '/profile/photos': typeof AuthenticatedProfilePhotosRoute
+  '/profile/preferences': typeof AuthenticatedProfilePreferencesRoute
   '/api/public/push': typeof ApiPublicPushRoute
   '/chat/': typeof AuthenticatedChatIndexRoute
   '/discover/': typeof AuthenticatedDiscoverIndexRoute
@@ -527,6 +543,8 @@ export interface FileRoutesByTo {
   '/profile/bio': typeof AuthenticatedProfileBioRoute
   '/profile/edit': typeof AuthenticatedProfileEditRoute
   '/profile/interests': typeof AuthenticatedProfileInterestsRoute
+  '/profile/photos': typeof AuthenticatedProfilePhotosRoute
+  '/profile/preferences': typeof AuthenticatedProfilePreferencesRoute
   '/api/public/push': typeof ApiPublicPushRoute
   '/chat': typeof AuthenticatedChatIndexRoute
   '/discover': typeof AuthenticatedDiscoverIndexRoute
@@ -595,6 +613,8 @@ export interface FileRoutesById {
   '/_authenticated/profile/bio': typeof AuthenticatedProfileBioRoute
   '/_authenticated/profile/edit': typeof AuthenticatedProfileEditRoute
   '/_authenticated/profile/interests': typeof AuthenticatedProfileInterestsRoute
+  '/_authenticated/profile/photos': typeof AuthenticatedProfilePhotosRoute
+  '/_authenticated/profile/preferences': typeof AuthenticatedProfilePreferencesRoute
   '/api/public/push': typeof ApiPublicPushRoute
   '/_authenticated/chat/': typeof AuthenticatedChatIndexRoute
   '/_authenticated/discover/': typeof AuthenticatedDiscoverIndexRoute
@@ -662,6 +682,8 @@ export interface FileRouteTypes {
     | '/profile/bio'
     | '/profile/edit'
     | '/profile/interests'
+    | '/profile/photos'
+    | '/profile/preferences'
     | '/api/public/push'
     | '/chat/'
     | '/discover/'
@@ -721,6 +743,8 @@ export interface FileRouteTypes {
     | '/profile/bio'
     | '/profile/edit'
     | '/profile/interests'
+    | '/profile/photos'
+    | '/profile/preferences'
     | '/api/public/push'
     | '/chat'
     | '/discover'
@@ -788,6 +812,8 @@ export interface FileRouteTypes {
     | '/_authenticated/profile/bio'
     | '/_authenticated/profile/edit'
     | '/_authenticated/profile/interests'
+    | '/_authenticated/profile/photos'
+    | '/_authenticated/profile/preferences'
     | '/api/public/push'
     | '/_authenticated/chat/'
     | '/_authenticated/discover/'
@@ -1139,6 +1165,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiPublicPushRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/_authenticated/profile/preferences': {
+      id: '/_authenticated/profile/preferences'
+      path: '/profile/preferences'
+      fullPath: '/profile/preferences'
+      preLoaderRoute: typeof AuthenticatedProfilePreferencesRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/profile/photos': {
+      id: '/_authenticated/profile/photos'
+      path: '/profile/photos'
+      fullPath: '/profile/photos'
+      preLoaderRoute: typeof AuthenticatedProfilePhotosRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/profile/interests': {
       id: '/_authenticated/profile/interests'
       path: '/profile/interests'
@@ -1414,6 +1454,8 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedProfileBioRoute: typeof AuthenticatedProfileBioRoute
   AuthenticatedProfileEditRoute: typeof AuthenticatedProfileEditRoute
   AuthenticatedProfileInterestsRoute: typeof AuthenticatedProfileInterestsRoute
+  AuthenticatedProfilePhotosRoute: typeof AuthenticatedProfilePhotosRoute
+  AuthenticatedProfilePreferencesRoute: typeof AuthenticatedProfilePreferencesRoute
   AuthenticatedNotificationsIndexRoute: typeof AuthenticatedNotificationsIndexRoute
   AuthenticatedProfileIndexRoute: typeof AuthenticatedProfileIndexRoute
 }
@@ -1428,6 +1470,8 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedProfileBioRoute: AuthenticatedProfileBioRoute,
   AuthenticatedProfileEditRoute: AuthenticatedProfileEditRoute,
   AuthenticatedProfileInterestsRoute: AuthenticatedProfileInterestsRoute,
+  AuthenticatedProfilePhotosRoute: AuthenticatedProfilePhotosRoute,
+  AuthenticatedProfilePreferencesRoute: AuthenticatedProfilePreferencesRoute,
   AuthenticatedNotificationsIndexRoute: AuthenticatedNotificationsIndexRoute,
   AuthenticatedProfileIndexRoute: AuthenticatedProfileIndexRoute,
 }
