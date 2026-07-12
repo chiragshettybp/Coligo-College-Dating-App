@@ -220,7 +220,7 @@ function HomeDashboardPage() {
         <Card
           interactive
           padding={0}
-          onClick={() => setComingSoon("Discovery")}
+          onClick={() => navigate({ to: "/discover" })}
           style={{
             background: gradients.primaryButton,
             boxShadow: shadows.primaryGlow,
@@ -426,7 +426,7 @@ function HomeDashboardPage() {
               {data.newMembers.map((m) => (
                 <button
                   key={m.id}
-                  onClick={() => setComingSoon("Discovery")}
+                  onClick={() => navigate({ to: "/discover/profile/$userId", params: { userId: m.id } })}
                   className="ds-press flex flex-col items-center shrink-0"
                   style={{ width: 76, background: "transparent" }}
                 >
