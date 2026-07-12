@@ -226,7 +226,7 @@ function UIShowcase() {
         {/* Typography */}
         <Section
           title="Typography"
-          description="Nunito across the board. Distinct weights build the full hierarchy."
+          description="SF Pro on Apple devices, Inter everywhere else. Tuned weights, line heights and optical tracking build the full hierarchy."
         >
           <GlassPanel style={{ padding: spacing[5] }}>
             <div style={{ fontSize: 48, fontWeight: 800, color: "#fff", letterSpacing: "-0.03em" }}>
