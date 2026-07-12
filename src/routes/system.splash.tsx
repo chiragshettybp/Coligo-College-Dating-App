@@ -233,7 +233,7 @@ function SplashPage() {
       style={{
         position: "fixed",
         inset: 0,
-        background: "#000",
+        background: "#fff",
         fontFamily: FONT_FAMILY,
         overflow: "hidden",
       }}
@@ -257,8 +257,8 @@ function SplashPage() {
             inset: 0,
             width: "100%",
             height: "100%",
-            objectFit: "contain",
-            background: "#000",
+            objectFit: "cover",
+            background: "#fff",
             pointerEvents: "none",
             opacity: fading ? 0 : 1,
             transition: `opacity ${FADE_MS}ms ease`,
