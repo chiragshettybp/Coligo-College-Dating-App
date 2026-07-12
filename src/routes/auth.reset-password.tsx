@@ -11,12 +11,11 @@ import { useEffect, useState } from "react";
 
 import { supabase } from "@/integrations/supabase/client";
 import { touchLastLogin } from "@/lib/profile.functions";
-import { touchLastLogin } from "@/lib/profile.functions";
 import { Button, Text, GlassPanel } from "@/components/ds/glass";
 import { AuthHeader } from "@/components/auth/AuthHeader";
 import { PasswordField, PasswordChecklist } from "@/components/auth/fields";
 import { colors, spacing } from "@/lib/ds";
-import { passwordSchema, passwordStrength, phoneToAlias, friendlyAuthError } from "@/lib/auth";
+import { passwordSchema, passwordStrength, phoneToAlias, toE164, friendlyAuthError } from "@/lib/auth";
 import { haptic } from "@/lib/haptics";
 
 export const Route = createFileRoute("/auth/reset-password")({
