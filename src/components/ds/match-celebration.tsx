@@ -462,7 +462,7 @@ export function MatchCelebration({
             </div>
 
             {/* CTAs emerge with a small spring lift. */}
-            <div className="w-full" style={{ marginTop: spacing[5] }}>
+            <div className="w-full" style={{ marginTop: "clamp(12px, 2.4vh, 24px)" }}>
               <div style={reveal(5 + indicators.length)}>
                 <Button
                   variant="primary"
