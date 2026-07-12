@@ -301,22 +301,31 @@ export const conversationQuery = (chatId: string) =>
 export const sendMessage = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator(
-    (input: { chatId: string; body?: string; imagePath?: string; replyTo?: string }) =>
+    (input: {
+      chatId: string;
+      body?: string;
+      imagePath?: string;
+      audioPath?: string;
+      audioDurationMs?: number;
+      replyTo?: string;
+    }) =>
       z
         .object({
           chatId: z.string().uuid(),
           body: z.string().trim().max(MESSAGE_MAX).optional(),
           imagePath: z.string().max(400).optional(),
+          audioPath: z.string().max(400).optional(),
+          audioDurationMs: z.number().int().min(0).max(1000 * 60 * 10).optional(),
           replyTo: z.string().uuid().optional(),
         })
-        .refine((v) => (v.body && v.body.length > 0) || !!v.imagePath, {
+        .refine((v) => (v.body && v.body.length > 0) || !!v.imagePath || !!v.audioPath, {
           message: "Message cannot be empty",
         })
         .parse(input),
   )
   .handler(async ({ context, data }): Promise<ChatMessage> => {
     const { supabase, userId } = context;
-    const kind = data.imagePath ? "image" : "text";
+    const kind = data.audioPath ? "voice" : data.imagePath ? "image" : "text";
     const { data: row, error } = await supabase
       .from("messages")
       .insert({
@@ -324,24 +333,17 @@ export const sendMessage = createServerFn({ method: "POST" })
         sender_id: userId,
         body: data.body ?? "",
         image_path: data.imagePath ?? null,
+        audio_path: data.audioPath ?? null,
+        audio_duration_ms: data.audioDurationMs ?? null,
         reply_to: data.replyTo ?? null,
         kind,
       })
-      .select("id, body, sender_id, created_at, read_at, kind, image_path, reply_to")
+      .select(MSG_COLS)
       .single();
     if (error) throw new Error(error.message);
 
-    const signed = await signPaths(supabase, CHAT_BUCKET, [row.image_path]);
-    return {
-      id: row.id as string,
-      body: (row.body as string) ?? "",
-      senderId: row.sender_id as string,
-      createdAt: row.created_at as string,
-      readAt: (row.read_at as string) ?? null,
-      kind: (row.kind as string) ?? "text",
-      imageUrl: resolveUrl(row.image_path as string | null, signed),
-      replyTo: null,
-    };
+    const signed = await signPaths(supabase, CHAT_BUCKET, [row.image_path, row.audio_path]);
+    return mapMessageRow(row as MessageRow, new Map(), signed);
   });
 
 export const markConversationRead = createServerFn({ method: "POST" })
