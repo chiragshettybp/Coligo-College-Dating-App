@@ -268,7 +268,7 @@ function MessageRow({
             maxWidth: "72%",
             padding: `${spacing[2]}px ${spacing[3]}px`,
             borderRadius: radii.lg,
-            background: mine ? colors.brand : surfaces.glass,
+            background: mine ? colors.primary : surfaces.glass,
             border: mine ? "none" : `1px solid ${surfaces.border}`,
             color: mine ? "#fff" : colors.textPrimary,
             borderBottomRightRadius: mine ? 4 : radii.lg,
