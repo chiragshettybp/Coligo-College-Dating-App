@@ -15,10 +15,16 @@ export type OnlineCounts = {
 
 type PresenceMeta = { collegeId: string | null };
 
-export function useOnlinePresence(userId: string | null, collegeId: string | null): OnlineCounts {
+export function useOnlinePresence(
+  userId: string | null,
+  myCollegeId: string | null,
+  filterCollegeId: string | null = myCollegeId,
+): OnlineCounts {
   const [counts, setCounts] = useState<OnlineCounts>({ national: 0, college: 0, connected: false });
-  const collegeRef = useRef(collegeId);
-  collegeRef.current = collegeId;
+  const myCollegeRef = useRef(myCollegeId);
+  myCollegeRef.current = myCollegeId;
+  const filterRef = useRef(filterCollegeId);
+  filterRef.current = filterCollegeId;
 
   useEffect(() => {
     if (!userId) return;
@@ -36,7 +42,7 @@ export function useOnlinePresence(userId: string | null, collegeId: string | nul
       for (const k of keys) {
         const metas = state[k];
         const meta = metas?.[0];
-        if (meta && collegeRef.current && meta.collegeId === collegeRef.current) college += 1;
+        if (meta && filterRef.current && meta.collegeId === filterRef.current) college += 1;
       }
       if (!cancelled) setCounts({ national, college, connected: true });
     };
@@ -47,7 +53,9 @@ export function useOnlinePresence(userId: string | null, collegeId: string | nul
       .on("presence", { event: "leave" }, recompute)
       .subscribe(async (status) => {
         if (status === "SUBSCRIBED") {
-          await channel.track({ collegeId: collegeRef.current });
+          // Always advertise the user's OWN college, never the one being viewed,
+          // so shared presence counts stay correct for every other user.
+          await channel.track({ collegeId: myCollegeRef.current });
         } else if (status === "CHANNEL_ERROR" || status === "TIMED_OUT" || status === "CLOSED") {
           if (!cancelled) setCounts((c) => ({ ...c, connected: false }));
         }
@@ -57,7 +65,7 @@ export function useOnlinePresence(userId: string | null, collegeId: string | nul
       cancelled = true;
       supabase.removeChannel(channel);
     };
-  }, [userId, collegeId]);
+  }, [userId, myCollegeId, filterCollegeId]);
 
   return counts;
 }
