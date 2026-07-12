@@ -388,10 +388,36 @@ export function MatchCelebration({
               ))}
             </div>
 
+            {/* Shared interests — the real thing, each chip revealed in turn. */}
+            {shared.interests.length > 0 && (
+              <div style={{ ...reveal(3 + indicators.length), marginTop: spacing[3], width: "100%" }}>
+                <span style={{ ...type.caption, color: "rgba(255,255,255,0.55)" }}>You both like</span>
+                <div className="flex flex-wrap items-center justify-center" style={{ gap: spacing[1], marginTop: spacing[2] }}>
+                  {shared.interests.map((interest) => (
+                    <span
+                      key={interest}
+                      className="inline-flex items-center gap-1.5"
+                      style={{
+                        borderRadius: radii.pill,
+                        padding: "6px 12px",
+                        ...type.badgeLabel,
+                        color: "#dfe9ff",
+                        background: "rgba(120,150,255,0.16)",
+                        border: "1px solid rgba(150,175,255,0.28)",
+                      }}
+                    >
+                      <Sparkles style={{ width: 13, height: 13 }} />
+                      {interest}
+                    </span>
+                  ))}
+                </div>
+              </div>
+            )}
+
             {/* Conversation starter — a warm, specific opener. */}
             <div
               style={{
-                ...reveal(3 + indicators.length),
+                ...reveal(4 + indicators.length),
                 marginTop: spacing[5],
                 width: "100%",
               }}
