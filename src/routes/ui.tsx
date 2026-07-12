@@ -2446,12 +2446,12 @@ function bubbleRadii(mine: boolean, pos: GroupPos) {
 }
 
 function Ticks({ state }: { state: MsgState }) {
-  const color = state === "read" ? colors.primary : "rgba(255,255,255,0.7)";
+  const color = state === "read" ? colors.primary : colors.textMuted;
   if (state === "sending")
     return (
       <span
         className="ds-rec-pulse inline-block rounded-full"
-        style={{ width: 9, height: 9, border: `1.5px solid rgba(255,255,255,0.6)` }}
+        style={{ width: 9, height: 9, border: `1.5px solid ${colors.textMuted}` }}
         aria-label="Sending"
       />
     );
