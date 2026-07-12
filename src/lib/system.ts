@@ -90,13 +90,15 @@ export type Destination =
   | { to: "/"; reason: "guest" }
   | { to: "/system/maintenance"; reason: "maintenance" }
   | { to: "/"; reason: "suspended" | "deleted"; signOut: true }
-  | { to: "/onboarding"; reason: "onboarding" }
-  | { to: "/app"; reason: "home" };
+  | { to: "/app"; reason: "onboarding" | "home" };
 
 /**
  * Pure routing engine used by the splash screen. Order matters: maintenance
  * overrides authenticated destinations; suspended/deleted accounts are logged
  * out before anything else user-facing.
+ *
+ * Onboarding-incomplete members are sent to `/app`, which renders the
+ * onboarding-incomplete handoff until the dedicated Onboarding module ships.
  */
 export function resolveDestination(state: SplashState): Destination {
   if (state.config.maintenanceEnabled) {
@@ -112,7 +114,7 @@ export function resolveDestination(state: SplashState): Destination {
     return { to: "/", reason: "deleted", signOut: true };
   }
   if (!state.onboardingCompleted) {
-    return { to: "/onboarding", reason: "onboarding" };
+    return { to: "/app", reason: "onboarding" };
   }
   return { to: "/app", reason: "home" };
 }
