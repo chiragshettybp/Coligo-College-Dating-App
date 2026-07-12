@@ -14,6 +14,63 @@ export type Database = {
   }
   public: {
     Tables: {
+      admin_login_attempts: {
+        Row: {
+          created_at: string
+          id: string
+          ip: string | null
+          phone: string
+          success: boolean
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          ip?: string | null
+          phone: string
+          success?: boolean
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          ip?: string | null
+          phone?: string
+          success?: boolean
+        }
+        Relationships: []
+      }
+      admin_logs: {
+        Row: {
+          action: string
+          admin_id: string
+          created_at: string
+          id: string
+          ip: string | null
+          metadata: Json
+          target_id: string | null
+          target_table: string | null
+        }
+        Insert: {
+          action: string
+          admin_id: string
+          created_at?: string
+          id?: string
+          ip?: string | null
+          metadata?: Json
+          target_id?: string | null
+          target_table?: string | null
+        }
+        Update: {
+          action?: string
+          admin_id?: string
+          created_at?: string
+          id?: string
+          ip?: string | null
+          metadata?: Json
+          target_id?: string | null
+          target_table?: string | null
+        }
+        Relationships: []
+      }
       announcements: {
         Row: {
           body: string
@@ -1065,6 +1122,21 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      admin_dashboard_stats: { Args: never; Returns: Json }
+      admin_distribution: { Args: never; Returns: Json }
+      admin_log_action: {
+        Args: {
+          _action: string
+          _ip?: string
+          _metadata?: Json
+          _target_id?: string
+          _target_table?: string
+        }
+        Returns: string
+      }
+      admin_recent_activity: { Args: { _limit?: number }; Returns: Json }
+      admin_search: { Args: { _q: string }; Returns: Json }
+      admin_timeseries: { Args: { _days?: number }; Returns: Json }
       college_rank: { Args: { _college_id: string }; Returns: number }
       college_rankings: {
         Args: { _limit?: number; _offset?: number; _search?: string }

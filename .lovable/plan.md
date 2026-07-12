@@ -1,79 +1,68 @@
-# Coligo — Settings Module Plan
+# Coligo Admin Module — Implementation Plan
 
-## What already exists (reused, not rebuilt)
+Scope: **only** `/admin/login` and `/admin/dashboard`. Real Supabase data, admin-only access, realtime. Reuses the `/ui` design system (no redesign). Future modules (Users, Reports, etc.) are surfaced as Quick Actions that link to `/admin/dashboard` for now.
 
-- **Design system** (`/ui` = source of truth): `Switch`, `SettingsGroup`, `SettingsItem`, `RadioGroup`, `Checkbox`, `Dropdown`, `Slider`, `CollapsibleGroup`, `DangerZone` in `src/components/ds/settings.tsx`; plus `TopBar`, `EmptyState`, `Skeleton`, `Button`, `DiscoverShell` (bottom nav).
-- **Server fns**: `getPreferences/updatePreferences`, `getNotificationPreferences/updateNotificationPreference`, `getFullProfile`, `getAppConfig`, `getFaqs`, `getLegalDocument`, `getCompanyInfo`, `createSupportTicket`, `blockUser`, `registerDeviceSession`.
-- **Tables**: `settings` (discovery_enabled, push_enabled, email_enabled, match_sort/filters), `notification_preferences` (category/in_app/push/email), `blocks`, `profiles` (verification_status, account_status enum active|suspended|deleted), `device_sessions`, `faqs`, `legal_documents`, `company_information`, `app_versions`.
-- **Realtime** already wired for profile/blocks in Discovery; root handles auth state + sign-out redirect.
+## How admin auth works (important)
+The app already signs students in with **+91 phone + password** by mapping the phone to an email *alias* (`phoneToAlias`) and calling `signInWithPassword`. No email is ever sent. The admin reuses this exact mechanism:
+- **Identity** = admin phone number (+91).
+- **6-digit PIN** = the auth password, hashed by Supabase Auth (bcrypt) — never stored in plaintext or in a table.
+- **Authorization** = a row in the existing `user_roles` table with `role = 'admin'`, checked by the existing `has_role()` security-definer function.
 
-Every screen is built by composing the above — no redesign.
+This satisfies "phone + PIN, no email auth, PIN hashed, admin-only" without a parallel auth system.
 
-## Scope decision on "(future)" items
-
-The prompt marks many controls `(future)`. To honor "no placeholders/fake toggles", I will **build only the controls backed by real data now** and **omit** future-only ones (last active, read receipts, trusted devices, active sessions, 2FA, marketing, licenses). The data model is left extensible so they drop in later. I'll note this in each page's footnote where relevant.
+After you approve, I will **ask you for the admin phone number and 6-digit PIN**, then create that single admin account (no fake/hardcoded credentials).
 
 ---
 
-## Phase 1 — Schema (one migration)
+## Phase 1 — Database & security (migration)
+1. **`admin_logs`** audit table: `admin_id`, `action`, `target_table`, `target_id`, `ip`, `metadata jsonb`, `created_at`. RLS: only admins can read; inserts via security-definer logging fn. GRANTs to `authenticated` + `service_role`.
+2. **`admin_login_attempts`** table for rate limiting / brute-force protection: `phone`, `success`, `ip`, `created_at`. Admin-read only.
+3. **Admin-gated aggregate RPCs** (SQL `SECURITY DEFINER`, each begins with `IF NOT has_role(auth.uid(),'admin') THEN RAISE EXCEPTION`):
+   - `admin_dashboard_stats()` → all overview counters (total/verified/active/online/new users, gender split, colleges, departments, swipes, likes, passes, matches, matches today, messages today, conversations, photos, reports pending, blocked, deleted accounts) as one `jsonb`.
+   - `admin_timeseries(_days int)` → daily signups, matches, messages, active users, storage growth.
+   - `admin_distribution()` → gender, department, profile-completion, top colleges, college growth.
+   - `admin_recent_activity(_limit int)` → unified latest registrations/matches/messages/reports/blocks/deleted/admin actions.
+   - `admin_log_action(...)` → append to `admin_logs`.
+4. Enable **realtime** on the tables the dashboard subscribes to (profiles, matches, messages, reports, blocks) via `ALTER PUBLICATION supabase_realtime ADD TABLE ...` (skip any already added).
+5. Reuse existing `platform_stats()`, `college_rankings()`, `has_role()`.
 
-- `settings`: add `profile_visible boolean not null default true`, `show_online_status boolean not null default true`, `allow_profile_preview boolean not null default true`. (Privacy lives on the existing per-user `settings` row — no new table needed; `handle_new_user` already seeds `settings`.)
-- Enable realtime: `ALTER PUBLICATION supabase_realtime ADD TABLE public.settings, public.notification_preferences;` (blocks already streamed).
-- `blocks`: confirm/add RLS `DELETE` policy for `auth.uid() = blocker_id` (needed for unblock) + `SELECT own blocks`.
-- Verify existing GRANTs; add if missing for the new columns' table (already granted).
+## Phase 2 — Admin account creation
+- After approval, prompt for **admin phone + 6-digit PIN**.
+- Create the auth user (phone alias + PIN as password) and insert `user_roles(admin)` for that id via a one-time secured server action (service role, run once). No other account gets `admin`.
 
-No changes to reserved schemas. Delete-account uses existing `account_status='deleted'` enum value.
+## Phase 3 — Server functions (`src/lib/admin.functions.ts`)
+All use `requireSupabaseAuth` + verify `has_role(admin)` server-side (never trust the client):
+- `adminDashboardStatsQuery`, `adminTimeseriesQuery`, `adminDistributionQuery`, `adminRecentActivityQuery`, `adminSystemHealthQuery` (pings DB/realtime/storage/auth), `adminSearch({ q })`, `logAdminAction`.
+- Public read shape via `queryOptions` + `ensureQueryData` in loaders, `useSuspenseQuery` in components.
 
-## Phase 2 — Server functions
+## Phase 4 — Routes
+- **`src/routes/admin.tsx`** — pathless-style admin layout wrapper (Coligo background, admin top bar). Public parent so `/admin/login` is reachable.
+- **`src/routes/admin.login.tsx`** — phone (`PhoneField`) + 6-digit PIN field with show/hide toggle, security notice, submit. Validates Indian mobile + 6-digit PIN with zod. On submit: check client-side rate limit, `signInWithPassword(alias, pin)`, then verify `has_role(admin)`; if not admin → `signOut()` + generic error ("Invalid credentials" — never reveal which field). Records attempt; locks out after N failures in a window. Redirects authed admins to dashboard.
+- **`src/routes/admin.dashboard.tsx`** — guarded (redirects to `/admin/login` if not authenticated or not admin), loader prefetches stats. Contains: overview stat-card grid, charts, recent activity feed, quick actions, system status, search, notifications.
 
-New file `src/lib/settings.functions.ts` (all `requireSupabaseAuth`, Zod-validated, with `queryOptions`):
-- `getAccountInfo` → phone, verification_status, college name, created_at (member since), account id, last_login_at.
-- `getPrivacySettings` / `updatePrivacySetting` → the 4 privacy booleans (discovery_enabled + 3 new). Writing `profile_visible`/`discovery_enabled` immediately affects Discovery (RPCs already filter on `discovery_enabled`; add `profile_visible` to `discover_candidates`/`discover_profile`/`match_detail` visibility where profile is shown).
-- `getSecurityInfo` → last_login_at, current session (from `device_sessions`), verification_status.
-- `listBlockedUsers` → joined profile (avatar signed URL, full_name, college, blocked date).
-- `unblockUser({ userId })` → delete from `blocks` where blocker=me.
-- `getSettingsOverview` → lightweight aggregate for the dashboard (counts: blocked users, unread prefs summary).
+Guarding: a `beforeLoad`/component check calling `has_role(admin)`; non-admins and students are redirected to `/admin/login`. Student sessions can authenticate but fail the admin-role check, so they never see admin data (RLS + RPC role checks enforce this even if the UI is bypassed).
 
-New file `src/lib/settings-account.functions.ts` (privileged): `deleteMyAccount` — `requireSupabaseAuth`, then inside handler `await import("@/integrations/supabase/client.server")`, set `account_status='deleted'`, purge photos from `profile-photos`, remove `device_sessions`/`device_tokens`, then `supabaseAdmin.auth.admin.deleteUser(userId)`. Returns ok; client signs out + navigates to `/`.
+## Phase 5 — Dashboard UI (reuse `/ui` primitives)
+- **Overview cards**: `StatCard` grid (`src/components/ds/card.tsx`), responsive `grid-cols-2 md:grid-cols-4`, skeletons while loading.
+- **Charts**: add `recharts` (client-only) wrapped in small themed components using design tokens — line/bar/area for signups, matches, messages, active users, college growth, storage; donut/bar for gender & department distribution; `ProgressBar` for profile completion. Reduced-motion respected.
+- **Recent activity feed**: list using existing card/avatar/badge components.
+- **Quick actions**: `SettingsItem`/card links (Users, Colleges, Reports, Chats, Analytics, Settings, Logs) → point to `/admin/dashboard` until those modules exist.
+- **System status**: live badges (Supabase, realtime, storage, auth, DB health) from `adminSystemHealthQuery`.
+- **Search**: `SearchBar` with debounced instant `adminSearch` across users/colleges/reports.
+- **Notifications**: pending reports + system alerts; clicking routes to the relevant (future) module.
 
-Reuse existing fns for notifications, FAQs, legal, company/app version, support tickets.
+## Phase 6 — Realtime
+- `src/lib/use-admin-realtime.ts`: one channel subscribing to INSERT/UPDATE on profiles, matches, messages, reports, blocks → invalidates the dashboard queries (throttled) so cards/charts/feed refresh instantly. Presence count for "Users online" via existing presence util. Cleanup on unmount.
 
-## Phase 3 — Routes (all under `_authenticated/`)
-
-1. `settings.index.tsx` — `/settings`: grouped `SettingsGroup`/`SettingsItem` list (Account, Privacy, Notifications, Security, Blocked Users, Help, About, then a DangerZone-style group for Logout + Delete Account). Loads overview; each row navigates (no popups).
-2. `settings.account.tsx` — read-only account card + "View Profile" (`/profile/preview`) and "Edit Profile" (`/profile/edit`) buttons; "Change Password" → `/auth/forgot-password`.
-3. `settings.privacy.tsx` — `Switch` rows for Profile Visibility, Discovery Visibility, Show Online Status, Allow Profile Preview. Optimistic update + rollback + toast, invalidate on success.
-4. `settings.notifications.tsx` — per-category `Switch` rows driven by `notification_preferences` (In-App / Match / Message / Announcement / Security). Reuses `updateNotificationPreference`.
-5. `settings.security.tsx` — current session + recent login info; "Reset Password" → auth reset flow; static Security Tips group.
-6. `settings.blocked-users.tsx` — list with avatar/name/college/blocked date; "View Profile" + "Unblock" (navigates to confirmation). Empty state via `EmptyState`.
-7. `settings.blocked-users.$userId.unblock.tsx` — dedicated confirmation page; calls `unblockUser`, invalidates blocks + discovery.
-8. `settings.help.tsx` — FAQ (from `getFaqs`, `CollapsibleGroup`), Contact Support (`/contact`), Privacy/Terms/Community links, Report Bug (`createSupportTicket`).
-9. `settings.about.tsx` — app name/version/build/release from `getAppConfig`; developer info from `getCompanyInfo`; Privacy/Terms links.
-10. `settings.logout.tsx` — confirmation page: cancelQueries → queryClient.clear → `supabase.auth.signOut()` → `navigate('/', replace)`.
-11. `settings.delete-account.tsx` — consequences + explicit typed confirmation + optional feedback; calls `deleteMyAccount`, then sign-out + redirect.
-
-Each route: `head()` with title + `robots noindex`, `loader` via `ensureQueryData`, `pendingComponent` (skeleton), `errorComponent`, `notFoundComponent` where dynamic.
-
-## Phase 4 — Realtime sync
-
-`src/lib/use-settings-realtime.ts`: subscribe (inside `useEffect`, cleanup with `removeChannel`) to `settings`, `notification_preferences`, `blocks` for `auth.uid()`; invalidate the matching queries so privacy/notification/block changes reflect instantly across tabs/devices and in Discovery/Matches/Chat.
-
-## Phase 5 — Navigation wiring
-
-- Profile gear icon (`profile.index.tsx`, currently → `/profile/preferences`) and the Settings button → `/settings`.
-- Keep `/profile/preferences` reachable from Privacy/Notifications where overlapping (or fold its controls into the new pages and redirect).
-- Ensure back navigation returns to `/settings` / `/profile` correctly.
-
-## Phase 6 — Verify
-
-- `tsgo` typecheck + build.
-- Confirm migration applied, realtime publication, RLS on `blocks` delete.
-- Manual review of redirect/guard flows (external Supabase → no signed-in browser E2E; verify via schema + types + route registration).
+## Phase 7 — States, a11y, verify
+- Loading skeletons for cards/charts/tables; no layout shift. Error components with retry; offline/realtime-disconnected banners. Keyboard nav, ARIA labels, semantic headings, visible focus, accessible chart summaries.
+- Verify: typecheck, run migrations, confirm RLS/role gating (student token cannot read admin RPCs), confirm realtime updates, confirm login lockout + generic errors.
 
 ---
 
 ## Technical notes
-
-- Privacy stored on existing `settings` row; no `privacy_settings` table (avoids duplication). `profiles`/`users`/`sessions`/`system_configuration` from the prompt map to `profiles` + `device_sessions` + `application_settings`/`app_versions`.
-- Delete uses soft-delete flag + admin `deleteUser`; all writes RLS-scoped to `auth.uid()`.
-- No new secrets required (service role already present).
+- **No new auth system / no email**: admin = phone-alias auth user + `user_roles.admin`; PIN is the bcrypt auth password.
+- **New dependency**: `recharts` (client-side charts). Everything else reuses existing DS + Supabase.
+- **New tables**: `admin_logs`, `admin_login_attempts`. **New RPCs**: the `admin_*` functions above. **Realtime**: publication additions.
+- **Not building yet** (future modules, per scope): the full Users/Colleges/Reports/Chats/Analytics/Settings/Logs management pages — only their dashboard entry points.
+- I will request the admin phone + PIN right after you approve, before creating the account.
