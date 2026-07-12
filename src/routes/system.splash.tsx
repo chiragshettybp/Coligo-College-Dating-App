@@ -233,7 +233,7 @@ function SplashPage() {
       style={{
         position: "fixed",
         inset: 0,
-        background: "#000",
+        background: "#fff",
         fontFamily: FONT_FAMILY,
         overflow: "hidden",
       }}
