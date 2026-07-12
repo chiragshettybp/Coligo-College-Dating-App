@@ -19,6 +19,7 @@ import { Route as PublicRouteRouteImport } from './routes/_public/route'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as OnboardingIndexRouteImport } from './routes/onboarding/index'
 import { Route as AuthIndexRouteImport } from './routes/auth.index'
+import { Route as AdminIndexRouteImport } from './routes/admin.index'
 import { Route as PublicIndexRouteImport } from './routes/_public/index'
 import { Route as SystemSplashRouteImport } from './routes/system.splash'
 import { Route as SystemMaintenanceRouteImport } from './routes/system.maintenance'
@@ -141,6 +142,11 @@ const AuthIndexRoute = AuthIndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => AuthRoute,
+} as any)
+const AdminIndexRoute = AdminIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => AdminRoute,
 } as any)
 const PublicIndexRoute = PublicIndexRouteImport.update({
   id: '/',
@@ -560,7 +566,7 @@ export interface FileRoutesByFullPath {
   '/onboarding': typeof OnboardingRouteRouteWithChildren
   '/404': typeof R404Route
   '/500': typeof R500Route
-  '/admin': typeof AdminRoute
+  '/admin': typeof AdminRouteWithChildren
   '/auth': typeof AuthRouteWithChildren
   '/ui': typeof UiRoute
   '/chat': typeof AuthenticatedChatRouteWithChildren
@@ -591,6 +597,7 @@ export interface FileRoutesByFullPath {
   '/onboarding/semester': typeof OnboardingSemesterRoute
   '/system/maintenance': typeof SystemMaintenanceRoute
   '/system/splash': typeof SystemSplashRoute
+  '/admin/': typeof AdminIndexRoute
   '/auth/': typeof AuthIndexRoute
   '/onboarding/': typeof OnboardingIndexRoute
   '/chat/$chatId': typeof AuthenticatedChatChatIdRouteWithChildren
@@ -643,7 +650,6 @@ export interface FileRoutesByTo {
   '/': typeof PublicIndexRoute
   '/404': typeof R404Route
   '/500': typeof R500Route
-  '/admin': typeof AdminRoute
   '/ui': typeof UiRoute
   '/about': typeof PublicAboutRoute
   '/community-guidelines': typeof PublicCommunityGuidelinesRoute
@@ -669,6 +675,7 @@ export interface FileRoutesByTo {
   '/onboarding/semester': typeof OnboardingSemesterRoute
   '/system/maintenance': typeof SystemMaintenanceRoute
   '/system/splash': typeof SystemSplashRoute
+  '/admin': typeof AdminIndexRoute
   '/auth': typeof AuthIndexRoute
   '/onboarding': typeof OnboardingIndexRoute
   '/chat/$chatId': typeof AuthenticatedChatChatIdRouteWithChildren
@@ -724,7 +731,7 @@ export interface FileRoutesById {
   '/onboarding': typeof OnboardingRouteRouteWithChildren
   '/404': typeof R404Route
   '/500': typeof R500Route
-  '/admin': typeof AdminRoute
+  '/admin': typeof AdminRouteWithChildren
   '/auth': typeof AuthRouteWithChildren
   '/ui': typeof UiRoute
   '/_authenticated/chat': typeof AuthenticatedChatRouteWithChildren
@@ -756,6 +763,7 @@ export interface FileRoutesById {
   '/system/maintenance': typeof SystemMaintenanceRoute
   '/system/splash': typeof SystemSplashRoute
   '/_public/': typeof PublicIndexRoute
+  '/admin/': typeof AdminIndexRoute
   '/auth/': typeof AuthIndexRoute
   '/onboarding/': typeof OnboardingIndexRoute
   '/_authenticated/chat/$chatId': typeof AuthenticatedChatChatIdRouteWithChildren
@@ -842,6 +850,7 @@ export interface FileRouteTypes {
     | '/onboarding/semester'
     | '/system/maintenance'
     | '/system/splash'
+    | '/admin/'
     | '/auth/'
     | '/onboarding/'
     | '/chat/$chatId'
@@ -894,7 +903,6 @@ export interface FileRouteTypes {
     | '/'
     | '/404'
     | '/500'
-    | '/admin'
     | '/ui'
     | '/about'
     | '/community-guidelines'
@@ -920,6 +928,7 @@ export interface FileRouteTypes {
     | '/onboarding/semester'
     | '/system/maintenance'
     | '/system/splash'
+    | '/admin'
     | '/auth'
     | '/onboarding'
     | '/chat/$chatId'
@@ -1006,6 +1015,7 @@ export interface FileRouteTypes {
     | '/system/maintenance'
     | '/system/splash'
     | '/_public/'
+    | '/admin/'
     | '/auth/'
     | '/onboarding/'
     | '/_authenticated/chat/$chatId'
@@ -1061,7 +1071,7 @@ export interface RootRouteChildren {
   OnboardingRouteRoute: typeof OnboardingRouteRouteWithChildren
   R404Route: typeof R404Route
   R500Route: typeof R500Route
-  AdminRoute: typeof AdminRoute
+  AdminRoute: typeof AdminRouteWithChildren
   AuthRoute: typeof AuthRouteWithChildren
   UiRoute: typeof UiRoute
   SystemMaintenanceRoute: typeof SystemMaintenanceRoute
@@ -1140,6 +1150,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/auth/'
       preLoaderRoute: typeof AuthIndexRouteImport
       parentRoute: typeof AuthRoute
+    }
+    '/admin/': {
+      id: '/admin/'
+      path: '/'
+      fullPath: '/admin/'
+      preLoaderRoute: typeof AdminIndexRouteImport
+      parentRoute: typeof AdminRoute
     }
     '/_public/': {
       id: '/_public/'
@@ -1926,6 +1943,16 @@ const OnboardingRouteRouteWithChildren = OnboardingRouteRoute._addFileChildren(
   OnboardingRouteRouteChildren,
 )
 
+interface AdminRouteChildren {
+  AdminIndexRoute: typeof AdminIndexRoute
+}
+
+const AdminRouteChildren: AdminRouteChildren = {
+  AdminIndexRoute: AdminIndexRoute,
+}
+
+const AdminRouteWithChildren = AdminRoute._addFileChildren(AdminRouteChildren)
+
 interface AuthRouteChildren {
   AuthForgotPasswordRoute: typeof AuthForgotPasswordRoute
   AuthLoginRoute: typeof AuthLoginRoute
@@ -1952,7 +1979,7 @@ const rootRouteChildren: RootRouteChildren = {
   OnboardingRouteRoute: OnboardingRouteRouteWithChildren,
   R404Route: R404Route,
   R500Route: R500Route,
-  AdminRoute: AdminRoute,
+  AdminRoute: AdminRouteWithChildren,
   AuthRoute: AuthRouteWithChildren,
   UiRoute: UiRoute,
   SystemMaintenanceRoute: SystemMaintenanceRoute,
