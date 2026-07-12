@@ -436,7 +436,7 @@ export function EmptyStateFromPreset({
   onSecondary?: () => void;
   card?: boolean;
 }) {
-  const p = emptyStatePresets[preset];
+  const p: EmptyPreset = emptyStatePresets[preset];
   return (
     <EmptyState
       scene={p.scene}
