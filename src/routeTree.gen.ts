@@ -63,6 +63,7 @@ import { Route as AuthenticatedMatchesMatchIdBlockRouteImport } from './routes/_
 import { Route as AuthenticatedHomeCollegeCollegeIdRouteImport } from './routes/_authenticated/home.college.$collegeId'
 import { Route as AuthenticatedDiscoverProfileUserIdRouteImport } from './routes/_authenticated/discover.profile.$userId'
 import { Route as AuthenticatedDiscoverMatchMatchIdRouteImport } from './routes/_authenticated/discover.match.$matchId'
+import { Route as AuthenticatedChatChatIdMediaRouteImport } from './routes/_authenticated/chat.$chatId.media'
 import { Route as AuthenticatedChatChatIdInfoRouteImport } from './routes/_authenticated/chat.$chatId.info'
 
 const UiRoute = UiRouteImport.update({
@@ -348,6 +349,12 @@ const AuthenticatedDiscoverMatchMatchIdRoute =
     path: '/match/$matchId',
     getParentRoute: () => AuthenticatedDiscoverRoute,
   } as any)
+const AuthenticatedChatChatIdMediaRoute =
+  AuthenticatedChatChatIdMediaRouteImport.update({
+    id: '/media',
+    path: '/media',
+    getParentRoute: () => AuthenticatedChatChatIdRoute,
+  } as any)
 const AuthenticatedChatChatIdInfoRoute =
   AuthenticatedChatChatIdInfoRouteImport.update({
     id: '/info',
@@ -401,6 +408,7 @@ export interface FileRoutesByFullPath {
   '/home/': typeof AuthenticatedHomeIndexRoute
   '/matches/': typeof AuthenticatedMatchesIndexRoute
   '/chat/$chatId/info': typeof AuthenticatedChatChatIdInfoRoute
+  '/chat/$chatId/media': typeof AuthenticatedChatChatIdMediaRoute
   '/discover/match/$matchId': typeof AuthenticatedDiscoverMatchMatchIdRoute
   '/discover/profile/$userId': typeof AuthenticatedDiscoverProfileUserIdRoute
   '/home/college/$collegeId': typeof AuthenticatedHomeCollegeCollegeIdRoute
@@ -450,6 +458,7 @@ export interface FileRoutesByTo {
   '/home': typeof AuthenticatedHomeIndexRoute
   '/matches': typeof AuthenticatedMatchesIndexRoute
   '/chat/$chatId/info': typeof AuthenticatedChatChatIdInfoRoute
+  '/chat/$chatId/media': typeof AuthenticatedChatChatIdMediaRoute
   '/discover/match/$matchId': typeof AuthenticatedDiscoverMatchMatchIdRoute
   '/discover/profile/$userId': typeof AuthenticatedDiscoverProfileUserIdRoute
   '/home/college/$collegeId': typeof AuthenticatedHomeCollegeCollegeIdRoute
@@ -508,6 +517,7 @@ export interface FileRoutesById {
   '/_authenticated/home/': typeof AuthenticatedHomeIndexRoute
   '/_authenticated/matches/': typeof AuthenticatedMatchesIndexRoute
   '/_authenticated/chat/$chatId/info': typeof AuthenticatedChatChatIdInfoRoute
+  '/_authenticated/chat/$chatId/media': typeof AuthenticatedChatChatIdMediaRoute
   '/_authenticated/discover/match/$matchId': typeof AuthenticatedDiscoverMatchMatchIdRoute
   '/_authenticated/discover/profile/$userId': typeof AuthenticatedDiscoverProfileUserIdRoute
   '/_authenticated/home/college/$collegeId': typeof AuthenticatedHomeCollegeCollegeIdRoute
@@ -565,6 +575,7 @@ export interface FileRouteTypes {
     | '/home/'
     | '/matches/'
     | '/chat/$chatId/info'
+    | '/chat/$chatId/media'
     | '/discover/match/$matchId'
     | '/discover/profile/$userId'
     | '/home/college/$collegeId'
@@ -614,6 +625,7 @@ export interface FileRouteTypes {
     | '/home'
     | '/matches'
     | '/chat/$chatId/info'
+    | '/chat/$chatId/media'
     | '/discover/match/$matchId'
     | '/discover/profile/$userId'
     | '/home/college/$collegeId'
@@ -671,6 +683,7 @@ export interface FileRouteTypes {
     | '/_authenticated/home/'
     | '/_authenticated/matches/'
     | '/_authenticated/chat/$chatId/info'
+    | '/_authenticated/chat/$chatId/media'
     | '/_authenticated/discover/match/$matchId'
     | '/_authenticated/discover/profile/$userId'
     | '/_authenticated/home/college/$collegeId'
@@ -1073,6 +1086,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedDiscoverMatchMatchIdRouteImport
       parentRoute: typeof AuthenticatedDiscoverRoute
     }
+    '/_authenticated/chat/$chatId/media': {
+      id: '/_authenticated/chat/$chatId/media'
+      path: '/media'
+      fullPath: '/chat/$chatId/media'
+      preLoaderRoute: typeof AuthenticatedChatChatIdMediaRouteImport
+      parentRoute: typeof AuthenticatedChatChatIdRoute
+    }
     '/_authenticated/chat/$chatId/info': {
       id: '/_authenticated/chat/$chatId/info'
       path: '/info'
@@ -1085,11 +1105,13 @@ declare module '@tanstack/react-router' {
 
 interface AuthenticatedChatChatIdRouteChildren {
   AuthenticatedChatChatIdInfoRoute: typeof AuthenticatedChatChatIdInfoRoute
+  AuthenticatedChatChatIdMediaRoute: typeof AuthenticatedChatChatIdMediaRoute
 }
 
 const AuthenticatedChatChatIdRouteChildren: AuthenticatedChatChatIdRouteChildren =
   {
     AuthenticatedChatChatIdInfoRoute: AuthenticatedChatChatIdInfoRoute,
+    AuthenticatedChatChatIdMediaRoute: AuthenticatedChatChatIdMediaRoute,
   }
 
 const AuthenticatedChatChatIdRouteWithChildren =
