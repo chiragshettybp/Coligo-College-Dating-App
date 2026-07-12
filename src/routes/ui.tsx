@@ -31,6 +31,9 @@ import {
   Camera,
   Smile,
   ArrowUp,
+  WifiOff,
+  Download,
+  BellRing,
 } from "lucide-react";
 
 import {
