@@ -160,7 +160,7 @@ function AdminUsers() {
   useEffect(() => {
     // Push the debounced term into the URL (resets to page 1).
     if ((search.q ?? "") !== debounced) {
-      navigate({ to: "/admin/users", search: (p) => ({ ...p, q: debounced || undefined, page: 1 }), replace: true });
+      navigate({ to: "/admin/users", search: (p: Search) => ({ ...p, q: debounced || undefined, page: 1 }), replace: true });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [debounced]);
@@ -192,7 +192,7 @@ function AdminUsers() {
   const totalPages = Math.max(1, Math.ceil(total / PAGE_SIZE));
 
   const setFilter = (patch: Partial<Search>) =>
-    navigate({ to: "/admin/users", search: (p) => ({ ...p, ...patch, page: 1 }), replace: true });
+    navigate({ to: "/admin/users", search: (p: Search) => ({ ...p, ...patch, page: 1 }), replace: true });
 
   const toggleSelect = (id: string) =>
     setSelected((prev) => {
@@ -353,11 +353,11 @@ function AdminUsers() {
       {/* Pagination */}
       {rows.length > 0 && (
         <div className="flex items-center justify-center" style={{ gap: spacing[3], marginTop: spacing[4] }}>
-          <button disabled={page <= 1} onClick={() => navigate({ to: "/admin/users", search: (p) => ({ ...p, page: page - 1 }) })} style={pagerStyle(page <= 1)}>
+          <button disabled={page <= 1} onClick={() => navigate({ to: "/admin/users", search: (p: Search) => ({ ...p, page: page - 1 }) })} style={pagerStyle(page <= 1)}>
             <ChevronLeft style={{ width: 16, height: 16 }} /> Prev
           </button>
           <Text variant="caption" tone="muted">Page {page} of {totalPages}</Text>
-          <button disabled={page >= totalPages} onClick={() => navigate({ to: "/admin/users", search: (p) => ({ ...p, page: page + 1 }) })} style={pagerStyle(page >= totalPages)}>
+          <button disabled={page >= totalPages} onClick={() => navigate({ to: "/admin/users", search: (p: Search) => ({ ...p, page: page + 1 }) })} style={pagerStyle(page >= totalPages)}>
             Next <ChevronRight style={{ width: 16, height: 16 }} />
           </button>
         </div>
