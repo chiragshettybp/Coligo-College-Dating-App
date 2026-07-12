@@ -149,6 +149,13 @@ export function Button({
   rightIcon?: React.ReactNode;
 }) {
   const isDisabled = disabled || loading;
+  // Semantic haptic per intent — never a generic "button was pressed" buzz.
+  const variantHaptic: HapticToken =
+    variant === "success"
+      ? "softSuccess"
+      : variant === "danger"
+        ? "medium"
+        : "selection";
   return (
     <button
       disabled={isDisabled}
@@ -166,8 +173,12 @@ export function Button({
         ...variantStyle(variant),
         ...style,
       }}
+      onPointerDown={() => {
+        if (!isDisabled) haptic(variantHaptic);
+      }}
       {...rest}
     >
+
       {loading ? (
         <Loader2 className="animate-spin" style={{ width: 18, height: 18 }} />
       ) : (
