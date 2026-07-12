@@ -872,6 +872,139 @@ function GlassPill({ children }: { children: React.ReactNode }) {
   );
 }
 
+// ---------------------------------------------------------------------------
+// Shared-element transition system (FLIP)
+// ---------------------------------------------------------------------------
+// The core of a continuity system: an element physically transforms from its
+// origin rect into its destination rect instead of one screen fading out and
+// another fading in. Same image, same identity — it just moves. Spring on the
+// way in, ease-out on the way back, radius + shadow morph preserved throughout.
+const SPRING = "cubic-bezier(0.34, 1.56, 0.64, 1)";
+const EASE = "cubic-bezier(0.22, 1, 0.36, 1)";
+
+function SharedGallery({ images }: { images: string[] }) {
+  const [active, setActive] = useState<number | null>(null);
+  const originRef = useRef<DOMRect | null>(null);
+  const thumbRefs = useRef<(HTMLButtonElement | null)[]>([]);
+  const imgRef = useRef<HTMLImageElement | null>(null);
+  const backdropRef = useRef<HTMLDivElement | null>(null);
+
+  const open = (i: number) => {
+    const el = thumbRefs.current[i];
+    if (el) originRef.current = el.getBoundingClientRect();
+    setActive(i);
+  };
+
+  // FLIP: measure the destination, invert to the origin rect, then play forward.
+  useLayoutEffect(() => {
+    if (active === null) return;
+    const img = imgRef.current;
+    const rect = originRef.current;
+    if (!img || !rect) return;
+    const dest = img.getBoundingClientRect();
+    const dx = rect.left - dest.left;
+    const dy = rect.top - dest.top;
+    const sx = rect.width / dest.width;
+    const sy = rect.height / dest.height;
+    img.animate(
+      [
+        { transform: `translate(${dx}px, ${dy}px) scale(${sx}, ${sy})`, borderRadius: "20px" },
+        { transform: "translate(0,0) scale(1,1)", borderRadius: `${radii.lg}px` },
+      ],
+      { duration: 440, easing: SPRING, fill: "both" },
+    );
+    backdropRef.current?.animate([{ opacity: 0 }, { opacity: 1 }], {
+      duration: 320,
+      easing: EASE,
+      fill: "both",
+    });
+  }, [active]);
+
+  const close = useCallback(() => {
+    const img = imgRef.current;
+    const rect = originRef.current;
+    if (!img || !rect) return setActive(null);
+    const dest = img.getBoundingClientRect();
+    const dx = rect.left - dest.left;
+    const dy = rect.top - dest.top;
+    const sx = rect.width / dest.width;
+    const sy = rect.height / dest.height;
+    const anim = img.animate(
+      [
+        { transform: "translate(0,0) scale(1,1)", borderRadius: `${radii.lg}px` },
+        { transform: `translate(${dx}px, ${dy}px) scale(${sx}, ${sy})`, borderRadius: "20px" },
+      ],
+      { duration: 340, easing: EASE, fill: "both" },
+    );
+    backdropRef.current?.animate([{ opacity: 1 }, { opacity: 0 }], {
+      duration: 300,
+      easing: EASE,
+      fill: "both",
+    });
+    anim.onfinish = () => setActive(null);
+  }, []);
+
+  return (
+    <>
+      <div className="flex gap-3">
+        {images.map((src, i) => (
+          <button
+            key={i}
+            ref={(el) => (thumbRefs.current[i] = el)}
+            onClick={() => open(i)}
+            className="ds-press overflow-hidden"
+            aria-label={`Open photo ${i + 1}`}
+            style={{
+              width: 84,
+              height: 84,
+              borderRadius: 20,
+              border: `1px solid ${surfaces.border}`,
+              boxShadow: shadows.soft,
+              opacity: active === i ? 0 : 1,
+              transition: "opacity 0.2s ease",
+            }}
+          >
+            <img src={src} alt="" className="h-full w-full object-cover" />
+          </button>
+        ))}
+      </div>
+
+      {active !== null && (
+        <div
+          className="fixed inset-0 flex items-center justify-center"
+          style={{ zIndex: 60, padding: spacing[5] }}
+          role="dialog"
+          aria-modal="true"
+        >
+          <div
+            ref={backdropRef}
+            onClick={close}
+            className="absolute inset-0 backdrop-blur-xl"
+            style={{ background: "rgba(4,8,20,0.82)" }}
+          />
+          <img
+            ref={imgRef}
+            src={images[active]}
+            alt="Expanded photo"
+            onClick={close}
+            className="relative object-cover"
+            style={{
+              width: "min(88vw, 420px)",
+              height: "min(70vh, 520px)",
+              borderRadius: radii.lg,
+              transformOrigin: "top left",
+              boxShadow: shadows.large,
+              border: `1px solid ${surfaces.border}`,
+            }}
+          />
+        </div>
+      )}
+    </>
+  );
+}
+
+
+
 function SwipeCard({ overlay }: { overlay?: "LIKE" | "NOPE" | "SUPER" | "BOOST" }) {
   const overlayColor =
     overlay === "NOPE"
