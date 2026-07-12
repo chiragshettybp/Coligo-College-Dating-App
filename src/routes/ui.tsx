@@ -2273,6 +2273,115 @@ function Banner({
   );
 }
 
+/** Confirmation dialog — centered, scrim-dimmed, spring-expands in. One clear
+ *  primary action; destructive intent uses the danger button. */
+function ConfirmDialog({
+  open,
+  tone = "default",
+  icon,
+  title,
+  body,
+  confirmLabel = "Confirm",
+  cancelLabel = "Cancel",
+  onConfirm,
+  onCancel,
+}: {
+  open: boolean;
+  tone?: "default" | "danger";
+  icon?: React.ReactNode;
+  title: string;
+  body?: string;
+  confirmLabel?: string;
+  cancelLabel?: string;
+  onConfirm?: () => void;
+  onCancel?: () => void;
+}) {
+  if (!open) return null;
+  const accent = tone === "danger" ? colors.danger : colors.primary;
+  return (
+    <div
+      className="ds-scrim-in fixed inset-0 flex items-center justify-center"
+      style={{ zIndex: 90, padding: 24, background: "rgba(20,20,25,0.28)", backdropFilter: "blur(3px)" }}
+      onClick={onCancel}
+      role="dialog"
+      aria-modal="true"
+    >
+      <div
+        className="ds-dialog-in w-full"
+        onClick={(e) => e.stopPropagation()}
+        style={{
+          maxWidth: 320,
+          borderRadius: radii.xl,
+          padding: `${spacing[6]}px ${spacing[5]}px ${spacing[4]}px`,
+          background: surfaces.glassSoft,
+          border: `1px solid ${surfaces.borderSoft}`,
+          boxShadow: shadows.large,
+          textAlign: "center",
+        }}
+      >
+        {icon != null && (
+          <div
+            className="mx-auto flex items-center justify-center"
+            style={{
+              width: 52,
+              height: 52,
+              borderRadius: radii.lg,
+              background: `${accent}14`,
+              color: accent,
+              marginBottom: spacing[3],
+            }}
+          >
+            {icon}
+          </div>
+        )}
+        <Text variant="headingSm" align="center">{title}</Text>
+        {body != null && (
+          <Text variant="body" tone="secondary" align="center" style={{ marginTop: spacing[1] }}>
+            {body}
+          </Text>
+        )}
+        <div className="flex flex-col" style={{ gap: spacing[2], marginTop: spacing[5] }}>
+          <Button fullWidth variant={tone === "danger" ? "danger" : "primary"} onClick={onConfirm}>
+            {confirmLabel}
+          </Button>
+          <Button fullWidth variant="ghost" onClick={onCancel}>
+            {cancelLabel}
+          </Button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/** Bottom action bar — sticky, thumb-reachable primary action(s) with a
+ *  hairline top edge and safe-area padding. Slides up from the bottom. */
+function BottomActionBar({
+  children,
+  className,
+  style,
+}: {
+  children: React.ReactNode;
+  className?: string;
+  style?: React.CSSProperties;
+}) {
+  return (
+    <div
+      className={cn("ds-actionbar-in flex items-center", className)}
+      style={{
+        gap: spacing[2],
+        padding: `${spacing[3]}px ${spacing[4]}px calc(${spacing[3]}px + env(safe-area-inset-bottom))`,
+        background: "rgba(255,255,255,0.86)",
+        backdropFilter: "blur(20px)",
+        borderTop: `1px solid ${surfaces.borderSoft}`,
+        ...style,
+      }}
+    >
+      {children}
+    </div>
+  );
+}
+
+
 
 // ---------------------------------------------------------------------------
 // Chat design system
