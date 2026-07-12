@@ -591,9 +591,10 @@ export function MatchCelebration({
           right: spacing[4],
           width: 40,
           height: 40,
-          background: "rgba(6,10,24,0.5)",
+          background: "rgba(255,255,255,0.72)",
           border: `1px solid ${surfaces.border}`,
-          color: "#fff",
+          boxShadow: "0 1px 2px rgba(0,0,0,0.05)",
+          color: colors.textPrimary,
         }}
       >
         <X style={{ width: 20, height: 20 }} />
