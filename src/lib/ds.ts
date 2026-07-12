@@ -13,7 +13,35 @@ export const APP_BACKGROUND =
   "linear-gradient(180deg, #05070f 0%, #070b1a 48%, #05070f 100%)";
 
 export const FONT_FAMILY =
-  "Nunito, ui-sans-serif, system-ui, sans-serif";
+  '-apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "Inter", ui-sans-serif, system-ui, sans-serif';
+
+/** Font weights — used intentionally, no excessive bold. */
+export const weights = {
+  regular: 400,
+  medium: 500,
+  semibold: 600,
+  bold: 700,
+  heavy: 800,
+} as const;
+
+/** Mobile-first type scale. size / lineHeight / weight / letterSpacing. */
+export const type = {
+  displayLg: { fontSize: 40, lineHeight: 1.05, fontWeight: weights.heavy, letterSpacing: "-0.03em" },
+  displayMd: { fontSize: 34, lineHeight: 1.08, fontWeight: weights.heavy, letterSpacing: "-0.03em" },
+  displaySm: { fontSize: 28, lineHeight: 1.1, fontWeight: weights.bold, letterSpacing: "-0.02em" },
+  headingLg: { fontSize: 24, lineHeight: 1.15, fontWeight: weights.bold, letterSpacing: "-0.02em" },
+  headingMd: { fontSize: 20, lineHeight: 1.2, fontWeight: weights.bold, letterSpacing: "-0.015em" },
+  headingSm: { fontSize: 18, lineHeight: 1.25, fontWeight: weights.semibold, letterSpacing: "-0.01em" },
+  titleMd: { fontSize: 16, lineHeight: 1.3, fontWeight: weights.semibold, letterSpacing: "-0.005em" },
+  bodyLg: { fontSize: 16, lineHeight: 1.5, fontWeight: weights.regular, letterSpacing: "0" },
+  bodyMd: { fontSize: 14, lineHeight: 1.5, fontWeight: weights.regular, letterSpacing: "0" },
+  bodySm: { fontSize: 13, lineHeight: 1.45, fontWeight: weights.regular, letterSpacing: "0" },
+  caption: { fontSize: 12, lineHeight: 1.4, fontWeight: weights.medium, letterSpacing: "0.01em" },
+  overline: { fontSize: 11, lineHeight: 1.3, fontWeight: weights.bold, letterSpacing: "0.08em", textTransform: "uppercase" as const },
+  label: { fontSize: 14, lineHeight: 1.2, fontWeight: weights.semibold, letterSpacing: "0" },
+  button: { fontSize: 15, lineHeight: 1, fontWeight: weights.semibold, letterSpacing: "-0.01em" },
+  number: { fontSize: 34, lineHeight: 1, fontWeight: weights.heavy, letterSpacing: "-0.02em", fontVariantNumeric: "tabular-nums" as const },
+} as const;
 
 /** Semantic colors. */
 export const colors = {
