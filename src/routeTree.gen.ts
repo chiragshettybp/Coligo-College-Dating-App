@@ -15,8 +15,10 @@ import { Route as PublicRouteRouteImport } from './routes/_public/route'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as AuthIndexRouteImport } from './routes/auth.index'
 import { Route as PublicIndexRouteImport } from './routes/_public/index'
+import { Route as AuthVerifyOtpRouteImport } from './routes/auth.verify-otp'
 import { Route as AuthSignupRouteImport } from './routes/auth.signup'
 import { Route as AuthLoginRouteImport } from './routes/auth.login'
+import { Route as AuthForgotPasswordRouteImport } from './routes/auth.forgot-password'
 import { Route as PublicTermsRouteImport } from './routes/_public/terms'
 import { Route as PublicPrivacyRouteImport } from './routes/_public/privacy'
 import { Route as PublicContactRouteImport } from './routes/_public/contact'
@@ -52,6 +54,11 @@ const PublicIndexRoute = PublicIndexRouteImport.update({
   path: '/',
   getParentRoute: () => PublicRouteRoute,
 } as any)
+const AuthVerifyOtpRoute = AuthVerifyOtpRouteImport.update({
+  id: '/verify-otp',
+  path: '/verify-otp',
+  getParentRoute: () => AuthRoute,
+} as any)
 const AuthSignupRoute = AuthSignupRouteImport.update({
   id: '/signup',
   path: '/signup',
@@ -60,6 +67,11 @@ const AuthSignupRoute = AuthSignupRouteImport.update({
 const AuthLoginRoute = AuthLoginRouteImport.update({
   id: '/login',
   path: '/login',
+  getParentRoute: () => AuthRoute,
+} as any)
+const AuthForgotPasswordRoute = AuthForgotPasswordRouteImport.update({
+  id: '/forgot-password',
+  path: '/forgot-password',
   getParentRoute: () => AuthRoute,
 } as any)
 const PublicTermsRoute = PublicTermsRouteImport.update({
@@ -104,8 +116,10 @@ export interface FileRoutesByFullPath {
   '/contact': typeof PublicContactRoute
   '/privacy': typeof PublicPrivacyRoute
   '/terms': typeof PublicTermsRoute
+  '/auth/forgot-password': typeof AuthForgotPasswordRoute
   '/auth/login': typeof AuthLoginRoute
   '/auth/signup': typeof AuthSignupRoute
+  '/auth/verify-otp': typeof AuthVerifyOtpRoute
   '/auth/': typeof AuthIndexRoute
 }
 export interface FileRoutesByTo {
@@ -117,8 +131,10 @@ export interface FileRoutesByTo {
   '/contact': typeof PublicContactRoute
   '/privacy': typeof PublicPrivacyRoute
   '/terms': typeof PublicTermsRoute
+  '/auth/forgot-password': typeof AuthForgotPasswordRoute
   '/auth/login': typeof AuthLoginRoute
   '/auth/signup': typeof AuthSignupRoute
+  '/auth/verify-otp': typeof AuthVerifyOtpRoute
   '/auth': typeof AuthIndexRoute
 }
 export interface FileRoutesById {
@@ -133,8 +149,10 @@ export interface FileRoutesById {
   '/_public/contact': typeof PublicContactRoute
   '/_public/privacy': typeof PublicPrivacyRoute
   '/_public/terms': typeof PublicTermsRoute
+  '/auth/forgot-password': typeof AuthForgotPasswordRoute
   '/auth/login': typeof AuthLoginRoute
   '/auth/signup': typeof AuthSignupRoute
+  '/auth/verify-otp': typeof AuthVerifyOtpRoute
   '/_public/': typeof PublicIndexRoute
   '/auth/': typeof AuthIndexRoute
 }
@@ -150,8 +168,10 @@ export interface FileRouteTypes {
     | '/contact'
     | '/privacy'
     | '/terms'
+    | '/auth/forgot-password'
     | '/auth/login'
     | '/auth/signup'
+    | '/auth/verify-otp'
     | '/auth/'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -163,8 +183,10 @@ export interface FileRouteTypes {
     | '/contact'
     | '/privacy'
     | '/terms'
+    | '/auth/forgot-password'
     | '/auth/login'
     | '/auth/signup'
+    | '/auth/verify-otp'
     | '/auth'
   id:
     | '__root__'
@@ -178,8 +200,10 @@ export interface FileRouteTypes {
     | '/_public/contact'
     | '/_public/privacy'
     | '/_public/terms'
+    | '/auth/forgot-password'
     | '/auth/login'
     | '/auth/signup'
+    | '/auth/verify-otp'
     | '/_public/'
     | '/auth/'
   fileRoutesById: FileRoutesById
@@ -235,6 +259,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PublicIndexRouteImport
       parentRoute: typeof PublicRouteRoute
     }
+    '/auth/verify-otp': {
+      id: '/auth/verify-otp'
+      path: '/verify-otp'
+      fullPath: '/auth/verify-otp'
+      preLoaderRoute: typeof AuthVerifyOtpRouteImport
+      parentRoute: typeof AuthRoute
+    }
     '/auth/signup': {
       id: '/auth/signup'
       path: '/signup'
@@ -247,6 +278,13 @@ declare module '@tanstack/react-router' {
       path: '/login'
       fullPath: '/auth/login'
       preLoaderRoute: typeof AuthLoginRouteImport
+      parentRoute: typeof AuthRoute
+    }
+    '/auth/forgot-password': {
+      id: '/auth/forgot-password'
+      path: '/forgot-password'
+      fullPath: '/auth/forgot-password'
+      preLoaderRoute: typeof AuthForgotPasswordRouteImport
       parentRoute: typeof AuthRoute
     }
     '/_public/terms': {
@@ -328,14 +366,18 @@ const PublicRouteRouteWithChildren = PublicRouteRoute._addFileChildren(
 )
 
 interface AuthRouteChildren {
+  AuthForgotPasswordRoute: typeof AuthForgotPasswordRoute
   AuthLoginRoute: typeof AuthLoginRoute
   AuthSignupRoute: typeof AuthSignupRoute
+  AuthVerifyOtpRoute: typeof AuthVerifyOtpRoute
   AuthIndexRoute: typeof AuthIndexRoute
 }
 
 const AuthRouteChildren: AuthRouteChildren = {
+  AuthForgotPasswordRoute: AuthForgotPasswordRoute,
   AuthLoginRoute: AuthLoginRoute,
   AuthSignupRoute: AuthSignupRoute,
+  AuthVerifyOtpRoute: AuthVerifyOtpRoute,
   AuthIndexRoute: AuthIndexRoute,
 }
 
