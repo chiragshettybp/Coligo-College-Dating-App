@@ -14,7 +14,7 @@ import { Trash2 } from "lucide-react";
 import { deleteMyAccount } from "@/lib/settings-account.functions";
 import { supabase } from "@/integrations/supabase/client";
 import { colors, spacing, surfaces, radii } from "@/lib/ds";
-import { Text, Button, TextField } from "@/components/ds/glass";
+import { Text, Button } from "@/components/ds/glass";
 import { Card, CardBody } from "@/components/ds/card";
 import { TopBar } from "@/components/ds/navigation";
 import { DiscoverShell } from "@/components/discover/shell";

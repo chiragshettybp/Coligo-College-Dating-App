@@ -58,9 +58,12 @@ import { Route as ApiPublicPushRouteImport } from './routes/api/public/push'
 import { Route as AuthenticatedSettingsSecurityRouteImport } from './routes/_authenticated/settings.security'
 import { Route as AuthenticatedSettingsPrivacyRouteImport } from './routes/_authenticated/settings.privacy'
 import { Route as AuthenticatedSettingsNotificationsRouteImport } from './routes/_authenticated/settings.notifications'
+import { Route as AuthenticatedSettingsLogoutRouteImport } from './routes/_authenticated/settings.logout'
 import { Route as AuthenticatedSettingsHelpRouteImport } from './routes/_authenticated/settings.help'
+import { Route as AuthenticatedSettingsDeleteAccountRouteImport } from './routes/_authenticated/settings.delete-account'
 import { Route as AuthenticatedSettingsBlockedUsersRouteImport } from './routes/_authenticated/settings.blocked-users'
 import { Route as AuthenticatedSettingsAccountRouteImport } from './routes/_authenticated/settings.account'
+import { Route as AuthenticatedSettingsAboutRouteImport } from './routes/_authenticated/settings.about'
 import { Route as AuthenticatedProfilePreviewRouteImport } from './routes/_authenticated/profile.preview'
 import { Route as AuthenticatedProfilePreferencesRouteImport } from './routes/_authenticated/profile.preferences'
 import { Route as AuthenticatedProfilePhotosRouteImport } from './routes/_authenticated/profile.photos'
@@ -339,10 +342,22 @@ const AuthenticatedSettingsNotificationsRoute =
     path: '/settings/notifications',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
+const AuthenticatedSettingsLogoutRoute =
+  AuthenticatedSettingsLogoutRouteImport.update({
+    id: '/settings/logout',
+    path: '/settings/logout',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const AuthenticatedSettingsHelpRoute =
   AuthenticatedSettingsHelpRouteImport.update({
     id: '/settings/help',
     path: '/settings/help',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedSettingsDeleteAccountRoute =
+  AuthenticatedSettingsDeleteAccountRouteImport.update({
+    id: '/settings/delete-account',
+    path: '/settings/delete-account',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
 const AuthenticatedSettingsBlockedUsersRoute =
@@ -355,6 +370,12 @@ const AuthenticatedSettingsAccountRoute =
   AuthenticatedSettingsAccountRouteImport.update({
     id: '/settings/account',
     path: '/settings/account',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedSettingsAboutRoute =
+  AuthenticatedSettingsAboutRouteImport.update({
+    id: '/settings/about',
+    path: '/settings/about',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
 const AuthenticatedProfilePreviewRoute =
@@ -548,9 +569,12 @@ export interface FileRoutesByFullPath {
   '/profile/photos': typeof AuthenticatedProfilePhotosRoute
   '/profile/preferences': typeof AuthenticatedProfilePreferencesRoute
   '/profile/preview': typeof AuthenticatedProfilePreviewRoute
+  '/settings/about': typeof AuthenticatedSettingsAboutRoute
   '/settings/account': typeof AuthenticatedSettingsAccountRoute
   '/settings/blocked-users': typeof AuthenticatedSettingsBlockedUsersRouteWithChildren
+  '/settings/delete-account': typeof AuthenticatedSettingsDeleteAccountRoute
   '/settings/help': typeof AuthenticatedSettingsHelpRoute
+  '/settings/logout': typeof AuthenticatedSettingsLogoutRoute
   '/settings/notifications': typeof AuthenticatedSettingsNotificationsRoute
   '/settings/privacy': typeof AuthenticatedSettingsPrivacyRoute
   '/settings/security': typeof AuthenticatedSettingsSecurityRoute
@@ -618,9 +642,12 @@ export interface FileRoutesByTo {
   '/profile/photos': typeof AuthenticatedProfilePhotosRoute
   '/profile/preferences': typeof AuthenticatedProfilePreferencesRoute
   '/profile/preview': typeof AuthenticatedProfilePreviewRoute
+  '/settings/about': typeof AuthenticatedSettingsAboutRoute
   '/settings/account': typeof AuthenticatedSettingsAccountRoute
   '/settings/blocked-users': typeof AuthenticatedSettingsBlockedUsersRouteWithChildren
+  '/settings/delete-account': typeof AuthenticatedSettingsDeleteAccountRoute
   '/settings/help': typeof AuthenticatedSettingsHelpRoute
+  '/settings/logout': typeof AuthenticatedSettingsLogoutRoute
   '/settings/notifications': typeof AuthenticatedSettingsNotificationsRoute
   '/settings/privacy': typeof AuthenticatedSettingsPrivacyRoute
   '/settings/security': typeof AuthenticatedSettingsSecurityRoute
@@ -697,9 +724,12 @@ export interface FileRoutesById {
   '/_authenticated/profile/photos': typeof AuthenticatedProfilePhotosRoute
   '/_authenticated/profile/preferences': typeof AuthenticatedProfilePreferencesRoute
   '/_authenticated/profile/preview': typeof AuthenticatedProfilePreviewRoute
+  '/_authenticated/settings/about': typeof AuthenticatedSettingsAboutRoute
   '/_authenticated/settings/account': typeof AuthenticatedSettingsAccountRoute
   '/_authenticated/settings/blocked-users': typeof AuthenticatedSettingsBlockedUsersRouteWithChildren
+  '/_authenticated/settings/delete-account': typeof AuthenticatedSettingsDeleteAccountRoute
   '/_authenticated/settings/help': typeof AuthenticatedSettingsHelpRoute
+  '/_authenticated/settings/logout': typeof AuthenticatedSettingsLogoutRoute
   '/_authenticated/settings/notifications': typeof AuthenticatedSettingsNotificationsRoute
   '/_authenticated/settings/privacy': typeof AuthenticatedSettingsPrivacyRoute
   '/_authenticated/settings/security': typeof AuthenticatedSettingsSecurityRoute
@@ -775,9 +805,12 @@ export interface FileRouteTypes {
     | '/profile/photos'
     | '/profile/preferences'
     | '/profile/preview'
+    | '/settings/about'
     | '/settings/account'
     | '/settings/blocked-users'
+    | '/settings/delete-account'
     | '/settings/help'
+    | '/settings/logout'
     | '/settings/notifications'
     | '/settings/privacy'
     | '/settings/security'
@@ -845,9 +878,12 @@ export interface FileRouteTypes {
     | '/profile/photos'
     | '/profile/preferences'
     | '/profile/preview'
+    | '/settings/about'
     | '/settings/account'
     | '/settings/blocked-users'
+    | '/settings/delete-account'
     | '/settings/help'
+    | '/settings/logout'
     | '/settings/notifications'
     | '/settings/privacy'
     | '/settings/security'
@@ -923,9 +959,12 @@ export interface FileRouteTypes {
     | '/_authenticated/profile/photos'
     | '/_authenticated/profile/preferences'
     | '/_authenticated/profile/preview'
+    | '/_authenticated/settings/about'
     | '/_authenticated/settings/account'
     | '/_authenticated/settings/blocked-users'
+    | '/_authenticated/settings/delete-account'
     | '/_authenticated/settings/help'
+    | '/_authenticated/settings/logout'
     | '/_authenticated/settings/notifications'
     | '/_authenticated/settings/privacy'
     | '/_authenticated/settings/security'
@@ -1310,11 +1349,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedSettingsNotificationsRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/settings/logout': {
+      id: '/_authenticated/settings/logout'
+      path: '/settings/logout'
+      fullPath: '/settings/logout'
+      preLoaderRoute: typeof AuthenticatedSettingsLogoutRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/settings/help': {
       id: '/_authenticated/settings/help'
       path: '/settings/help'
       fullPath: '/settings/help'
       preLoaderRoute: typeof AuthenticatedSettingsHelpRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/settings/delete-account': {
+      id: '/_authenticated/settings/delete-account'
+      path: '/settings/delete-account'
+      fullPath: '/settings/delete-account'
+      preLoaderRoute: typeof AuthenticatedSettingsDeleteAccountRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/settings/blocked-users': {
@@ -1329,6 +1382,13 @@ declare module '@tanstack/react-router' {
       path: '/settings/account'
       fullPath: '/settings/account'
       preLoaderRoute: typeof AuthenticatedSettingsAccountRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/settings/about': {
+      id: '/_authenticated/settings/about'
+      path: '/settings/about'
+      fullPath: '/settings/about'
+      preLoaderRoute: typeof AuthenticatedSettingsAboutRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/profile/preview': {
@@ -1652,9 +1712,12 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedProfilePhotosRoute: typeof AuthenticatedProfilePhotosRoute
   AuthenticatedProfilePreferencesRoute: typeof AuthenticatedProfilePreferencesRoute
   AuthenticatedProfilePreviewRoute: typeof AuthenticatedProfilePreviewRoute
+  AuthenticatedSettingsAboutRoute: typeof AuthenticatedSettingsAboutRoute
   AuthenticatedSettingsAccountRoute: typeof AuthenticatedSettingsAccountRoute
   AuthenticatedSettingsBlockedUsersRoute: typeof AuthenticatedSettingsBlockedUsersRouteWithChildren
+  AuthenticatedSettingsDeleteAccountRoute: typeof AuthenticatedSettingsDeleteAccountRoute
   AuthenticatedSettingsHelpRoute: typeof AuthenticatedSettingsHelpRoute
+  AuthenticatedSettingsLogoutRoute: typeof AuthenticatedSettingsLogoutRoute
   AuthenticatedSettingsNotificationsRoute: typeof AuthenticatedSettingsNotificationsRoute
   AuthenticatedSettingsPrivacyRoute: typeof AuthenticatedSettingsPrivacyRoute
   AuthenticatedSettingsSecurityRoute: typeof AuthenticatedSettingsSecurityRoute
@@ -1676,10 +1739,14 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedProfilePhotosRoute: AuthenticatedProfilePhotosRoute,
   AuthenticatedProfilePreferencesRoute: AuthenticatedProfilePreferencesRoute,
   AuthenticatedProfilePreviewRoute: AuthenticatedProfilePreviewRoute,
+  AuthenticatedSettingsAboutRoute: AuthenticatedSettingsAboutRoute,
   AuthenticatedSettingsAccountRoute: AuthenticatedSettingsAccountRoute,
   AuthenticatedSettingsBlockedUsersRoute:
     AuthenticatedSettingsBlockedUsersRouteWithChildren,
+  AuthenticatedSettingsDeleteAccountRoute:
+    AuthenticatedSettingsDeleteAccountRoute,
   AuthenticatedSettingsHelpRoute: AuthenticatedSettingsHelpRoute,
+  AuthenticatedSettingsLogoutRoute: AuthenticatedSettingsLogoutRoute,
   AuthenticatedSettingsNotificationsRoute:
     AuthenticatedSettingsNotificationsRoute,
   AuthenticatedSettingsPrivacyRoute: AuthenticatedSettingsPrivacyRoute,
