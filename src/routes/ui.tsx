@@ -175,6 +175,7 @@ function UIShowcase() {
   const [scrollTab, setScrollTab] = useState("For You");
   const [toasts, setToasts] = useState<ToastItem[]>([]);
   const [matchOpen, setMatchOpen] = useState(false);
+  const [confirmOpen, setConfirmOpen] = useState(false);
 
   const toggleInterest = (i: string) =>
     setInterests((s) => (s.includes(i) ? s.filter((x) => x !== i) : [...s, i]));
