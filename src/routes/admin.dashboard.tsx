@@ -53,6 +53,8 @@ import { AreaTrend, BarSeries, Donut } from "@/components/admin/charts";
 import { colors, radii, spacing, surfaces } from "@/lib/ds";
 import { haptic } from "@/lib/haptics";
 
+const I = { width: 16, height: 16 } as const;
+
 export const Route = createFileRoute("/admin/dashboard")({
   head: () => ({
     meta: [
