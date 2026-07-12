@@ -228,21 +228,15 @@ export const getConversation = createServerFn({ method: "GET" })
       }
     }
 
-    const signed = await signPaths(supabase, CHAT_BUCKET, windowRows.map((r) => r.image_path));
+    const signed = await signPaths(supabase, CHAT_BUCKET, [
+      ...windowRows.map((r) => r.image_path),
+      ...windowRows.map((r) => r.audio_path),
+    ]);
 
     const messages: ChatMessage[] = windowRows
       .slice()
       .reverse()
-      .map((r) => ({
-        id: r.id as string,
-        body: (r.body as string) ?? "",
-        senderId: r.sender_id as string,
-        createdAt: r.created_at as string,
-        readAt: (r.read_at as string) ?? null,
-        kind: (r.kind as string) ?? "text",
-        imageUrl: resolveUrl(r.image_path as string | null, signed),
-        replyTo: r.reply_to ? parents.get(r.reply_to as string) ?? null : null,
-      }));
+      .map((r) => mapMessageRow(r, parents, signed));
 
     return { viewerId: userId, messages, hasMore };
   });
