@@ -44,6 +44,7 @@ import { Route as PublicContactRouteImport } from './routes/_public/contact'
 import { Route as PublicCommunityGuidelinesRouteImport } from './routes/_public/community-guidelines'
 import { Route as PublicAboutRouteImport } from './routes/_public/about'
 import { Route as AuthenticatedHomeRouteImport } from './routes/_authenticated/home'
+import { Route as AuthenticatedHomeIndexRouteImport } from './routes/_authenticated/home.index'
 
 const UiRoute = UiRouteImport.update({
   id: '/ui',
@@ -220,6 +221,11 @@ const AuthenticatedHomeRoute = AuthenticatedHomeRouteImport.update({
   path: '/home',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedHomeIndexRoute = AuthenticatedHomeIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => AuthenticatedHomeRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof PublicIndexRoute
@@ -228,7 +234,7 @@ export interface FileRoutesByFullPath {
   '/500': typeof R500Route
   '/auth': typeof AuthRouteWithChildren
   '/ui': typeof UiRoute
-  '/home': typeof AuthenticatedHomeRoute
+  '/home': typeof AuthenticatedHomeRouteWithChildren
   '/about': typeof PublicAboutRoute
   '/community-guidelines': typeof PublicCommunityGuidelinesRoute
   '/contact': typeof PublicContactRoute
@@ -255,13 +261,13 @@ export interface FileRoutesByFullPath {
   '/system/splash': typeof SystemSplashRoute
   '/auth/': typeof AuthIndexRoute
   '/onboarding/': typeof OnboardingIndexRoute
+  '/home/': typeof AuthenticatedHomeIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof PublicIndexRoute
   '/404': typeof R404Route
   '/500': typeof R500Route
   '/ui': typeof UiRoute
-  '/home': typeof AuthenticatedHomeRoute
   '/about': typeof PublicAboutRoute
   '/community-guidelines': typeof PublicCommunityGuidelinesRoute
   '/contact': typeof PublicContactRoute
@@ -288,6 +294,7 @@ export interface FileRoutesByTo {
   '/system/splash': typeof SystemSplashRoute
   '/auth': typeof AuthIndexRoute
   '/onboarding': typeof OnboardingIndexRoute
+  '/home': typeof AuthenticatedHomeIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -298,7 +305,7 @@ export interface FileRoutesById {
   '/500': typeof R500Route
   '/auth': typeof AuthRouteWithChildren
   '/ui': typeof UiRoute
-  '/_authenticated/home': typeof AuthenticatedHomeRoute
+  '/_authenticated/home': typeof AuthenticatedHomeRouteWithChildren
   '/_public/about': typeof PublicAboutRoute
   '/_public/community-guidelines': typeof PublicCommunityGuidelinesRoute
   '/_public/contact': typeof PublicContactRoute
@@ -326,6 +333,7 @@ export interface FileRoutesById {
   '/_public/': typeof PublicIndexRoute
   '/auth/': typeof AuthIndexRoute
   '/onboarding/': typeof OnboardingIndexRoute
+  '/_authenticated/home/': typeof AuthenticatedHomeIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -363,13 +371,13 @@ export interface FileRouteTypes {
     | '/system/splash'
     | '/auth/'
     | '/onboarding/'
+    | '/home/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
     | '/404'
     | '/500'
     | '/ui'
-    | '/home'
     | '/about'
     | '/community-guidelines'
     | '/contact'
@@ -396,6 +404,7 @@ export interface FileRouteTypes {
     | '/system/splash'
     | '/auth'
     | '/onboarding'
+    | '/home'
   id:
     | '__root__'
     | '/_authenticated'
@@ -433,6 +442,7 @@ export interface FileRouteTypes {
     | '/_public/'
     | '/auth/'
     | '/onboarding/'
+    | '/_authenticated/home/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -694,15 +704,33 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedHomeRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/home/': {
+      id: '/_authenticated/home/'
+      path: '/'
+      fullPath: '/home/'
+      preLoaderRoute: typeof AuthenticatedHomeIndexRouteImport
+      parentRoute: typeof AuthenticatedHomeRoute
+    }
   }
 }
 
+interface AuthenticatedHomeRouteChildren {
+  AuthenticatedHomeIndexRoute: typeof AuthenticatedHomeIndexRoute
+}
+
+const AuthenticatedHomeRouteChildren: AuthenticatedHomeRouteChildren = {
+  AuthenticatedHomeIndexRoute: AuthenticatedHomeIndexRoute,
+}
+
+const AuthenticatedHomeRouteWithChildren =
+  AuthenticatedHomeRoute._addFileChildren(AuthenticatedHomeRouteChildren)
+
 interface AuthenticatedRouteRouteChildren {
-  AuthenticatedHomeRoute: typeof AuthenticatedHomeRoute
+  AuthenticatedHomeRoute: typeof AuthenticatedHomeRouteWithChildren
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
-  AuthenticatedHomeRoute: AuthenticatedHomeRoute,
+  AuthenticatedHomeRoute: AuthenticatedHomeRouteWithChildren,
 }
 
 const AuthenticatedRouteRouteWithChildren =
