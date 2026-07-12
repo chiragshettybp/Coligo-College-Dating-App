@@ -1,72 +1,73 @@
+# Notifications Module — Implementation Plan
 
-# Coligo — Chat Module (`/chat`) Implementation Plan
+## Current state (verified against the live project)
 
-## Scope & ground rules
-- Build exactly these pages: `/chat`, `/chat/:chatId`, `/chat/:chatId/media`, `/chat/:chatId/info`, `/chat/:chatId/report`. Nothing outside this list.
-- `chatId` **is** the existing `matchId` (a conversation = a mutual match). No new conversation table.
-- Every screen is real Supabase data via authenticated TanStack server functions — no mock/placeholder/fake realtime.
-- All chat visuals come from the `/ui` page components. Today those live **inline in `src/routes/ui.tsx`**, so they are not importable. Phase 0 extracts them verbatim into a shared file; `/ui` then imports from that file (single source of truth preserved, zero visual change).
-
-## Current state (verified)
-- `matches.functions.ts` already has `getConversation`, `sendMessage`, `markConversationRead`, `getMatchDetail`, `unmatch`, prefs, plus signed-URL helpers.
-- A working thread exists at `/matches/$matchId/chat` — its logic is reused/moved, not duplicated.
-- `messages` columns: `id, match_id, sender_id, body, read_at, created_at`. No image or reply columns yet.
-- `notify_on_message` / `notify_on_match` triggers already generate notifications. `reports` and `blocks` tables exist. Photos bucket `profile-photos` is private.
+- `public.notifications` already exists: `id, user_id, type, title, body, data(jsonb), read_at, created_at`. RLS = SELECT own + UPDATE own. **No DELETE policy.** Realtime **is** enabled.
+- Triggers already insert rows: `notify_on_match` (type `match`), `notify_on_message` (types `note`/`message`). `notify_push` fires web push via `/api/public/push` on every insert.
+- Gaps: no `/notifications` routes, no notifications server functions, no unread badge, no DELETE policy, no priority field, no per-type preference respect (push fires regardless of `settings.push_enabled`), and no `notification_preferences` table.
+- Entry point already exists: the **Bell** button in the home header (`home.index.tsx`, currently shows a "coming soon" sheet).
+- Design system source of truth: `/ui` (`src/routes/ui.tsx`) + `src/components/ds/*` (Card, Badge, Skeleton, EmptyState, navigation). These get reused, nothing redesigned.
 
 ---
 
-## Phase 0 — Extract `/ui` chat components (no behavior change)
-Create `src/components/ds/chat.tsx` and move these from `ui.tsx` verbatim: `Bubble`, `MetaRow`, `Ticks`, `bubbleRadii`, `DayDivider`, `ChatHeader`, `TypingBubble`, `VoiceMessage`, `ImageMessage`, `Composer`/`ComposerAction`, plus the `GroupPos`/`MsgState` types. Generalize props so they accept real data (text, time, state, avatar, image URL, onSend, value, disabled, onAttach) while keeping identical markup/styles. Update `ui.tsx` to import them so the `/ui` showcase is unchanged.
+## Phase 1 — Database & backend foundation (one migration)
 
-## Phase 1 — Database & storage (one migration)
-- `ALTER TABLE public.messages ADD COLUMN image_path text, ADD COLUMN reply_to uuid REFERENCES public.messages(id) ON DELETE SET NULL, ADD COLUMN kind text NOT NULL DEFAULT 'text';` (kind ∈ text/image — future-proof for voice/video).
-- Index: `messages(match_id, created_at)` and `messages(reply_to)`.
-- Create private storage bucket `chat-media` (via storage tool) with RLS on `storage.objects`: a user may read/insert an object only if its path prefix is a `matchId` they participate in (active match, not blocked). Enforced with a `SECURITY DEFINER` helper `public.is_chat_participant(_match_id uuid)`.
-- Add RPC `mark_read(_match_id uuid)` and keep existing message RLS (participants only, active match, not blocked).
-- Ensure realtime: `ALTER PUBLICATION supabase_realtime ADD TABLE public.messages, public.matches, public.blocks;` (skip if already present).
-- Grants per standard (authenticated + service_role) for any new objects.
+1. Add columns to `notifications`:
+   - `priority text not null default 'normal'` (values `low|normal|high|urgent`).
+   - `deleted_at timestamptz` (soft delete, so realtime DELETE-style updates + "already deleted" handling are clean and reversible).
+2. Add missing RLS: keep SELECT/UPDATE own; **no hard DELETE** — deletion is a soft-delete UPDATE (`deleted_at = now()`), already covered by the UPDATE-own policy. All reads filter `deleted_at is null`.
+3. Create `notification_preferences` table (per-user, per-category toggles) — future-proof so new types don't need schema changes:
+   - `user_id uuid`, `category text`, `in_app boolean default true`, `push boolean default true`, `email boolean default false`, unique(`user_id`,`category`). Full GRANTs + RLS (own-row manage) + `service_role` grant.
+4. RPCs (SECURITY DEFINER, `search_path=public`):
+   - `unread_notifications_count()` → int.
+   - `mark_notification_read(_id)` / `mark_all_notifications_read()` → single-transaction bulk update, returns count.
+   - `soft_delete_notification(_id)` → sets `deleted_at`, idempotent.
+5. Normalize/extend `type` vocabulary to the spec set (`MATCH_CREATED, NEW_MESSAGE, FIRST_NOTE, SYSTEM_ANNOUNCEMENT, ACCOUNT_NOTICE, COLLEGE_ANNOUNCEMENT, PROFILE_UPDATE, SECURITY_ALERT, ADMIN_MESSAGE, WELCOME`). Keep existing lowercase rows working via a mapping layer in code (no destructive data change). Update `notify_on_match`/`notify_on_message` to emit the new type codes + a `route`/`data` payload for navigation.
+6. Preference-aware generation: update `notify_push` (and the insert triggers) to **check `notification_preferences`/`settings` before inserting an in-app row or firing push**, so disabled categories generate nothing.
 
-## Phase 2 — Server functions (`src/lib/chat.functions.ts`)
-Authenticated (`requireSupabaseAuth`), RLS-scoped, plain-DTO returns:
-- `getChatList()` — reuse `my_matches` RPC → conversation rows (photo signed, last message, unread, other profile). Ordered by last activity.
-- `getConversation({chatId, before?, limit})` — paginated (keyset on `created_at`) ascending window for infinite scroll; joins `reply_to` preview; signs `image_path`.
-- `sendMessage({chatId, body?, imagePath?, replyTo?})` — validates ownership/active-match/not-blocked, length (`MESSAGE_MAX=2000`), inserts, returns row. (Trigger creates notification.)
-- `createChatImageUpload({chatId, ext})` — returns a signed upload URL / path in `chat-media/<chatId>/...`.
-- `markConversationRead({chatId})`, `getChatInfo({chatId})` (profile + match date + shared media count), `getSharedMedia({chatId, before?})`, `reportUser`, `blockUser`, `unmatch` (reuse existing where present).
-Add matching `queryOptions` factories. Register nothing new in `start.ts` (bearer middleware already wired).
+*(Migration surfaced via the migration tool for your approval before any code.)*
 
-## Phase 3 — Conversation list `/chat` (`_authenticated/chat.index.tsx`)
-- Layout route `chat.tsx` renders `<Outlet/>`; `chat.index.tsx` is the inbox.
-- Uses `DiscoverShell` + the extracted list/card styling. Shows photo, name, last message, timestamp, unread badge, online dot, live typing indicator.
-- Instant client search over name/college/department/last message. Empty-search, no-results, and skeleton states.
-- Realtime: subscribe to `messages` INSERT/UPDATE, `matches`, `blocks`, presence set; invalidate list queries. Presence via existing `use-presence-set`.
+## Phase 2 — Server functions (`src/lib/notifications.functions.ts`)
 
-## Phase 4 — Conversation screen `/chat/:chatId`
-- `ChatHeader` (real avatar, name, live presence, back). Message list built from `Bubble`/`ImageMessage`/`DayDivider`/`TypingBubble` with grouping, day separators, unread separator, read receipts (`read_at`), timestamps.
-- `Composer` wired: controlled input, auto-resize, char validation, draft persistence (localStorage per chat), send button state, image attach.
-- Optimistic send with sending→sent→read states and retry on failure; never lose draft.
-- Realtime message stream + typing broadcast (channel `chat:<id>`, ephemeral, expires on inactivity) + presence. Auto-scroll to newest; preserve scroll on older-page load (infinite scroll upward via `before` cursor). Mark read on view; broadcast read.
-- Image send: pick → validate type/size → upload to `chat-media` with progress → insert image message → render preview; tap opens fullscreen viewer (reuse `/ui` shared-element viewer). Reply: select message → composer reply preview → send with `reply_to`; tap preview scrolls to original.
+All via `createServerFn` + `requireSupabaseAuth` (RLS-scoped to the user):
+- `listNotifications({ cursor, limit })` — paginated, newest first, joins related profile/match/message metadata for the card (avatar, name) with graceful nulls for deleted references.
+- `getNotification({ id })` — full detail + resolved related content; returns a `missing` flag when the target no longer exists.
+- `markRead`, `markAllRead`, `deleteNotification`, `unreadCount` — thin wrappers over the RPCs.
+- `getNotificationPreferences` / `updateNotificationPreference`.
 
-## Phase 5 — Info / Media / Report / Unmatch / Block
-- `/chat/:chatId/info`: profile pic, name, college, department, match date, shared-media count; buttons View Media, View Profile, Block, Report, Unmatch.
-- `/chat/:chatId/media`: responsive lazy grid of shared images, paginated, realtime, fullscreen viewer.
-- `/chat/:chatId/report`: dedicated page (no popup) — reason select + optional details, duplicate-report guard, confirmation.
-- Unmatch & Block: dedicated confirmation pages (reuse existing `matches.$matchId.unmatch`/`.block` flows) — archive match, remove match/discovery eligibility, block prevents messaging; realtime updates propagate to `/chat`, `/matches`, Discovery.
+## Phase 3 — Realtime + shared hook
 
-## Phase 6 — Cross-module sync, navigation, a11y, verification
-- Wire chat into bottom nav / matches so unread counts, previews, typing, presence, receipts stay in sync with Matches. First note from Matches remains the first message (already works via shared `messages`).
-- Navigation: deep links, back, refresh recovery, scroll restoration, auth guard (under `_authenticated`).
-- Accessibility: semantic roles, ARIA labels, focus states, reduced motion, keyboard send, accessible viewer/forms.
-- Verify: `tsgo` typecheck, security scan on new RLS/bucket, and a Playwright pass on the live preview for send/receive, read receipts, image upload, report, unmatch.
+- `src/lib/use-notifications.ts`: subscribes (inside `useEffect`, cleanup with `removeChannel`) to `postgres_changes` on `notifications` filtered to the current user; keeps a TanStack Query cache of the list + unread count in sync on INSERT/UPDATE, and drives the header badge. Reconnect handling for pull-to-refresh.
+
+## Phase 4 — `/notifications` dashboard route
+
+`src/routes/_authenticated/notifications.index.tsx` inside the existing app shell:
+- Notification cards reusing `Card`, type icon, title, body, relative timestamp, unread dot, `Badge` for priority, related avatar.
+- Skeleton list on load (reuse `Skeleton`), `EmptyStateFromPreset` "notifications" empty state, `Mark all as read` action.
+- Mobile-first: pull-to-refresh, thumb-friendly targets, optimistic mark-read on tap then contextual navigation (match→match page, message/note→chat, announcement/alert→detail).
+- `errorComponent` + `notFoundComponent` with retry.
+
+## Phase 5 — `/notifications/$notificationId` detail + delete confirmation
+
+- `notifications.$notificationId.tsx`: full detail, category, related user/content, contextual action buttons (Open Chat / View Match / View Profile / Go Home / Delete). Marks read on open. Handles missing target gracefully.
+- `notifications.$notificationId.delete.tsx`: **dedicated confirmation page** (no popup, per spec) → soft-delete → back to list, realtime-synced.
+
+## Phase 6 — Integration & entry points
+
+- Wire the home-header **Bell** to `/notifications` and show a live unread badge on it (replace the "coming soon" sheet).
+- Surface unread count wherever the header/badge appears; keep `matchesBadge` behavior intact.
+- Add a `/notifications` demo block to `/ui` so the module stays documented in the design source of truth.
+
+## Phase 7 — Verification
+
+- `tsgo` typecheck, RLS/ownership checks, realtime insert→badge→list live test, mark-all transaction, soft-delete idempotency, missing-reference fallback, empty state, and preference-respecting generation (disabled category creates nothing).
 
 ---
 
 ## Technical notes
-- Server layer = `createServerFn` only (no edge functions). Admin client not needed; all reads/writes run as the user under RLS.
-- Signed URLs (1h TTL) for all private media, matching existing pattern.
-- Typing & presence are realtime-broadcast only, never persisted.
-- No schema change stores secrets; migration adds columns + one bucket + helper function + realtime publication entries.
+- No mock data — every card is a real `notifications` row; badges/counts come from RPCs.
+- Soft-delete (not hard delete) keeps realtime + "already deleted" handling simple and matches the "prevent duplicate deletion" requirement.
+- Type vocabulary handled through a code-side map so legacy rows and new codes coexist without a destructive migration.
+- Everything composes existing `ds/*` components; no visual redesign.
 
-## Out of scope (explicitly not built now)
-Voice/video messages, calling, reactions, edit/delete, disappearing/pinned messages, stickers/GIFs, translation, push device tokens — data model left extensible but no UI/logic added.
+Approve and I'll start with the Phase 1 migration.
