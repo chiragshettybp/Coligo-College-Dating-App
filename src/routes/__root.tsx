@@ -42,6 +42,10 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
       { name: "twitter:site", content: "@Lovable" },
+      { name: "twitter:title", content: "CampusMatch — Dating for verified college students" },
+      { name: "twitter:description", content: "CampusMatch is the exclusive dating app for verified college students in India. Match and chat with students from your campus." },
+      { property: "og:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/b168c64b-a6c8-4cea-859c-a20fe59d812a/id-preview-70e0ec70--9900e54b-f541-4340-8c39-bd8d6fca2142.lovable.app-1783866995850.png" },
+      { name: "twitter:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/b168c64b-a6c8-4cea-859c-a20fe59d812a/id-preview-70e0ec70--9900e54b-f541-4340-8c39-bd8d6fca2142.lovable.app-1783866995850.png" },
     ],
     links: [
       {
