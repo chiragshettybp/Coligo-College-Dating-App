@@ -60,9 +60,18 @@ function currentStepFromPath(pathname: string): OnboardingStep | null {
 
 function OnboardingLayout() {
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
   const { data: state } = useSuspenseQuery(onboardingStateQuery());
   const pathname = useRouterState({ select: (s) => s.location.pathname });
   const step = currentStepFromPath(pathname);
+
+  // Warm the reference lists once so college/department/interest steps are
+  // instant when reached (searched locally after this single fetch).
+  useEffect(() => {
+    queryClient.prefetchQuery(collegesQuery());
+    queryClient.prefetchQuery(departmentsQuery());
+    queryClient.prefetchQuery(interestsListQuery());
+  }, [queryClient]);
 
   // Redirect completed users out of onboarding.
   useEffect(() => {
