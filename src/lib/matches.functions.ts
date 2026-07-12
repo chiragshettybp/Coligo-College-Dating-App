@@ -380,3 +380,97 @@ export const updateMatchPrefs = createServerFn({ method: "POST" })
     if (error) throw new Error(error.message);
     return { ok: true };
   });
+
+// ============================================================================
+// Conversation (chat thread) — real messages, RLS-scoped to participants.
+// ============================================================================
+export const MESSAGE_MAX = 2000;
+
+export type ChatMessage = {
+  id: string;
+  body: string;
+  senderId: string;
+  createdAt: string;
+  readAt: string | null;
+};
+
+export type Conversation = {
+  viewerId: string;
+  messages: ChatMessage[];
+};
+
+export const getConversation = createServerFn({ method: "GET" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((input: { matchId: string }) =>
+    z.object({ matchId: z.string().uuid() }).parse(input),
+  )
+  .handler(async ({ context, data }): Promise<Conversation> => {
+    const { supabase, userId } = context;
+    const { data: rows, error } = await supabase
+      .from("messages")
+      .select("id, body, sender_id, created_at, read_at")
+      .eq("match_id", data.matchId)
+      .order("created_at", { ascending: true });
+    if (error) throw new Error(error.message);
+    return {
+      viewerId: userId,
+      messages: (rows ?? []).map((r) => ({
+        id: r.id as string,
+        body: r.body as string,
+        senderId: r.sender_id as string,
+        createdAt: r.created_at as string,
+        readAt: (r.read_at as string) ?? null,
+      })),
+    };
+  });
+
+export const conversationQuery = (matchId: string) =>
+  queryOptions({
+    queryKey: ["matches", "conversation", matchId],
+    queryFn: () => getConversation({ data: { matchId } }),
+    staleTime: 5_000,
+  });
+
+export const sendMessage = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((input: { matchId: string; body: string }) =>
+    z
+      .object({
+        matchId: z.string().uuid(),
+        body: z.string().trim().min(1).max(MESSAGE_MAX),
+      })
+      .parse(input),
+  )
+  .handler(async ({ context, data }): Promise<ChatMessage> => {
+    const { supabase, userId } = context;
+    const { data: row, error } = await supabase
+      .from("messages")
+      .insert({ match_id: data.matchId, sender_id: userId, body: data.body })
+      .select("id, body, sender_id, created_at, read_at")
+      .single();
+    if (error) throw new Error(error.message);
+    return {
+      id: row.id as string,
+      body: row.body as string,
+      senderId: row.sender_id as string,
+      createdAt: row.created_at as string,
+      readAt: (row.read_at as string) ?? null,
+    };
+  });
+
+export const markConversationRead = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((input: { matchId: string }) =>
+    z.object({ matchId: z.string().uuid() }).parse(input),
+  )
+  .handler(async ({ context, data }): Promise<{ ok: true }> => {
+    const { supabase, userId } = context;
+    const { error } = await supabase
+      .from("messages")
+      .update({ read_at: new Date().toISOString() })
+      .eq("match_id", data.matchId)
+      .neq("sender_id", userId)
+      .is("read_at", null);
+    if (error) throw new Error(error.message);
+    return { ok: true };
+  });
