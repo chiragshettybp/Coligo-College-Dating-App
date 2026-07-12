@@ -4,7 +4,7 @@
 // Every future screen imports these. Do not re-style; compose.
 // ============================================================================
 import * as React from "react";
-import { Loader2 } from "lucide-react";
+import { Check, Loader2 } from "lucide-react";
 
 import {
   colors,
