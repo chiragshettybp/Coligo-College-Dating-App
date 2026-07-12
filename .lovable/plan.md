@@ -1,61 +1,64 @@
-# Public Module — Phase-Wise Implementation Plan
+# Authentication Module — Implementation Plan
 
-A production-ready public section for the College Dating App: 6 routes, all content driven by Supabase (no hardcoded copy or numbers), reusing the existing `/ui` design system exactly.
+Build the full `/auth` module for CampusMatch: 5 routes, real Supabase auth, phone (+91) identity, protected routing, and a database foundation the rest of the app will build on. Everything reuses the existing design system in `src/components/ds/*` — no new visual language.
 
-## Guiding constraints
-- **Design system**: reuse only `src/components/ds/*` (`Card`, `GlassPanel`, `Button`, `Chip`, `Text`, `TextField`, `Toggle`, `Skeleton`, `TopBar`, `BottomSheet`, `EmptyStateCard`, etc.) and tokens in `src/lib/ds.ts`. No new visual styles.
-- **Data**: every stat, FAQ, legal document, company fact, college ranking, and screenshot comes from Supabase. Public reads via a server publishable client + narrow `TO anon` SELECT policies. Contact writes via an `anon` INSERT policy with validation.
-- **Stack rules**: TanStack Start file routes under `src/routes/`, data via `createServerFn` + `queryOptions` + loader `ensureQueryData` + `useSuspenseQuery`. Each route gets its own `head()`, `errorComponent`, `notFoundComponent`.
-- **Mobile-first**, sticky nav → drawer on mobile, animated section reveals, reduced-motion support, semantic HTML + ARIA.
+## Key decisions & tradeoffs (please confirm on approval)
 
----
+1. **Identity = phone (+91) + password, via Supabase.** OTP/SMS requires a paid SMS provider that isn't configured, and you asked to disable OTP for now. So each account is created in Supabase with a **stable internal email alias derived from the phone** (`91XXXXXXXXXX@phone.campusmatch.app`) plus the user's password. This is real Supabase auth (real sessions, refresh, RLS) and works today with zero SMS setup. The real +91 number is stored on the profile and shown everywhere. When you later enable an SMS provider, we swap the alias for native Supabase phone auth without redesigning the UI.
+2. **OTP disabled mode.** `/auth/verify-otp` is built to spec but runs behind an `OTP_ENABLED = false` flag: signup goes phone → set password → account created immediately, skipping OTP. Re-enabling later is a config flip, not a rebuild.
+3. **Password recovery while OTP is off.** With no SMS/email channel for phone accounts, `/auth/forgot-password` verifies the number exists and routes to `/auth/reset-password` directly. This is acceptable only in OTP-disabled dev mode and is **not production-safe** (anyone knowing a number could reset it). It becomes secure automatically once OTP is enabled. Flagged clearly in code.
+4. **Roles live in a separate `user_roles` table** (never on profiles) with a `has_role()` security-definer function, per security best practice.
 
-## Phase 1 — Database schema & seed content
-One migration creating all tables with GRANTs, RLS, and `updated_at` triggers, followed by a seed data insert.
+## Phase 1 — Database foundation (migration)
 
-Tables (all in `public`):
-- `landing_statistics` — key (text), label, value (bigint), display_order. Public read.
-- `featured_colleges` — name, city, verified_students (int), rank/display_order, logo_url. Public read.
-- `faqs` — question, answer, category, display_order, is_published. Public read (published only).
-- `legal_documents` — slug (`privacy`|`terms`|`community-guidelines`), title, version (int), sections (jsonb: array of {heading, type, content/items}), last_updated, is_current. Public read (current only).
-- `company_information` — key, title, body, section_type (overview/mission/vision/goal/safety/roadmap/milestone), display_order. Public read.
-- `homepage_media` — title, caption, storage_path, display_order, is_published. Public read.
-- `contact_messages` — name, email, subject, category, message, status (default `new`), created_at, ip/user-agent audit columns. **anon INSERT** (with a `WITH CHECK` length/format guard); **no anon SELECT** (privacy). service_role full.
+- `app_role` enum (`user`, `moderator`, `admin`).
+- `profiles`: `id` (FK auth.users, cascade), `phone` (unique, E.164), `display_name`, `avatar_url`, `verification_status`, `onboarding_completed` (bool default false), `last_login_at`, timestamps.
+- `settings`: per-user preferences row (notifications, discovery prefs placeholder columns), FK to auth.users.
+- `device_tokens`: `user_id`, `token`, `platform`, timestamps (for future push).
+- `user_roles`: `user_id`, `role`, unique(user_id, role).
+- `has_role(_user_id, _role)` security-definer function.
+- `handle_new_user()` trigger on `auth.users` insert → creates `profiles` + `settings` row + default `user` role.
+- `update_updated_at_column` triggers on all tables.
+- RLS: users read/update only their own profile/settings/device_tokens; `user_roles` readable by authenticated self; all GRANTs (`authenticated`, `service_role`) per table.
 
-RLS: read tables get `TO anon` SELECT scoped to published/current rows. `contact_messages` gets anon INSERT only. Storage bucket `homepage-media` (public) for screenshots created via the storage tool.
+## Phase 2 — Auth infrastructure
 
-Seed: real starter content for legal docs (privacy/terms/community-guidelines full sections), FAQs, company info, statistics, featured colleges (a handful of real Indian colleges), homepage media rows.
+- `src/routes/_authenticated/route.tsx` — integration-managed gate (`ssr: false`, redirect to `/auth/login`).
+- Root session wiring in `__root.tsx`: single `onAuthStateChange` → `router.invalidate()` + query invalidation (identity transitions only).
+- `src/lib/auth.ts` (client-safe): `phoneToAlias()`, `formatPhoneIN()`, zod schemas (phone, password strength, OTP), `OTP_ENABLED` flag, post-auth redirect resolver (reads `onboarding_completed`).
+- `src/lib/profile.functions.ts`: `getMyProfile` (requireSupabaseAuth), `checkPhoneAvailable` (public server fn, anon), `touchLastLogin`.
 
-## Phase 2 — Shared public layout
-- `src/routes/_public/route.tsx` pathless layout (SSR on) rendering shared **PublicNav** (sticky, logo, Get Started + Login buttons, active highlighting, mobile drawer via `BottomSheet`) + `<Outlet />` + **PublicFooter** (legal links, contact, copyright, social placeholders).
-- Move the 6 public routes under `_public/` so they share chrome; smooth scroll + scroll-reveal helper hook honoring `prefers-reduced-motion`.
-- New presentational components in `src/components/public/` (composed from `ds/*` only): `PublicNav`, `PublicFooter`, `SectionReveal`, `LegalDocument` renderer (jsonb → headings/paragraphs/lists), `Timeline`.
+## Phase 3 — Route restructure
 
-## Phase 3 — Data layer (server functions + query options)
-- `src/lib/public-content.functions.ts`: public `createServerFn` readers using the server publishable client (anon) — `getLandingStats`, `getFeaturedColleges`, `getFaqs`, `getLegalDocument(slug)`, `getCompanyInfo`, `getHomepageMedia`. All safe-column projections.
-- `src/lib/contact.functions.ts`: `submitContactMessage` — Zod-validated (trim, email, lengths, category enum), inserts via anon client, returns success; duplicate-submission guard (client dedupe + recent-duplicate check).
-- `queryOptions` factories for each reader for loader priming + `useSuspenseQuery`.
+- Convert single `src/routes/auth.tsx` into a layout + children:
+  `auth.tsx` (shared shell/branding + `<Outlet/>`), `auth.login.tsx`, `auth.signup.tsx`, `auth.verify-otp.tsx`, `auth.forgot-password.tsx`, `auth.reset-password.tsx`.
+- `/auth` redirects to `/auth/login`.
+- Update `PublicNav` + landing CTAs: "Login" → `/auth/login`, "Get Started" → `/auth/signup`. Legal links stay reachable in the auth shell footer.
 
-## Phase 4 — Landing page (`/`)
-Replace placeholder `index.tsx`. Sections: hero + value prop, dual CTAs (Get Started → `/auth`, Login → `/auth`), feature overview (5 features via `Card`/`Chip`), live statistics (from `landing_statistics`), college rankings preview (`featured_colleges`), featured screenshots (Storage-backed `homepage_media`), FAQ (`faqs`, accordion via existing patterns), footer. Skeleton loaders, animated reveals.
+## Phase 4 — Pages (mobile-first, DS components only)
 
-## Phase 5 — Legal pages (`/privacy`, `/terms`, `/community-guidelines`)
-Three routes rendering `legal_documents` via the `LegalDocument` renderer. Terms shows version + last-updated; community-guidelines renders categorized icon cards. Each has own `head()`, skeletons, back-to-home.
+Each page uses `TextField`, `Button`, `SegmentControl`, `Text`, `GlassPanel`, `Checkbox` from `src/components/ds`, with loading states, disabled-on-submit, inline validation, `role="alert"`/`aria-live`, focus management, and reduced-motion support.
 
-## Phase 6 — About (`/about`)
-Company overview/mission/vision/goals/safety/student-first/verification/roadmap from `company_information`, milestones via `Timeline`, live totals (colleges + registered users) from stats.
+- **Login**: +91 phone, password + show/hide, remember-me, submit → `signInWithPassword({email: alias, password})` → resolve redirect. Handles wrong password / disabled / network / rate messages generically.
+- **Signup**: +91 phone → `checkPhoneAvailable` → (OTP off) set-password step → `signUp` → profile created by trigger → redirect.
+- **Verify-OTP**: 6-box auto-advance + paste + countdown + resend/change-number UI, built but bypassed while `OTP_ENABLED=false`.
+- **Forgot-password**: phone input, generic response, → reset (dev mode).
+- **Reset-password**: new/confirm password, live strength meter + requirements checklist, submit disabled until met, `updateUser({password})`.
 
-## Phase 7 — Contact (`/contact`)
-Accessible form (name/email/subject/category/message) using `TextField` + validation, loading/disabled states, success confirmation, duplicate prevention, support email + social placeholders. Writes to `contact_messages`.
+## Phase 5 — Post-auth handoff
 
-## Phase 8 — SEO, a11y & verification
-Per-route `head()` (title/description/OG/twitter), single H1 per page, keyboard/focus/ARIA passes, lazy images, prefetch on intent. Verify: typecheck, build, Playwright smoke of all 6 routes (nav, drawer, form submit, deep links), confirm live data renders.
+- Redirect resolver sends new users to onboarding and completed users home. Since Splash/Onboarding/Home are separate future modules, this module lands on a minimal protected `/app` route confirming the session so the flow completes end-to-end (clearly marked as the handoff point for the next module).
 
----
+## Phase 6 — Verification
 
-## Notes / decisions
-- **Auth**: these are public pages; CTAs point to `/auth` (an auth route isn't in this prompt's scope — I'll link to `/auth` as the target). Say if you want a stub `/auth` too.
-- `contact_messages` is intentionally **not** anon-readable (only insert) to protect submissions; you'd read them from an admin surface later.
-- "Realtime/optimistic" is applied where meaningful (contact success feedback); legal/marketing content is cache-first via TanStack Query.
+- `tsgo --noEmit` clean.
+- Playwright: render all 5 routes, complete a real signup → account in DB → session persists across refresh → login → protected redirect works → unauthenticated access to `/app` bounces to `/auth/login`. Confirm zero console/runtime errors.
 
-Approve and I'll execute phase by phase, starting with the migration.
+## Technical notes
+
+- Server functions only for DB access; `requireSupabaseAuth` for user-scoped reads, publishable-anon client for `checkPhoneAvailable`.
+- No secrets in client; bearer attachment already wired via `attachSupabaseAuth` in `src/start.ts`.
+- All validation duplicated client + server (zod).
+- Architecture leaves clean extension points for real OTP, MFA, social login, device management, and admin controls without redesign.
+
+Approve and I'll build Phase 1 → 6 in order.
