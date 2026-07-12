@@ -14,7 +14,258 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      company_information: {
+        Row: {
+          body: string
+          created_at: string
+          display_order: number
+          id: string
+          is_published: boolean
+          key: string
+          meta: Json
+          section_type: string
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          body?: string
+          created_at?: string
+          display_order?: number
+          id?: string
+          is_published?: boolean
+          key: string
+          meta?: Json
+          section_type?: string
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          body?: string
+          created_at?: string
+          display_order?: number
+          id?: string
+          is_published?: boolean
+          key?: string
+          meta?: Json
+          section_type?: string
+          title?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      contact_messages: {
+        Row: {
+          category: string
+          created_at: string
+          email: string
+          id: string
+          message: string
+          name: string
+          source: string
+          status: string
+          subject: string
+          updated_at: string
+          user_agent: string | null
+        }
+        Insert: {
+          category?: string
+          created_at?: string
+          email: string
+          id?: string
+          message: string
+          name: string
+          source?: string
+          status?: string
+          subject: string
+          updated_at?: string
+          user_agent?: string | null
+        }
+        Update: {
+          category?: string
+          created_at?: string
+          email?: string
+          id?: string
+          message?: string
+          name?: string
+          source?: string
+          status?: string
+          subject?: string
+          updated_at?: string
+          user_agent?: string | null
+        }
+        Relationships: []
+      }
+      faqs: {
+        Row: {
+          answer: string
+          category: string
+          created_at: string
+          display_order: number
+          id: string
+          is_published: boolean
+          question: string
+          updated_at: string
+        }
+        Insert: {
+          answer: string
+          category?: string
+          created_at?: string
+          display_order?: number
+          id?: string
+          is_published?: boolean
+          question: string
+          updated_at?: string
+        }
+        Update: {
+          answer?: string
+          category?: string
+          created_at?: string
+          display_order?: number
+          id?: string
+          is_published?: boolean
+          question?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      featured_colleges: {
+        Row: {
+          city: string
+          created_at: string
+          display_order: number
+          id: string
+          is_published: boolean
+          logo_url: string | null
+          name: string
+          updated_at: string
+          verified_students: number
+        }
+        Insert: {
+          city?: string
+          created_at?: string
+          display_order?: number
+          id?: string
+          is_published?: boolean
+          logo_url?: string | null
+          name: string
+          updated_at?: string
+          verified_students?: number
+        }
+        Update: {
+          city?: string
+          created_at?: string
+          display_order?: number
+          id?: string
+          is_published?: boolean
+          logo_url?: string | null
+          name?: string
+          updated_at?: string
+          verified_students?: number
+        }
+        Relationships: []
+      }
+      homepage_media: {
+        Row: {
+          caption: string
+          created_at: string
+          display_order: number
+          id: string
+          is_published: boolean
+          storage_path: string
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          caption?: string
+          created_at?: string
+          display_order?: number
+          id?: string
+          is_published?: boolean
+          storage_path: string
+          title?: string
+          updated_at?: string
+        }
+        Update: {
+          caption?: string
+          created_at?: string
+          display_order?: number
+          id?: string
+          is_published?: boolean
+          storage_path?: string
+          title?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      landing_statistics: {
+        Row: {
+          created_at: string
+          display_order: number
+          id: string
+          key: string
+          label: string
+          suffix: string
+          updated_at: string
+          value: number
+        }
+        Insert: {
+          created_at?: string
+          display_order?: number
+          id?: string
+          key: string
+          label: string
+          suffix?: string
+          updated_at?: string
+          value?: number
+        }
+        Update: {
+          created_at?: string
+          display_order?: number
+          id?: string
+          key?: string
+          label?: string
+          suffix?: string
+          updated_at?: string
+          value?: number
+        }
+        Relationships: []
+      }
+      legal_documents: {
+        Row: {
+          created_at: string
+          id: string
+          is_current: boolean
+          last_updated: string
+          sections: Json
+          slug: string
+          title: string
+          updated_at: string
+          version: number
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          is_current?: boolean
+          last_updated?: string
+          sections?: Json
+          slug: string
+          title: string
+          updated_at?: string
+          version?: number
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          is_current?: boolean
+          last_updated?: string
+          sections?: Json
+          slug?: string
+          title?: string
+          updated_at?: string
+          version?: number
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
