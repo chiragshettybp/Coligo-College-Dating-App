@@ -51,6 +51,7 @@ import {
   prefersReducedMotion,
 } from "@/lib/ds";
 import { haptic, type HapticToken } from "@/lib/haptics";
+import { cn } from "@/lib/utils";
 import {
   Card,
   CardHeader,
@@ -74,6 +75,7 @@ import {
   Chip,
   GlassPanel,
   IconButton,
+  Fab,
   ProgressBar,
   Skeleton,
   Text,
@@ -173,6 +175,7 @@ function UIShowcase() {
   const [scrollTab, setScrollTab] = useState("For You");
   const [toasts, setToasts] = useState<ToastItem[]>([]);
   const [matchOpen, setMatchOpen] = useState(false);
+  const [confirmOpen, setConfirmOpen] = useState(false);
 
   const toggleInterest = (i: string) =>
     setInterests((s) => (s.includes(i) ? s.filter((x) => x !== i) : [...s, i]));
@@ -349,7 +352,7 @@ function UIShowcase() {
         {/* Buttons */}
         <Section
           title="Buttons"
-          description="Every variant, size and state — glass fills, primary glow, hover lift and press."
+          description="One tactile button system — every variant, size and state. Solid restrained surfaces, hairline borders, spring press and clear focus."
         >
           <div className="space-y-4">
             <div>
@@ -394,9 +397,12 @@ function UIShowcase() {
                 <IconButton primary>
                   <Plus style={{ width: 22, height: 22 }} />
                 </IconButton>
-                <IconButton size={64} primary style={{ boxShadow: shadows.glow }}>
-                  <Heart style={{ width: 28, height: 28 }} />
-                </IconButton>
+                <Fab aria-label="New">
+                  <Plus style={{ width: 26, height: 26 }} />
+                </Fab>
+                <Fab label="Compose">
+                  <Plus style={{ width: 22, height: 22 }} />
+                </Fab>
               </Row>
             </div>
             <Button fullWidth variant="primary" size="lg">
@@ -841,7 +847,40 @@ function UIShowcase() {
             <Button size="sm" variant="secondary" onClick={() => pushToast("warning", <AlertTriangle style={{ width: 15, height: 15 }} />, "Photo upload slow")}>Warning</Button>
             <Button size="sm" variant="secondary" onClick={() => pushToast("danger", <WifiOff style={{ width: 15, height: 15 }} />, "Network error")}>Error</Button>
           </Row>
+
+          <div style={{ height: spacing[4] }} />
+          <Label>Confirmation dialog</Label>
+          <Row>
+            <Button size="sm" variant="secondary" onClick={() => setConfirmOpen(true)}>
+              Delete account
+            </Button>
+          </Row>
+
+          <div style={{ height: spacing[4] }} />
+          <Label>Bottom action bar</Label>
+          <div style={{ borderRadius: radii.lg, overflow: "hidden", border: `1px solid ${surfaces.borderSoft}` }}>
+            <div style={{ height: 96, background: "rgba(120,120,128,0.06)" }} />
+            <BottomActionBar>
+              <Button variant="ghost">Skip</Button>
+              <Button fullWidth variant="primary">Continue</Button>
+            </BottomActionBar>
+          </div>
         </Section>
+
+        <ConfirmDialog
+          open={confirmOpen}
+          tone="danger"
+          icon={<AlertTriangle style={{ width: 24, height: 24 }} />}
+          title="Delete account?"
+          body="This permanently removes your profile, matches and messages. This can't be undone."
+          confirmLabel="Delete"
+          cancelLabel="Keep account"
+          onConfirm={() => {
+            setConfirmOpen(false);
+            pushToast("success", <Check style={{ width: 15, height: 15 }} />, "Account deleted");
+          }}
+          onCancel={() => setConfirmOpen(false)}
+        />
 
 
         {/* Chat */}
@@ -2038,11 +2077,10 @@ function FeedbackIcon({
       style={{
         width: size,
         height: size,
-        borderRadius: size / 2.6,
+        borderRadius: size / 2.8,
         color: c,
-        background: `linear-gradient(165deg, ${c}2e, ${c}12)`,
-        border: `1px solid ${c}40`,
-        boxShadow: `inset 0 1px 0 rgba(255,255,255,0.12), 0 0 16px ${c}22`,
+        background: `${c}18`,
+        border: `1px solid ${c}22`,
       }}
     >
       {icon}
@@ -2077,9 +2115,9 @@ function Alert({
         position: "relative",
         borderRadius: radii.lg,
         padding: hasActions ? "16px 16px 14px" : "14px 16px",
-        background: surfaces.glass,
-        border: `1px solid ${surfaces.border}`,
-        boxShadow: shadows.glass,
+        background: surfaces.glassSoft,
+        border: `1px solid ${surfaces.borderSoft}`,
+        boxShadow: shadows.soft,
         overflow: "hidden",
       }}
     >
@@ -2099,7 +2137,7 @@ function Alert({
       <div className="flex items-start gap-3">
         <FeedbackIcon tone={tone} icon={icon} />
         <div className="min-w-0 flex-1">
-          <div style={{ color: "#fff", fontWeight: 700, fontSize: 15, letterSpacing: "-0.01em" }}>
+          <div style={{ color: colors.textPrimary, fontWeight: 700, fontSize: 15, letterSpacing: "-0.01em" }}>
             {title}
           </div>
           <div style={{ color: colors.textSecondary, fontSize: 13.5, lineHeight: 1.45, marginTop: 3 }}>
@@ -2145,8 +2183,8 @@ function Alert({
   );
 }
 
-/** Floating toast — lightweight blurred surface, spring entry, swipe/tap to
- *  dismiss. Stacked and auto-dismissed by ToastHost. */
+/** Floating toast — light card, soft elevation, spring entry, swipe-to-dismiss
+ *  (horizontal) and tap-to-dismiss. Stacked and auto-dismissed by ToastHost. */
 function Toast({
   tone,
   icon,
@@ -2158,23 +2196,57 @@ function Toast({
   message: string;
   onDismiss: () => void;
 }) {
-  const c = feedbackColor[tone];
+  const [dx, setDx] = useState(0);
+  const [leaving, setLeaving] = useState(false);
+  const start = useRef<number | null>(null);
+  const moved = useRef(false);
+
+  const finish = () => {
+    if (leaving) return;
+    setLeaving(true);
+    haptic("light");
+    window.setTimeout(onDismiss, 180);
+  };
+
   return (
     <div
       role="status"
-      onClick={onDismiss}
-      className="ds-toast-in ds-feedback flex items-center gap-2.5 backdrop-blur-xl"
+      onPointerDown={(e) => {
+        start.current = e.clientX;
+        moved.current = false;
+        (e.currentTarget as HTMLElement).setPointerCapture(e.pointerId);
+      }}
+      onPointerMove={(e) => {
+        if (start.current == null) return;
+        const d = e.clientX - start.current;
+        if (Math.abs(d) > 3) moved.current = true;
+        setDx(d);
+      }}
+      onPointerUp={() => {
+        if (start.current == null) return;
+        start.current = null;
+        if (Math.abs(dx) > 96) finish();
+        else setDx(0);
+      }}
+      onClick={() => {
+        if (!moved.current) finish();
+      }}
+      className="ds-toast-in flex items-center gap-2.5"
       style={{
         borderRadius: radii.pill,
-        padding: "9px 16px 9px 10px",
-        background: "linear-gradient(165deg, rgba(28,37,69,0.86), rgba(14,20,48,0.86))",
-        border: `1px solid ${surfaces.border}`,
-        boxShadow: `${shadows.large}, 0 0 22px ${c}22`,
+        padding: "8px 18px 8px 8px",
+        background: surfaces.glassSoft,
+        border: `1px solid ${surfaces.borderSoft}`,
+        boxShadow: shadows.large,
         cursor: "pointer",
+        touchAction: "pan-y",
+        transform: `translateX(${dx}px)`,
+        opacity: leaving ? 0 : Math.max(0, 1 - Math.abs(dx) / 200),
+        transition: start.current == null ? "transform 0.28s cubic-bezier(0.34,1.56,0.64,1), opacity 0.18s ease" : "none",
       }}
     >
-      <FeedbackIcon tone={tone} icon={icon} size={28} />
-      <span style={{ color: "#fff", fontSize: 14, fontWeight: 600, letterSpacing: "-0.01em" }}>
+      <FeedbackIcon tone={tone} icon={icon} size={30} />
+      <span style={{ color: colors.textPrimary, fontSize: 14, fontWeight: 600, letterSpacing: "-0.01em" }}>
         {message}
       </span>
     </div>
@@ -2216,19 +2288,19 @@ function Banner({
   const c = feedbackColor[tone];
   return (
     <div
-      className="ds-feedback flex items-center gap-3 backdrop-blur-xl"
+      className="ds-feedback flex items-center gap-3"
       style={{
         borderRadius: radii.md,
         padding: "10px 12px 10px 14px",
-        background: `linear-gradient(165deg, ${c}1c, rgba(14,20,48,0.6))`,
-        border: `1px solid ${c}33`,
-        boxShadow: shadows.medium,
+        background: `${c}12`,
+        border: `1px solid ${c}22`,
+        boxShadow: "none",
       }}
     >
       <span aria-hidden style={{ color: c, display: "flex" }}>
         {icon}
       </span>
-      <span className="min-w-0 flex-1" style={{ color: "#fff", fontSize: 13.5, fontWeight: 600 }}>
+      <span className="min-w-0 flex-1" style={{ color: colors.textPrimary, fontSize: 13.5, fontWeight: 600 }}>
         {title}
       </span>
       {action && (
@@ -2239,6 +2311,115 @@ function Banner({
     </div>
   );
 }
+
+/** Confirmation dialog — centered, scrim-dimmed, spring-expands in. One clear
+ *  primary action; destructive intent uses the danger button. */
+function ConfirmDialog({
+  open,
+  tone = "default",
+  icon,
+  title,
+  body,
+  confirmLabel = "Confirm",
+  cancelLabel = "Cancel",
+  onConfirm,
+  onCancel,
+}: {
+  open: boolean;
+  tone?: "default" | "danger";
+  icon?: React.ReactNode;
+  title: string;
+  body?: string;
+  confirmLabel?: string;
+  cancelLabel?: string;
+  onConfirm?: () => void;
+  onCancel?: () => void;
+}) {
+  if (!open) return null;
+  const accent = tone === "danger" ? colors.danger : colors.primary;
+  return (
+    <div
+      className="ds-scrim-in fixed inset-0 flex items-center justify-center"
+      style={{ zIndex: 90, padding: 24, background: "rgba(20,20,25,0.28)", backdropFilter: "blur(3px)" }}
+      onClick={onCancel}
+      role="dialog"
+      aria-modal="true"
+    >
+      <div
+        className="ds-dialog-in w-full"
+        onClick={(e) => e.stopPropagation()}
+        style={{
+          maxWidth: 320,
+          borderRadius: radii.xl,
+          padding: `${spacing[6]}px ${spacing[5]}px ${spacing[4]}px`,
+          background: surfaces.glassSoft,
+          border: `1px solid ${surfaces.borderSoft}`,
+          boxShadow: shadows.large,
+          textAlign: "center",
+        }}
+      >
+        {icon != null && (
+          <div
+            className="mx-auto flex items-center justify-center"
+            style={{
+              width: 52,
+              height: 52,
+              borderRadius: radii.lg,
+              background: `${accent}14`,
+              color: accent,
+              marginBottom: spacing[3],
+            }}
+          >
+            {icon}
+          </div>
+        )}
+        <Text variant="headingSm" align="center">{title}</Text>
+        {body != null && (
+          <Text variant="body" tone="secondary" align="center" style={{ marginTop: spacing[1] }}>
+            {body}
+          </Text>
+        )}
+        <div className="flex flex-col" style={{ gap: spacing[2], marginTop: spacing[5] }}>
+          <Button fullWidth variant={tone === "danger" ? "danger" : "primary"} onClick={onConfirm}>
+            {confirmLabel}
+          </Button>
+          <Button fullWidth variant="ghost" onClick={onCancel}>
+            {cancelLabel}
+          </Button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/** Bottom action bar — sticky, thumb-reachable primary action(s) with a
+ *  hairline top edge and safe-area padding. Slides up from the bottom. */
+function BottomActionBar({
+  children,
+  className,
+  style,
+}: {
+  children: React.ReactNode;
+  className?: string;
+  style?: React.CSSProperties;
+}) {
+  return (
+    <div
+      className={cn("ds-actionbar-in flex items-center", className)}
+      style={{
+        gap: spacing[2],
+        padding: `${spacing[3]}px ${spacing[4]}px calc(${spacing[3]}px + env(safe-area-inset-bottom))`,
+        background: "rgba(255,255,255,0.86)",
+        backdropFilter: "blur(20px)",
+        borderTop: `1px solid ${surfaces.borderSoft}`,
+        ...style,
+      }}
+    >
+      {children}
+    </div>
+  );
+}
+
 
 
 // ---------------------------------------------------------------------------
