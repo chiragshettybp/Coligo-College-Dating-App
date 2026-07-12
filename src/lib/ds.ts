@@ -6,11 +6,10 @@
 // reuses the exact same visual language. Import from here — never hardcode.
 // ============================================================================
 
-/** App background: deep-blue radial glow + linear gradient (from the poster). */
+/** App background: calm, elegant off-white system (iOS-first). No glow. */
 export const APP_BACKGROUND =
-  "radial-gradient(90% 55% at 50% -12%, rgba(60,120,246,0.10) 0%, rgba(60,120,246,0) 62%)," +
-  "radial-gradient(80% 50% at 50% 112%, rgba(46,70,200,0.08) 0%, rgba(46,70,200,0) 58%)," +
-  "linear-gradient(180deg, #05070f 0%, #070b1a 48%, #05070f 100%)";
+  "radial-gradient(120% 80% at 50% -20%, #ffffff 0%, rgba(255,255,255,0) 60%)," +
+  "linear-gradient(180deg, #f8f8f7 0%, #f6f7f9 52%, #f4f5f7 100%)";
 
 export const FONT_FAMILY =
   '-apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "Inter", ui-sans-serif, system-ui, sans-serif';
@@ -43,46 +42,46 @@ export const type = {
   number: { fontSize: 34, lineHeight: 1, fontWeight: weights.heavy, letterSpacing: "-0.02em", fontVariantNumeric: "tabular-nums" as const },
 } as const;
 
-/** Semantic colors. */
+/** Semantic colors — calm, low-saturation iOS palette. Dark text on light. */
 export const colors = {
-  primary: "#3ea0f2",
-  primaryDeep: "#2a75dd",
-  secondary: "#8ea3d6",
-  accent: "#ea6fa6",
-  success: "#43d9a3",
-  warning: "#f5b544",
-  danger: "#f2576b",
-  info: "#57b0f6",
-  textPrimary: "#ffffff",
-  textSecondary: "rgba(205,214,238,0.72)",
-  textMuted: "rgba(205,214,238,0.6)",
+  primary: "#0a84ff",
+  primaryDeep: "#0060df",
+  secondary: "#6b7280",
+  accent: "#ff375f",
+  success: "#34c759",
+  warning: "#ff9f0a",
+  danger: "#ff3b30",
+  info: "#0a84ff",
+  textPrimary: "#1c1c1e",
+  textSecondary: "rgba(60,60,67,0.72)",
+  textMuted: "rgba(60,60,67,0.5)",
 } as const;
 
-/** Gradients. */
+/** Gradients — restrained. Solid-leaning surfaces, minimal color. */
 export const gradients = {
   blueGloss:
-    "radial-gradient(120% 90% at 50% -10%, #57b0f6 0%, #3ea0f2 34%, #2f83e6 72%, #2a75dd 100%)",
+    "linear-gradient(180deg, #0a84ff 0%, #0060df 100%)",
   primaryButton:
-    "linear-gradient(160deg, rgba(74,166,248,0.92) 0%, rgba(47,131,232,0.92) 55%, rgba(38,115,222,0.92) 100%)",
+    "linear-gradient(180deg, #0a84ff 0%, #0071e3 100%)",
   glassCard:
-    "linear-gradient(160deg, rgba(28,37,69,0.72) 0%, rgba(19,26,54,0.72) 42%, rgba(14,20,48,0.72) 100%)",
+    "linear-gradient(180deg, rgba(255,255,255,0.86) 0%, rgba(255,255,255,0.72) 100%)",
   glassButton:
-    "linear-gradient(160deg, rgba(255,255,255,0.12) 0%, rgba(255,255,255,0.04) 100%)",
+    "linear-gradient(180deg, rgba(255,255,255,0.9) 0%, rgba(255,255,255,0.7) 100%)",
   pink:
-    "radial-gradient(120% 120% at 30% 20%, #f3c6dd 0%, #ea6fa6 45%, #d0418a 100%)",
+    "linear-gradient(180deg, #ff6482 0%, #ff375f 100%)",
   success:
-    "radial-gradient(120% 120% at 30% 20%, #a8f0d6 0%, #43d9a3 45%, #1fae7e 100%)",
+    "linear-gradient(180deg, #5cd679 0%, #34c759 100%)",
 } as const;
 
-/** Surface / glass fills. */
+/** Surface / glass fills — solid, layered elevation on off-white. */
 export const surfaces = {
-  glass: gradients.glassCard,
-  glassSoft: "rgba(38,50,96,0.42)",
-  glassPill: "rgba(18,52,120,0.42)",
-  overlay: "rgba(4,8,20,0.6)",
-  border: "rgba(255,255,255,0.12)",
-  borderSoft: "rgba(255,255,255,0.08)",
-  borderStrong: "rgba(255,255,255,0.28)",
+  glass: "rgba(255,255,255,0.72)",
+  glassSoft: "#ffffff",
+  glassPill: "rgba(255,255,255,0.7)",
+  overlay: "rgba(20,20,25,0.28)",
+  border: "rgba(0,0,0,0.08)",
+  borderSoft: "rgba(0,0,0,0.05)",
+  borderStrong: "rgba(0,0,0,0.14)",
 } as const;
 
 /** Border radius scale (px). */
@@ -105,18 +104,18 @@ export const spacing = [4, 8, 12, 16, 20, 24, 32, 40, 48, 64, 80, 96] as const;
  */
 export const shadows = {
   soft:
-    "0 1px 2px rgba(0,0,0,0.30), 0 4px 10px rgba(0,0,0,0.24), inset 0 1px 0 rgba(255,255,255,0.05)",
+    "0 1px 1px rgba(0,0,0,0.04), 0 2px 6px rgba(0,0,0,0.05)",
   medium:
-    "0 1px 2px rgba(0,0,0,0.34), 0 8px 20px rgba(0,0,0,0.30), inset 0 1px 0 rgba(255,255,255,0.06)",
+    "0 1px 2px rgba(0,0,0,0.05), 0 6px 16px rgba(0,0,0,0.07)",
   large:
-    "0 2px 4px rgba(0,0,0,0.34), 0 16px 32px rgba(0,0,0,0.34), 0 32px 64px rgba(0,0,0,0.28), inset 0 1px 0 rgba(255,255,255,0.06)",
+    "0 2px 4px rgba(0,0,0,0.06), 0 12px 32px rgba(0,0,0,0.09)",
   glass:
-    "0 2px 4px rgba(0,0,0,0.30), 0 20px 44px rgba(0,0,0,0.36), inset 0 1px 0 rgba(255,255,255,0.07)",
+    "0 1px 2px rgba(0,0,0,0.05), 0 8px 24px rgba(0,0,0,0.08)",
   button:
-    "0 1px 2px rgba(0,0,0,0.30), 0 3px 8px rgba(0,0,0,0.24), inset 0 1px 0 rgba(255,255,255,0.14)",
+    "0 1px 1px rgba(0,0,0,0.05), 0 2px 6px rgba(0,0,0,0.08)",
   primaryGlow:
-    "0 1px 2px rgba(0,0,0,0.28), 0 6px 16px rgba(45,120,230,0.34), inset 0 1px 0 rgba(255,255,255,0.24)",
-  glow: "0 0 32px rgba(62,160,242,0.36)",
+    "0 1px 2px rgba(0,0,0,0.06), 0 6px 16px rgba(10,132,255,0.18)",
+  glow: "0 4px 16px rgba(10,132,255,0.14)",
 } as const;
 
 /**
