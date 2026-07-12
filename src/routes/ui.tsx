@@ -670,8 +670,8 @@ function SwipeCard() {
             background: "linear-gradient(180deg, transparent 40%, rgba(4,8,20,0.9) 100%)",
           }}
         />
-        <div style={{ position: "absolute", left: 16, bottom: 14, right: 16 }}>
-          <div className="flex items-center gap-2">
+        <div style={{ position: "absolute", left: spacing[3], bottom: spacing[3], right: spacing[3] }}>
+          <div className="flex items-center" style={{ gap: spacing[1] }}>
             <span style={{ color: "#fff", fontSize: 22, fontWeight: 800 }}>Jordan, 20</span>
             <Badge tone="success"><ShieldCheck style={{ width: 12, height: 12 }} /></Badge>
           </div>
@@ -680,7 +680,7 @@ function SwipeCard() {
           </div>
         </div>
       </div>
-      <div className="flex items-center justify-center gap-4" style={{ padding: "14px" }}>
+      <div className="flex items-center justify-center" style={{ gap: spacing[4], padding: spacing[3] }}>
         <IconButton size={48} style={{ color: colors.danger }}>
           <X style={{ width: 22, height: 22 }} strokeWidth={2.6} />
         </IconButton>
