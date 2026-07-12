@@ -1711,10 +1711,9 @@ function SwipeDeck() {
   const thirdScale = 0.9 + 0.05 * progress;
   const thirdY = 22 - 11 * progress;
 
-  const springCurve = springing ? spring.responsive : "none";
   const frontTransition = dragging
     ? "none"
-    : `transform ${springing ? 0.42 : 0.32}s ${springCurve === "none" ? "cubic-bezier(0.22,1,0.36,1)" : springCurve}`;
+    : `transform ${springing ? 0.42 : 0.32}s ${springing ? SPRING : "cubic-bezier(0.22,1,0.36,1)"}`;
 
   return (
     <div style={{ position: "relative", touchAction: "none", userSelect: "none" }}>
