@@ -640,24 +640,33 @@ export type Database = {
           body: string
           created_at: string
           id: string
+          image_path: string | null
+          kind: string
           match_id: string
           read_at: string | null
+          reply_to: string | null
           sender_id: string
         }
         Insert: {
-          body: string
+          body?: string
           created_at?: string
           id?: string
+          image_path?: string | null
+          kind?: string
           match_id: string
           read_at?: string | null
+          reply_to?: string | null
           sender_id: string
         }
         Update: {
           body?: string
           created_at?: string
           id?: string
+          image_path?: string | null
+          kind?: string
           match_id?: string
           read_at?: string | null
+          reply_to?: string | null
           sender_id?: string
         }
         Relationships: [
@@ -666,6 +675,13 @@ export type Database = {
             columns: ["match_id"]
             isOneToOne: false
             referencedRelation: "matches"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "messages_reply_to_fkey"
+            columns: ["reply_to"]
+            isOneToOne: false
+            referencedRelation: "messages"
             referencedColumns: ["id"]
           },
         ]
@@ -1039,6 +1055,8 @@ export type Database = {
         Returns: boolean
       }
       is_active_member: { Args: { _folder: string }; Returns: boolean }
+      is_chat_participant: { Args: { _match_id: string }; Returns: boolean }
+      mark_read: { Args: { _match_id: string }; Returns: number }
       match_detail: { Args: { _match_id: string }; Returns: Json }
       match_participants: {
         Args: { _match_id: string }

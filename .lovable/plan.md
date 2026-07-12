@@ -1,62 +1,72 @@
-# Matches Module — Implementation Plan
 
-Builds the full Matches module for Coligo (`/matches`, `/matches/:matchId`, `/matches/:matchId/note`, plus dedicated confirm/report pages), fully wired to Supabase. Reuses the existing `/ui` design system (`src/components/ds/*`, tokens in `src/lib/ds.ts`), the `DiscoverShell` frame, photo-signing, and the auth/RLS patterns already used by Discovery.
+# Coligo — Chat Module (`/chat`) Implementation Plan
 
-## What already exists (reused, not rebuilt)
-- `matches` table (`user_a`, `user_b`, `created_at`, `last_message_at`) with owner-only SELECT RLS. Realtime already on.
-- `messages` table with `read_at` (drives unread counts — no separate `message_reads` table needed for 1:1 chat). Realtime already on. RLS: participants read/insert, recipients mark read.
-- `blocks`, `reports` tables + RLS, and `blockUser` / `reportUser` / `sendMatchNote` server functions in `src/lib/discover.functions.ts`.
-- `match_screen` / `match_participants` RPCs, photo `signPaths` helper, presence hooks (`use-presence-set.ts`), `DiscoverShell` with a Matches tab (currently opens a "coming soon" sheet).
+## Scope & ground rules
+- Build exactly these pages: `/chat`, `/chat/:chatId`, `/chat/:chatId/media`, `/chat/:chatId/info`, `/chat/:chatId/report`. Nothing outside this list.
+- `chatId` **is** the existing `matchId` (a conversation = a mutual match). No new conversation table.
+- Every screen is real Supabase data via authenticated TanStack server functions — no mock/placeholder/fake realtime.
+- All chat visuals come from the `/ui` page components. Today those live **inline in `src/routes/ui.tsx`**, so they are not importable. Phase 0 extracts them verbatim into a shared file; `/ui` then imports from that file (single source of truth preserved, zero visual change).
 
-## Gaps to close
-- No `notifications` table.
-- `matches` has no unmatch/archive state or DELETE path.
-- `settings` has no sort/filter preference storage.
-- No matches-list RPC (list + latest message + unread count in one query).
-- Matches tab + home "Matches today" card are not linked to real routes.
+## Current state (verified)
+- `matches.functions.ts` already has `getConversation`, `sendMessage`, `markConversationRead`, `getMatchDetail`, `unmatch`, prefs, plus signed-URL helpers.
+- A working thread exists at `/matches/$matchId/chat` — its logic is reused/moved, not duplicated.
+- `messages` columns: `id, match_id, sender_id, body, read_at, created_at`. No image or reply columns yet.
+- `notify_on_message` / `notify_on_match` triggers already generate notifications. `reports` and `blocks` tables exist. Photos bucket `profile-photos` is private.
 
 ---
 
-## Phase 1 — Database (single migration)
-1. `matches`: add `status text NOT NULL DEFAULT 'active'` (`active` | `unmatched`), `unmatched_by uuid`, `unmatched_at timestamptz`. Add owner UPDATE policy (participants only) so unmatch can flip status. Keep messages intact (archive, not delete).
-2. `notifications` table: `id`, `user_id`, `type` (`match` | `message` | `note` | `system`), `title`, `body`, `data jsonb`, `read_at`, `created_at`. GRANTs (`authenticated`, `service_role`), RLS (users see/update only their own), realtime enabled.
-3. `settings`: add `match_sort text DEFAULT 'recent_activity'` and `match_filters jsonb DEFAULT '[]'` for persisted preferences.
-4. SECURITY DEFINER RPCs:
-   - `my_matches()` → for each active match of `auth.uid()`: other participant (name, age, college, department, primary photo path, last_login_at), match `created_at`/`last_message_at`, latest message body+sender+time, unread count (messages where `sender_id <> me AND read_at IS NULL`). Excludes blocked relationships and unmatched rows.
-   - `match_detail(_match_id)` → full participant profile (gallery paths, bio, interests, common interests, semester, grad year, last active) + match meta + conversation-exists flag; validates ownership; returns null for invalid/blocked/removed.
-   - `unmatch(_match_id)` → validates ownership, sets `status='unmatched'`, stamps `unmatched_by/at` (transactional).
-   - `note_status(_match_id)` → whether the current user already sent a first note (prevents duplicates).
-5. Notification triggers: on new `matches` row → insert `match` notifications for both users; on new `messages` row → insert `message`/`note` notification for the recipient.
+## Phase 0 — Extract `/ui` chat components (no behavior change)
+Create `src/components/ds/chat.tsx` and move these from `ui.tsx` verbatim: `Bubble`, `MetaRow`, `Ticks`, `bubbleRadii`, `DayDivider`, `ChatHeader`, `TypingBubble`, `VoiceMessage`, `ImageMessage`, `Composer`/`ComposerAction`, plus the `GroupPos`/`MsgState` types. Generalize props so they accept real data (text, time, state, avatar, image URL, onSend, value, disabled, onAttach) while keeping identical markup/styles. Update `ui.tsx` to import them so the `/ui` showcase is unchanged.
 
-## Phase 2 — Server functions (`src/lib/matches.functions.ts`)
-All `createServerFn` + `requireSupabaseAuth`, returning plain DTOs, with `queryOptions` factories:
-- `matchesListQuery()` — calls `my_matches`, signs primary photo paths, returns `MatchListItem[]`.
-- `matchDetailQuery(matchId)` — calls `match_detail`, signs gallery paths.
-- `sendFirstNote({matchId, body})` — validates (non-empty, max length), checks `note_status`, inserts message, returns conversation target. (Extends existing `sendMatchNote`.)
-- `openConversation({matchId})` — ensures/opens conversation (1:1 match already is the conversation; guarantees no duplicate), returns route target.
-- `unmatch({matchId})`, and reuse existing `blockUser` / `reportUser`.
-- `updateMatchPrefs({sort, filters})` — persists to `settings`.
-- Unread total helper for the nav badge.
+## Phase 1 — Database & storage (one migration)
+- `ALTER TABLE public.messages ADD COLUMN image_path text, ADD COLUMN reply_to uuid REFERENCES public.messages(id) ON DELETE SET NULL, ADD COLUMN kind text NOT NULL DEFAULT 'text';` (kind ∈ text/image — future-proof for voice/video).
+- Index: `messages(match_id, created_at)` and `messages(reply_to)`.
+- Create private storage bucket `chat-media` (via storage tool) with RLS on `storage.objects`: a user may read/insert an object only if its path prefix is a `matchId` they participate in (active match, not blocked). Enforced with a `SECURITY DEFINER` helper `public.is_chat_participant(_match_id uuid)`.
+- Add RPC `mark_read(_match_id uuid)` and keep existing message RLS (participants only, active match, not blocked).
+- Ensure realtime: `ALTER PUBLICATION supabase_realtime ADD TABLE public.messages, public.matches, public.blocks;` (skip if already present).
+- Grants per standard (authenticated + service_role) for any new objects.
 
-## Phase 3 — Routes & UI (mobile-first, `/ui` components only)
-- `_authenticated/matches.tsx` — layout guard (onboarding complete) + `<Outlet/>`, mirrors `discover.tsx`.
-- `_authenticated/matches.index.tsx` — dashboard: skeleton loaders, match cards (photo, name, age, college, department, match timestamp, latest-message preview, unread badge, online dot, Open Chat / View Match / Preview actions), instant local **search** (name/college/department), **sort** menu (recent match, newest messages, unread first, online first, alphabetical), **filter** chips (unread, online, recently matched, same college, same department), empty + error states. Sort/filter persisted via `updateMatchPrefs`. Realtime: subscribe to `matches`, `messages`, `blocks`, `profiles` to update list live.
-- `_authenticated/matches.$matchId.tsx` — match details: gallery (reuse `PhotoCarousel`), profile info, common interests, match date, online/last-active, actions (Open Chat, Send Note, View Full Profile → reuse `/discover/profile/:userId`, Unmatch, Block, Report). Realtime online/profile refresh.
-- `_authenticated/matches.$matchId.note.tsx` — first-note composer: multiline input, live char counter + max limit, validation, loading button; if a note exists, show it read-only; on send → create message + navigate to chat target. Guards duplicate/deleted/blocked.
-- `_authenticated/matches.$matchId.unmatch.tsx`, `.block.tsx`, `.report.tsx` — dedicated full-page confirm/report flows (no popups), each with consequences copy, confirmation, and rollback-safe calls.
+## Phase 2 — Server functions (`src/lib/chat.functions.ts`)
+Authenticated (`requireSupabaseAuth`), RLS-scoped, plain-DTO returns:
+- `getChatList()` — reuse `my_matches` RPC → conversation rows (photo signed, last message, unread, other profile). Ordered by last activity.
+- `getConversation({chatId, before?, limit})` — paginated (keyset on `created_at`) ascending window for infinite scroll; joins `reply_to` preview; signs `image_path`.
+- `sendMessage({chatId, body?, imagePath?, replyTo?})` — validates ownership/active-match/not-blocked, length (`MESSAGE_MAX=2000`), inserts, returns row. (Trigger creates notification.)
+- `createChatImageUpload({chatId, ext})` — returns a signed upload URL / path in `chat-media/<chatId>/...`.
+- `markConversationRead({chatId})`, `getChatInfo({chatId})` (profile + match date + shared media count), `getSharedMedia({chatId, before?})`, `reportUser`, `blockUser`, `unmatch` (reuse existing where present).
+Add matching `queryOptions` factories. Register nothing new in `start.ts` (bearer middleware already wired).
 
-## Phase 4 — Wiring & sync
-- `DiscoverShell`: Matches tab navigates to `/matches` (remove its coming-soon branch); feed the live unread/matches count into `matchesBadge` across Home/Discover/Matches.
-- Home dashboard: "Matches today" card and match-related CTAs navigate to `/matches`.
-- Discovery match celebration "Send note" path already writes a real message — confirm it lands the user in the Matches/chat flow consistently.
-- Root `onAuthStateChange` already invalidates queries; add match/notification query keys to realtime invalidation so counts stay synced app-wide.
+## Phase 3 — Conversation list `/chat` (`_authenticated/chat.index.tsx`)
+- Layout route `chat.tsx` renders `<Outlet/>`; `chat.index.tsx` is the inbox.
+- Uses `DiscoverShell` + the extracted list/card styling. Shows photo, name, last message, timestamp, unread badge, online dot, live typing indicator.
+- Instant client search over name/college/department/last message. Empty-search, no-results, and skeleton states.
+- Realtime: subscribe to `messages` INSERT/UPDATE, `matches`, `blocks`, presence set; invalidate list queries. Presence via existing `use-presence-set`.
 
-## Phase 5 — Verification
-- `tsgo` typecheck clean; no console/runtime errors.
-- Playwright pass on `/matches` and detail/note/unmatch/block/report flows against the live preview (with the injected Supabase session), plus realtime sanity (new message updates unread badge).
+## Phase 4 — Conversation screen `/chat/:chatId`
+- `ChatHeader` (real avatar, name, live presence, back). Message list built from `Bubble`/`ImageMessage`/`DayDivider`/`TypingBubble` with grouping, day separators, unread separator, read receipts (`read_at`), timestamps.
+- `Composer` wired: controlled input, auto-resize, char validation, draft persistence (localStorage per chat), send button state, image attach.
+- Optimistic send with sending→sent→read states and retry on failure; never lose draft.
+- Realtime message stream + typing broadcast (channel `chat:<id>`, ephemeral, expires on inactivity) + presence. Auto-scroll to newest; preserve scroll on older-page load (infinite scroll upward via `before` cursor). Mark read on view; broadcast read.
+- Image send: pick → validate type/size → upload to `chat-media` with progress → insert image message → render preview; tap opens fullscreen viewer (reuse `/ui` shared-element viewer). Reply: select message → composer reply preview → send with `reply_to`; tap preview scrolls to original.
 
-## Notes / decisions
-- Chat module isn't built yet; "Open Chat" targets the conversation for a match (the match *is* the 1:1 conversation). If no `/chat` route exists at build time, Open Chat routes to the note/detail surface and is chat-ready without redesign. I'll confirm the intended chat target before finalizing that link.
-- `message_reads` from the spec is intentionally folded into `messages.read_at` (correct for 1:1); a separate table would add no value and I'll note this rather than build dead structure.
+## Phase 5 — Info / Media / Report / Unmatch / Block
+- `/chat/:chatId/info`: profile pic, name, college, department, match date, shared-media count; buttons View Media, View Profile, Block, Report, Unmatch.
+- `/chat/:chatId/media`: responsive lazy grid of shared images, paginated, realtime, fullscreen viewer.
+- `/chat/:chatId/report`: dedicated page (no popup) — reason select + optional details, duplicate-report guard, confirmation.
+- Unmatch & Block: dedicated confirmation pages (reuse existing `matches.$matchId.unmatch`/`.block` flows) — archive match, remove match/discovery eligibility, block prevents messaging; realtime updates propagate to `/chat`, `/matches`, Discovery.
 
-Approve and I'll start with the Phase 1 migration.
+## Phase 6 — Cross-module sync, navigation, a11y, verification
+- Wire chat into bottom nav / matches so unread counts, previews, typing, presence, receipts stay in sync with Matches. First note from Matches remains the first message (already works via shared `messages`).
+- Navigation: deep links, back, refresh recovery, scroll restoration, auth guard (under `_authenticated`).
+- Accessibility: semantic roles, ARIA labels, focus states, reduced motion, keyboard send, accessible viewer/forms.
+- Verify: `tsgo` typecheck, security scan on new RLS/bucket, and a Playwright pass on the live preview for send/receive, read receipts, image upload, report, unmatch.
+
+---
+
+## Technical notes
+- Server layer = `createServerFn` only (no edge functions). Admin client not needed; all reads/writes run as the user under RLS.
+- Signed URLs (1h TTL) for all private media, matching existing pattern.
+- Typing & presence are realtime-broadcast only, never persisted.
+- No schema change stores secrets; migration adds columns + one bucket + helper function + realtime publication entries.
+
+## Out of scope (explicitly not built now)
+Voice/video messages, calling, reactions, edit/delete, disappearing/pinned messages, stickers/GIFs, translation, push device tokens — data model left extensible but no UI/logic added.
