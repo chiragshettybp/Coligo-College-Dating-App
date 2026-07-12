@@ -328,7 +328,7 @@ function MatchRow({
       />
       <div style={{ flex: 1, minWidth: 0 }}>
         <div className="flex items-center" style={{ gap: spacing[1], justifyContent: "space-between" }}>
-          <Text variant="headingSm" color={colors.textPrimary} truncate>
+          <Text variant="headingSm" color={colors.textPrimary} truncate style={{ flex: 1, minWidth: 0 }}>
             {name}
             {other.age ? `, ${other.age}` : ""}
           </Text>
