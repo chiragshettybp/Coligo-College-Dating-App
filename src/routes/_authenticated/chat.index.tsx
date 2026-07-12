@@ -14,11 +14,13 @@ import { supabase } from "@/integrations/supabase/client";
 import { chatListQuery, type ChatListItem } from "@/lib/chat.functions";
 import { myProfileQuery } from "@/lib/profile.functions";
 import { useOnlineUserIds } from "@/lib/use-presence-set";
-import { colors, spacing, radii, surfaces } from "@/lib/ds";
+import { colors, spacing, radii, surfaces, gradients, shadows, type as ds, weights } from "@/lib/ds";
 import { Text, Avatar, Skeleton, Button } from "@/components/ds/glass";
 import { TopBar, SearchBar } from "@/components/ds/navigation";
 import { EmptyState, EmptyStateFromPreset } from "@/components/ds/empty-state";
 import { DiscoverShell } from "@/components/discover/shell";
+import { usePushNotifications } from "@/lib/use-push";
+import { toast } from "sonner";
 
 export const Route = createFileRoute("/_authenticated/chat/")({
   loader: ({ context }) => context.queryClient.ensureQueryData(chatListQuery()),
