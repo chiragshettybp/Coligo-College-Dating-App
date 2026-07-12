@@ -47,7 +47,6 @@ import { Route as AuthenticatedHomeRouteImport } from './routes/_authenticated/h
 import { Route as AuthenticatedDiscoverRouteImport } from './routes/_authenticated/discover'
 import { Route as AuthenticatedHomeIndexRouteImport } from './routes/_authenticated/home.index'
 import { Route as AuthenticatedDiscoverIndexRouteImport } from './routes/_authenticated/discover.index'
-import { Route as ApiPublicSeedStudentsRouteImport } from './routes/api/public/seed-students'
 import { Route as AuthenticatedHomeCollegeRankingsRouteImport } from './routes/_authenticated/home.college-rankings'
 import { Route as AuthenticatedDiscoverNoMoreProfilesRouteImport } from './routes/_authenticated/discover.no-more-profiles'
 import { Route as AuthenticatedHomeCollegeCollegeIdRouteImport } from './routes/_authenticated/home.college.$collegeId'
@@ -245,11 +244,6 @@ const AuthenticatedDiscoverIndexRoute =
     path: '/',
     getParentRoute: () => AuthenticatedDiscoverRoute,
   } as any)
-const ApiPublicSeedStudentsRoute = ApiPublicSeedStudentsRouteImport.update({
-  id: '/api/public/seed-students',
-  path: '/api/public/seed-students',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const AuthenticatedHomeCollegeRankingsRoute =
   AuthenticatedHomeCollegeRankingsRouteImport.update({
     id: '/college-rankings',
@@ -318,7 +312,6 @@ export interface FileRoutesByFullPath {
   '/onboarding/': typeof OnboardingIndexRoute
   '/discover/no-more-profiles': typeof AuthenticatedDiscoverNoMoreProfilesRoute
   '/home/college-rankings': typeof AuthenticatedHomeCollegeRankingsRoute
-  '/api/public/seed-students': typeof ApiPublicSeedStudentsRoute
   '/discover/': typeof AuthenticatedDiscoverIndexRoute
   '/home/': typeof AuthenticatedHomeIndexRoute
   '/discover/match/$matchId': typeof AuthenticatedDiscoverMatchMatchIdRoute
@@ -358,7 +351,6 @@ export interface FileRoutesByTo {
   '/onboarding': typeof OnboardingIndexRoute
   '/discover/no-more-profiles': typeof AuthenticatedDiscoverNoMoreProfilesRoute
   '/home/college-rankings': typeof AuthenticatedHomeCollegeRankingsRoute
-  '/api/public/seed-students': typeof ApiPublicSeedStudentsRoute
   '/discover': typeof AuthenticatedDiscoverIndexRoute
   '/home': typeof AuthenticatedHomeIndexRoute
   '/discover/match/$matchId': typeof AuthenticatedDiscoverMatchMatchIdRoute
@@ -405,7 +397,6 @@ export interface FileRoutesById {
   '/onboarding/': typeof OnboardingIndexRoute
   '/_authenticated/discover/no-more-profiles': typeof AuthenticatedDiscoverNoMoreProfilesRoute
   '/_authenticated/home/college-rankings': typeof AuthenticatedHomeCollegeRankingsRoute
-  '/api/public/seed-students': typeof ApiPublicSeedStudentsRoute
   '/_authenticated/discover/': typeof AuthenticatedDiscoverIndexRoute
   '/_authenticated/home/': typeof AuthenticatedHomeIndexRoute
   '/_authenticated/discover/match/$matchId': typeof AuthenticatedDiscoverMatchMatchIdRoute
@@ -451,7 +442,6 @@ export interface FileRouteTypes {
     | '/onboarding/'
     | '/discover/no-more-profiles'
     | '/home/college-rankings'
-    | '/api/public/seed-students'
     | '/discover/'
     | '/home/'
     | '/discover/match/$matchId'
@@ -491,7 +481,6 @@ export interface FileRouteTypes {
     | '/onboarding'
     | '/discover/no-more-profiles'
     | '/home/college-rankings'
-    | '/api/public/seed-students'
     | '/discover'
     | '/home'
     | '/discover/match/$matchId'
@@ -537,7 +526,6 @@ export interface FileRouteTypes {
     | '/onboarding/'
     | '/_authenticated/discover/no-more-profiles'
     | '/_authenticated/home/college-rankings'
-    | '/api/public/seed-students'
     | '/_authenticated/discover/'
     | '/_authenticated/home/'
     | '/_authenticated/discover/match/$matchId'
@@ -555,7 +543,6 @@ export interface RootRouteChildren {
   UiRoute: typeof UiRoute
   SystemMaintenanceRoute: typeof SystemMaintenanceRoute
   SystemSplashRoute: typeof SystemSplashRoute
-  ApiPublicSeedStudentsRoute: typeof ApiPublicSeedStudentsRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -826,13 +813,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedDiscoverIndexRouteImport
       parentRoute: typeof AuthenticatedDiscoverRoute
     }
-    '/api/public/seed-students': {
-      id: '/api/public/seed-students'
-      path: '/api/public/seed-students'
-      fullPath: '/api/public/seed-students'
-      preLoaderRoute: typeof ApiPublicSeedStudentsRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/_authenticated/home/college-rankings': {
       id: '/_authenticated/home/college-rankings'
       path: '/college-rankings'
@@ -1010,7 +990,6 @@ const rootRouteChildren: RootRouteChildren = {
   UiRoute: UiRoute,
   SystemMaintenanceRoute: SystemMaintenanceRoute,
   SystemSplashRoute: SystemSplashRoute,
-  ApiPublicSeedStudentsRoute: ApiPublicSeedStudentsRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
