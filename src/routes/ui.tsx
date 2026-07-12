@@ -59,12 +59,12 @@ import {
   Toggle,
 } from "@/components/ds/glass";
 
-import memoji1 from "@/assets/memoji1.jpg";
-import memoji2 from "@/assets/memoji2.jpg";
-import memoji3 from "@/assets/memoji3.jpg";
-import memoji4 from "@/assets/memoji4.jpg";
-import memoji5 from "@/assets/memoji5.jpg";
-import ana from "@/assets/ana.jpg";
+import memoji1 from "@/assets/sample.png";
+import memoji2 from "@/assets/sample.png";
+import memoji3 from "@/assets/sample.png";
+import memoji4 from "@/assets/sample.png";
+import memoji5 from "@/assets/sample.png";
+import ana from "@/assets/sample.png";
 
 export const Route = createFileRoute("/ui")({
   head: () => ({
