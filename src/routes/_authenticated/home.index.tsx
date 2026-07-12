@@ -458,7 +458,7 @@ function HomeDashboardPage() {
 
         {/* Quick stats */}
         <section>
-          <SectionHead title="On CampusMatch" />
+          <SectionHead title="On Coligo" />
           <div className="grid" style={{ gridTemplateColumns: "1fr 1fr", gap: spacing[3] }}>
             <StatCard
               label="Verified students"

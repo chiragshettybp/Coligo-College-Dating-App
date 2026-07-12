@@ -14,7 +14,7 @@ import { phoneSchema, OTP_ENABLED } from "@/lib/auth";
 import { haptic } from "@/lib/haptics";
 
 export const Route = createFileRoute("/auth/forgot-password")({
-  head: () => ({ meta: [{ title: "Reset password — CampusMatch" }] }),
+  head: () => ({ meta: [{ title: "Reset password — Coligo" }] }),
   component: ForgotPasswordPage,
 });
 

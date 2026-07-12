@@ -20,7 +20,7 @@ import { Text } from "@/components/ds/glass";
 import { colors, radii, surfaces, spacing, shadows, gradients } from "@/lib/ds";
 
 export const Route = createFileRoute("/onboarding/photos")({
-  head: () => ({ meta: [{ title: "Your photos — CampusMatch" }, { name: "robots", content: "noindex" }] }),
+  head: () => ({ meta: [{ title: "Your photos — Coligo" }, { name: "robots", content: "noindex" }] }),
   component: PhotosStep,
 });
 
@@ -244,7 +244,7 @@ function PhotosStep() {
         {photos.length}/{LIMITS.photosMax} added{photos.length < LIMITS.photosMin ? ` · add ${LIMITS.photosMin - photos.length} more to continue` : ""}
       </Text>
 
-      <InfoNote>Photos are private to CampusMatch and only shown to verified students during matching.</InfoNote>
+      <InfoNote>Photos are private to Coligo and only shown to verified students during matching.</InfoNote>
     </OnboardingScreen>
   );
 }

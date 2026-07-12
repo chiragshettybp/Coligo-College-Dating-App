@@ -23,13 +23,13 @@ import { colors, spacing, radii } from "@/lib/ds";
 export const Route = createFileRoute("/_public/about")({
   head: () => ({
     meta: [
-      { title: "About CampusMatch — Our Mission" },
+      { title: "About Coligo — Our Mission" },
       {
         name: "description",
         content:
-          "CampusMatch is on a mission to help verified college students in India form genuine, safe connections. Learn about our vision, values, and roadmap.",
+          "Coligo is on a mission to help verified college students in India form genuine, safe connections. Learn about our vision, values, and roadmap.",
       },
-      { property: "og:title", content: "About CampusMatch — Our Mission" },
+      { property: "og:title", content: "About Coligo — Our Mission" },
       {
         property: "og:description",
         content: "Our mission to help verified college students connect safely.",

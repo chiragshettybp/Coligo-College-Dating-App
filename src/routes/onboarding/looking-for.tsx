@@ -8,7 +8,7 @@ import { useOnboardingState, useSaveStep } from "@/components/onboarding/useOnbo
 import { LOOKING_FOR_OPTIONS } from "@/lib/onboarding";
 
 export const Route = createFileRoute("/onboarding/looking-for")({
-  head: () => ({ meta: [{ title: "Looking for — CampusMatch" }, { name: "robots", content: "noindex" }] }),
+  head: () => ({ meta: [{ title: "Looking for — Coligo" }, { name: "robots", content: "noindex" }] }),
   component: LookingForStep,
 });
 

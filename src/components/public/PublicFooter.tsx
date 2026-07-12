@@ -1,8 +1,9 @@
 import { Link } from "@tanstack/react-router";
-import { Heart, Mail, Instagram, Twitter, Linkedin } from "lucide-react";
+import { Mail, Instagram, Twitter, Linkedin } from "lucide-react";
 
 import { Text } from "@/components/ds/glass";
-import { colors, radii, spacing, surfaces, gradients } from "@/lib/ds";
+import { BrandLogo } from "@/components/brand/BrandLogo";
+import { colors, radii, spacing, surfaces } from "@/lib/ds";
 
 const LEGAL_LINKS = [
   { to: "/privacy", label: "Privacy Policy" },
@@ -61,24 +62,8 @@ export function PublicFooter() {
         >
           {/* Brand + contact */}
           <div>
-            <div className="inline-flex items-center" style={{ gap: spacing[1] }}>
-              <span
-                aria-hidden
-                className="inline-flex items-center justify-center"
-                style={{
-                  width: 30,
-                  height: 30,
-                  borderRadius: radii.sm,
-                  background: gradients.primaryButton,
-                  color: "#fff",
-                }}
-              >
-                <Heart style={{ width: 16, height: 16, fill: "currentColor" }} />
-              </span>
-              <Text variant="title" color={colors.textPrimary}>
-                CampusMatch
-              </Text>
-            </div>
+            <BrandLogo size={30} wordmarkVariant="title" eager />
+
             <Text variant="bodySm" tone="secondary" style={{ marginTop: spacing[2], maxWidth: 260 }}>
               The verified dating community made exclusively for college students in India.
             </Text>
@@ -176,7 +161,7 @@ export function PublicFooter() {
           }}
         >
           <Text variant="caption" tone="muted">
-            © {year} CampusMatch. All rights reserved. Made for verified college students in India.
+            © {year} Coligo. All rights reserved. Made for verified college students in India.
           </Text>
         </div>
       </div>

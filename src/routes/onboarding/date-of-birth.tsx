@@ -9,7 +9,7 @@ import { Text } from "@/components/ds/glass";
 import { colors, radii, surfaces, spacing } from "@/lib/ds";
 
 export const Route = createFileRoute("/onboarding/date-of-birth")({
-  head: () => ({ meta: [{ title: "Your birthday — CampusMatch" }, { name: "robots", content: "noindex" }] }),
+  head: () => ({ meta: [{ title: "Your birthday — Coligo" }, { name: "robots", content: "noindex" }] }),
   component: DobStep,
 });
 
@@ -23,7 +23,7 @@ function DobStep() {
   return (
     <OnboardingScreen
       title="When's your birthday?"
-      subtitle="You must be 18 or older to use CampusMatch."
+      subtitle="You must be 18 or older to use Coligo."
       onContinue={() => submit({ date_of_birth: dob })}
       continueDisabled={!parsed.success}
       loading={loading}

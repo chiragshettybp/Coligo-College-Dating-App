@@ -15,7 +15,7 @@ import {
 } from "@tanstack/react-router";
 import { useEffect } from "react";
 import { useSuspenseQuery, useQueryClient } from "@tanstack/react-query";
-import { ArrowLeft, Heart } from "lucide-react";
+import { ArrowLeft } from "lucide-react";
 
 import { supabase } from "@/integrations/supabase/client";
 import { getAppConfig } from "@/lib/system.functions";
@@ -34,7 +34,8 @@ import {
   type OnboardingStep,
 } from "@/lib/onboarding";
 import { Text, ProgressBar } from "@/components/ds/glass";
-import { APP_BACKGROUND, FONT_FAMILY, colors, spacing, radii, gradients } from "@/lib/ds";
+import { BrandLogo } from "@/components/brand/BrandLogo";
+import { APP_BACKGROUND, FONT_FAMILY, colors, spacing, radii } from "@/lib/ds";
 
 export const Route = createFileRoute("/onboarding")({
   ssr: false,
@@ -130,13 +131,8 @@ function OnboardingLayout() {
               <ArrowLeft style={{ width: 18, height: 18 }} />
             </button>
           ) : (
-            <span
-              aria-hidden
-              className="inline-flex items-center justify-center shrink-0"
-              style={{ width: 40, height: 40, borderRadius: radii.sm, background: gradients.primaryButton, color: "#fff" }}
-            >
-              <Heart style={{ width: 20, height: 20, fill: "currentColor" }} />
-            </span>
+            <BrandLogo size={40} showWordmark={false} eager className="shrink-0" />
+
           )}
 
           <div style={{ flex: 1 }}>
@@ -145,7 +141,7 @@ function OnboardingLayout() {
                 {step && step !== "complete" ? `Step ${index + 1} of ${TOTAL_STEPS - 1}` : "Almost there"}
               </Text>
               <Text variant="caption" tone="muted">
-                CampusMatch
+                Coligo
               </Text>
             </div>
             <ProgressBar value={progress} />

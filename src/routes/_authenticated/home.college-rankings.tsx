@@ -20,10 +20,10 @@ const SORTS = ["Rank", "Name", "Growth"] as const;
 export const Route = createFileRoute("/_authenticated/home/college-rankings")({
   head: () => ({
     meta: [
-      { title: "College Rankings — CampusMatch" },
+      { title: "College Rankings — Coligo" },
       {
         name: "description",
-        content: "See how colleges rank by verified student community on CampusMatch.",
+        content: "See how colleges rank by verified student community on Coligo.",
       },
     ],
   }),

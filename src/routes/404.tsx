@@ -9,7 +9,7 @@ export const Route = createFileRoute("/404")({
   ssr: false,
   head: () => ({
     meta: [
-      { title: "Page not found — CampusMatch" },
+      { title: "Page not found — Coligo" },
       { name: "robots", content: "noindex" },
     ],
   }),

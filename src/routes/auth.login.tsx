@@ -16,8 +16,8 @@ import { haptic } from "@/lib/haptics";
 export const Route = createFileRoute("/auth/login")({
   head: () => ({
     meta: [
-      { title: "Sign in — CampusMatch" },
-      { name: "description", content: "Sign in to CampusMatch to connect with verified college students." },
+      { title: "Sign in — Coligo" },
+      { name: "description", content: "Sign in to Coligo to connect with verified college students." },
     ],
   }),
   component: LoginPage,
@@ -78,7 +78,7 @@ function LoginPage() {
 
   return (
     <div>
-      <AuthHeader title="Welcome back" subtitle="Sign in to continue to CampusMatch." />
+      <AuthHeader title="Welcome back" subtitle="Sign in to continue to Coligo." />
       <GlassPanel style={{ padding: spacing[5] }}>
         <form onSubmit={onSubmit} noValidate style={{ display: "grid", gap: spacing[3] }}>
           <PhoneField value={phone} onChange={setPhone} error={fieldErr.phone} autoFocus />
@@ -107,7 +107,7 @@ function LoginPage() {
       </GlassPanel>
 
       <Text variant="body" tone="secondary" style={{ display: "block", textAlign: "center", marginTop: spacing[4] }}>
-        New to CampusMatch?{" "}
+        New to Coligo?{" "}
         <Link to="/auth/signup" style={{ fontWeight: 600, color: colors.primary, textDecoration: "none" }}>
           Create an account
         </Link>

@@ -24,12 +24,12 @@ export const Route = createFileRoute("/_authenticated/home/college/$collegeId")(
   },
   head: ({ loaderData }) => ({
     meta: [
-      { title: loaderData ? `${loaderData.name} — CampusMatch` : "College — CampusMatch" },
+      { title: loaderData ? `${loaderData.name} — Coligo` : "College — Coligo" },
       {
         name: "description",
         content: loaderData
-          ? `${loaderData.name}: ${loaderData.memberCount} verified students on CampusMatch.`
-          : "College profile on CampusMatch.",
+          ? `${loaderData.name}: ${loaderData.memberCount} verified students on Coligo.`
+          : "College profile on Coligo.",
       },
     ],
   }),
@@ -259,7 +259,7 @@ function CollegeDetailPage() {
             scene="college"
             tone="primary"
             title="No students yet"
-            description="This college doesn't have verified students on CampusMatch yet. Be the one to start its community."
+            description="This college doesn't have verified students on Coligo yet. Be the one to start its community."
           />
         )}
       </div>

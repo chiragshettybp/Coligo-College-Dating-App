@@ -1,9 +1,10 @@
 import { useEffect, useState } from "react";
 import { Link, useRouterState } from "@tanstack/react-router";
-import { Heart, Menu, X } from "lucide-react";
+import { Menu, X } from "lucide-react";
 
-import { Button, Text } from "@/components/ds/glass";
-import { colors, radii, spacing, surfaces, shadows, gradients } from "@/lib/ds";
+import { Button } from "@/components/ds/glass";
+import { BrandLogo as BrandMark } from "@/components/brand/BrandLogo";
+import { colors, radii, spacing, surfaces, shadows } from "@/lib/ds";
 import { easing, durationMs } from "@/lib/motion";
 import { haptic } from "@/lib/haptics";
 
@@ -18,27 +19,11 @@ function BrandLogo() {
   return (
     <Link
       to="/"
-      aria-label="CampusMatch home"
+      aria-label="Coligo home"
       className="inline-flex items-center"
-      style={{ gap: spacing[1], textDecoration: "none" }}
+      style={{ textDecoration: "none" }}
     >
-      <span
-        aria-hidden
-        className="inline-flex items-center justify-center"
-        style={{
-          width: 34,
-          height: 34,
-          borderRadius: radii.sm,
-          background: gradients.primaryButton,
-          boxShadow: shadows.primaryGlow,
-          color: "#fff",
-        }}
-      >
-        <Heart style={{ width: 18, height: 18, fill: "currentColor" }} />
-      </span>
-      <Text variant="headingSm" color={colors.textPrimary}>
-        CampusMatch
-      </Text>
+      <BrandMark size={34} wordmarkVariant="headingSm" eager />
     </Link>
   );
 }

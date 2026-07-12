@@ -4,10 +4,11 @@
 // and persistent legal links. Mobile-first, centered, one-handed friendly.
 // ============================================================================
 import { createFileRoute, Outlet, Link, useRouter } from "@tanstack/react-router";
-import { Heart, ArrowLeft } from "lucide-react";
+import { ArrowLeft } from "lucide-react";
 
 import { Text, Button } from "@/components/ds/glass";
-import { APP_BACKGROUND, FONT_FAMILY, colors, spacing, radii, gradients } from "@/lib/ds";
+import { BrandLogo } from "@/components/brand/BrandLogo";
+import { APP_BACKGROUND, FONT_FAMILY, colors, spacing } from "@/lib/ds";
 
 export const Route = createFileRoute("/auth")({
   component: AuthLayout,
@@ -38,18 +39,8 @@ function AuthLayout() {
             <ArrowLeft style={{ width: 16, height: 16 }} />
             Home
           </Link>
-          <div className="flex items-center" style={{ gap: spacing[0] }}>
-            <span
-              aria-hidden
-              className="inline-flex items-center justify-center"
-              style={{ width: 32, height: 32, borderRadius: radii.sm, background: gradients.primaryButton, color: "#fff" }}
-            >
-              <Heart style={{ width: 16, height: 16, fill: "currentColor" }} />
-            </span>
-            <Text variant="headingSm" color={colors.textPrimary}>
-              CampusMatch
-            </Text>
-          </div>
+          <BrandLogo size={32} wordmarkVariant="headingSm" eager />
+
         </div>
 
         <div style={{ flex: 1, display: "flex", flexDirection: "column", justifyContent: "center" }}>

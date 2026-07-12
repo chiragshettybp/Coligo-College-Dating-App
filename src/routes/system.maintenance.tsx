@@ -17,7 +17,7 @@ export const Route = createFileRoute("/system/maintenance")({
   ssr: false,
   head: () => ({
     meta: [
-      { title: "Under maintenance — CampusMatch" },
+      { title: "Under maintenance — Coligo" },
       { name: "robots", content: "noindex" },
     ],
   }),
@@ -76,7 +76,7 @@ function MaintenancePage() {
   };
 
   const eta = formatEta(config?.estimatedCompletion ?? null);
-  const supportEmail = config?.supportEmail ?? "support@campusmatch.app";
+  const supportEmail = config?.supportEmail ?? "support@coligo.app";
 
   return (
     <main
@@ -106,7 +106,7 @@ function MaintenancePage() {
           </Text>
           <Text variant="body" tone="secondary" style={{ marginTop: spacing[2] }}>
             {config?.maintenanceMessage ??
-              "CampusMatch is undergoing scheduled maintenance. Please check back soon."}
+              "Coligo is undergoing scheduled maintenance. Please check back soon."}
           </Text>
 
           {eta ? (
