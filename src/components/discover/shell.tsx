@@ -87,13 +87,6 @@ export function DiscoverShell({
           />
         </div>
       </div>
-
-      <BottomSheet open={comingSoon != null} onClose={() => setComingSoon(null)} title={`${comingSoon} — coming soon`}>
-        <Text variant="body" tone="secondary" style={{ marginTop: spacing[2] }}>
-          The {comingSoon} experience is on its way. Keep discovering — your new
-          connections will be waiting here.
-        </Text>
-      </BottomSheet>
     </div>
   );
 }
