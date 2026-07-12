@@ -25,11 +25,120 @@ import {
   radii,
   shadows,
   surfaces,
+  type as typeScale,
+  type TypeToken,
 } from "@/lib/ds";
 import { cn } from "@/lib/utils";
 import { haptic, type HapticToken } from "@/lib/haptics";
 
 const transition = `all ${motion.base} ${motion.snappy}`;
+
+/* -------------------------------------------------------------------- Text */
+
+const TEXT_TAG: Record<TypeToken, keyof React.JSX.IntrinsicElements> = {
+  displayXl: "h1",
+  displayLg: "h1",
+  displayMd: "h1",
+  displaySm: "h2",
+  headingXl: "h2",
+  headingLg: "h2",
+  headingMd: "h3",
+  headingSm: "h4",
+  title: "div",
+  titleMd: "div",
+  bodyLg: "p",
+  body: "p",
+  bodyMd: "p",
+  bodySm: "p",
+  caption: "span",
+  overline: "span",
+  label: "span",
+  buttonLabel: "span",
+  button: "span",
+  inputText: "span",
+  navLabel: "span",
+  badgeLabel: "span",
+  number: "span",
+};
+
+type TextTone = "primary" | "secondary" | "muted" | "inherit";
+const textToneColor: Record<TextTone, string | undefined> = {
+  primary: colors.textPrimary,
+  secondary: colors.textSecondary,
+  muted: colors.textMuted,
+  inherit: undefined,
+};
+
+/**
+ * The single text primitive. Every text role inherits a token from the type
+ * scale — never hardcode a font size. Supports single-line truncation and
+ * multi-line clamping so overflow behaviour is consistent everywhere.
+ */
+export function Text({
+  variant = "body",
+  tone = "primary",
+  as,
+  truncate = false,
+  clamp,
+  numeric = false,
+  align,
+  color,
+  className,
+  style,
+  children,
+  ...rest
+}: {
+  variant?: TypeToken;
+  tone?: TextTone;
+  as?: keyof React.JSX.IntrinsicElements;
+  /** Single-line ellipsis truncation. */
+  truncate?: boolean;
+  /** Multi-line clamp to N lines with ellipsis. */
+  clamp?: number;
+  /** Force tabular figures (for aligned numbers). */
+  numeric?: boolean;
+  align?: React.CSSProperties["textAlign"];
+  color?: string;
+  className?: string;
+  style?: React.CSSProperties;
+  children?: React.ReactNode;
+} & Omit<React.HTMLAttributes<HTMLElement>, "color">) {
+  const Tag = (as ?? TEXT_TAG[variant]) as React.ElementType;
+  const token = typeScale[variant] as React.CSSProperties & {
+    textTransform?: string;
+    fontVariantNumeric?: string;
+  };
+  const clampStyle: React.CSSProperties = clamp
+    ? {
+        display: "-webkit-box",
+        WebkitBoxOrient: "vertical",
+        WebkitLineClamp: clamp,
+        overflow: "hidden",
+      }
+    : {};
+  const truncateStyle: React.CSSProperties = truncate
+    ? { overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }
+    : {};
+  return (
+    <Tag
+      className={className}
+      style={{
+        margin: 0,
+        color: color ?? textToneColor[tone],
+        textAlign: align,
+        ...token,
+        ...(numeric ? { fontVariantNumeric: "tabular-nums" } : {}),
+        ...truncateStyle,
+        ...clampStyle,
+        ...style,
+      }}
+      {...rest}
+    >
+      {children}
+    </Tag>
+  );
+}
+
 
 /* ---------------------------------------------------------------- GlassPanel */
 
