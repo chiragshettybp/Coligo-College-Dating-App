@@ -5,7 +5,7 @@
 // even authenticated users are diverted (session preserved) to the
 // maintenance page.
 // ============================================================================
-import { createFileRoute, Outlet, redirect } from "@tanstack/react-router";
+import { createFileRoute, Outlet, redirect, isRedirect } from "@tanstack/react-router";
 
 import { supabase } from "@/integrations/supabase/client";
 import { getAppConfig } from "@/lib/system.functions";
@@ -25,7 +25,7 @@ export const Route = createFileRoute("/_authenticated")({
     } catch (e) {
       // Re-throw redirects; ignore config fetch failures so a transient
       // network hiccup never locks a signed-in user out of the app.
-      if (e && typeof e === "object" && "to" in e) throw e;
+      if (isRedirect(e)) throw e;
     }
     return { user: data.user };
   },
