@@ -102,7 +102,26 @@ function RootComponent() {
       router.invalidate();
       if (event !== "SIGNED_OUT") queryClient.invalidateQueries();
     });
-    return () => data.subscription.unsubscribe();
+
+    // Realtime maintenance detection: when an admin toggles maintenance, drop
+    // cached config and re-run route guards so the app diverts without a manual
+    // refresh (the _authenticated gate redirects to the maintenance page).
+    const maintenanceChannel = supabase
+      .channel("root_application_settings")
+      .on(
+        "postgres_changes",
+        { event: "*", schema: "public", table: "application_settings" },
+        () => {
+          queryClient.invalidateQueries({ queryKey: ["system", "app-config"] });
+          router.invalidate();
+        },
+      )
+      .subscribe();
+
+    return () => {
+      data.subscription.unsubscribe();
+      void supabase.removeChannel(maintenanceChannel);
+    };
   }, [queryClient, router]);
 
   return (
