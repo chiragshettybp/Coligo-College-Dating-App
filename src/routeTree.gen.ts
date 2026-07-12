@@ -15,6 +15,7 @@ import { Route as PublicRouteRouteImport } from './routes/_public/route'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as AuthIndexRouteImport } from './routes/auth.index'
 import { Route as PublicIndexRouteImport } from './routes/_public/index'
+import { Route as SystemSplashRouteImport } from './routes/system.splash'
 import { Route as AuthVerifyOtpRouteImport } from './routes/auth.verify-otp'
 import { Route as AuthSignupRouteImport } from './routes/auth.signup'
 import { Route as AuthResetPasswordRouteImport } from './routes/auth.reset-password'
@@ -54,6 +55,11 @@ const PublicIndexRoute = PublicIndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => PublicRouteRoute,
+} as any)
+const SystemSplashRoute = SystemSplashRouteImport.update({
+  id: '/system/splash',
+  path: '/system/splash',
+  getParentRoute: () => rootRouteImport,
 } as any)
 const AuthVerifyOtpRoute = AuthVerifyOtpRouteImport.update({
   id: '/verify-otp',
@@ -127,6 +133,7 @@ export interface FileRoutesByFullPath {
   '/auth/reset-password': typeof AuthResetPasswordRoute
   '/auth/signup': typeof AuthSignupRoute
   '/auth/verify-otp': typeof AuthVerifyOtpRoute
+  '/system/splash': typeof SystemSplashRoute
   '/auth/': typeof AuthIndexRoute
 }
 export interface FileRoutesByTo {
@@ -143,6 +150,7 @@ export interface FileRoutesByTo {
   '/auth/reset-password': typeof AuthResetPasswordRoute
   '/auth/signup': typeof AuthSignupRoute
   '/auth/verify-otp': typeof AuthVerifyOtpRoute
+  '/system/splash': typeof SystemSplashRoute
   '/auth': typeof AuthIndexRoute
 }
 export interface FileRoutesById {
@@ -162,6 +170,7 @@ export interface FileRoutesById {
   '/auth/reset-password': typeof AuthResetPasswordRoute
   '/auth/signup': typeof AuthSignupRoute
   '/auth/verify-otp': typeof AuthVerifyOtpRoute
+  '/system/splash': typeof SystemSplashRoute
   '/_public/': typeof PublicIndexRoute
   '/auth/': typeof AuthIndexRoute
 }
@@ -182,6 +191,7 @@ export interface FileRouteTypes {
     | '/auth/reset-password'
     | '/auth/signup'
     | '/auth/verify-otp'
+    | '/system/splash'
     | '/auth/'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -198,6 +208,7 @@ export interface FileRouteTypes {
     | '/auth/reset-password'
     | '/auth/signup'
     | '/auth/verify-otp'
+    | '/system/splash'
     | '/auth'
   id:
     | '__root__'
@@ -216,6 +227,7 @@ export interface FileRouteTypes {
     | '/auth/reset-password'
     | '/auth/signup'
     | '/auth/verify-otp'
+    | '/system/splash'
     | '/_public/'
     | '/auth/'
   fileRoutesById: FileRoutesById
@@ -225,6 +237,7 @@ export interface RootRouteChildren {
   PublicRouteRoute: typeof PublicRouteRouteWithChildren
   AuthRoute: typeof AuthRouteWithChildren
   UiRoute: typeof UiRoute
+  SystemSplashRoute: typeof SystemSplashRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -270,6 +283,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/'
       preLoaderRoute: typeof PublicIndexRouteImport
       parentRoute: typeof PublicRouteRoute
+    }
+    '/system/splash': {
+      id: '/system/splash'
+      path: '/system/splash'
+      fullPath: '/system/splash'
+      preLoaderRoute: typeof SystemSplashRouteImport
+      parentRoute: typeof rootRouteImport
     }
     '/auth/verify-otp': {
       id: '/auth/verify-otp'
@@ -409,6 +429,7 @@ const rootRouteChildren: RootRouteChildren = {
   PublicRouteRoute: PublicRouteRouteWithChildren,
   AuthRoute: AuthRouteWithChildren,
   UiRoute: UiRoute,
+  SystemSplashRoute: SystemSplashRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
