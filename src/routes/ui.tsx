@@ -22,6 +22,15 @@ import {
   Flame,
   RotateCcw,
   Zap,
+  ChevronLeft,
+  Phone,
+  Video,
+  CheckCheck,
+  Play,
+  Mic,
+  Camera,
+  Smile,
+  ArrowUp,
 } from "lucide-react";
 
 import {
@@ -33,6 +42,8 @@ import {
   shadows,
   spacing,
   surfaces,
+  type,
+  weights,
 } from "@/lib/ds";
 import {
   Avatar,
@@ -630,29 +641,48 @@ function UIShowcase() {
         </Section>
 
         {/* Chat */}
-        <Section title="Chat" description="Message bubbles, typing indicator and receipts.">
-          <GlassPanel style={{ padding: spacing[5] }}>
-            <div className="flex flex-col gap-3">
-              <Bubble mine={false}>Hey! Saw we're both in CS 👋</Bubble>
-              <Bubble mine>No way, what year are you?</Bubble>
-              <Bubble mine={false}>Second year. Coffee this week?</Bubble>
-              <div className="flex items-center gap-1.5" style={{ paddingLeft: 4 }}>
-                {[0, 1, 2].map((i) => (
-                  <span
-                    key={i}
-                    className="rounded-full"
-                    style={{
-                      width: 8,
-                      height: 8,
-                      background: colors.textMuted,
-                      animation: `ds-typing 1.2s ${i * 0.15}s ease-in-out infinite`,
-                    }}
-                  />
-                ))}
-              </div>
+        <Section
+          title="Chat"
+          description="A native messaging surface — grouped bubbles, receipts, reactions, voice, media and composer."
+        >
+          <GlassPanel style={{ padding: 0, overflow: "hidden" }}>
+            <ChatHeader />
+            <div
+              className="flex flex-col"
+              style={{ padding: `${spacing[4]}px ${spacing[4]}px ${spacing[3]}px`, gap: 2 }}
+            >
+              <DayDivider label="Today" />
+
+              <Bubble mine={false} entrance groupPos="single" tail>
+                Hey! Saw we're both in CS 👋
+              </Bubble>
+
+              <Bubble mine entrance groupPos="first">
+                No way, what year are you?
+              </Bubble>
+              <Bubble mine entrance groupPos="last" tail state="read" time="9:41">
+                We should study together sometime
+              </Bubble>
+
+              <Bubble
+                mine={false}
+                entrance
+                groupPos="single"
+                reactions={["❤️", "🔥"]}
+              >
+                Second year. Coffee this week? ☕️
+              </Bubble>
+
+              <VoiceMessage mine={false} />
+
+              <ImageMessage mine time="9:44" state="delivered" />
+
+              <TypingBubble />
             </div>
+            <Composer />
           </GlassPanel>
         </Section>
+
 
         {/* Toggles & settings */}
         <Section title="Settings Controls" description="Toggles and switches for preferences.">
@@ -1117,29 +1147,376 @@ function Alert({
   );
 }
 
-function Bubble({ children, mine }: { children: React.ReactNode; mine?: boolean }) {
+// ---------------------------------------------------------------------------
+// Chat design system
+// ---------------------------------------------------------------------------
+
+type GroupPos = "single" | "first" | "middle" | "last";
+type MsgState = "sending" | "sent" | "delivered" | "read";
+
+function bubbleRadii(mine: boolean, pos: GroupPos) {
+  const R = 22;
+  const tight = 7;
+  const r = { tl: R, tr: R, br: R, bl: R };
+  if (mine) {
+    if (pos === "first") r.br = tight;
+    else if (pos === "middle") { r.tr = tight; r.br = tight; }
+    else if (pos === "last") r.tr = tight;
+  } else {
+    if (pos === "first") r.bl = tight;
+    else if (pos === "middle") { r.tl = tight; r.bl = tight; }
+    else if (pos === "last") r.tl = tight;
+  }
+  return `${r.tl}px ${r.tr}px ${r.br}px ${r.bl}px`;
+}
+
+function Ticks({ state }: { state: MsgState }) {
+  const color = state === "read" ? colors.primary : "rgba(255,255,255,0.7)";
+  if (state === "sending")
+    return (
+      <span
+        className="ds-rec-pulse inline-block rounded-full"
+        style={{ width: 9, height: 9, border: `1.5px solid rgba(255,255,255,0.6)` }}
+        aria-label="Sending"
+      />
+    );
+  if (state === "sent")
+    return <Check style={{ width: 14, height: 14, color }} aria-label="Sent" />;
+  return <CheckCheck style={{ width: 15, height: 15, color }} aria-label={state} />;
+}
+
+function MetaRow({ mine, time, state }: { mine: boolean; time?: string; state?: MsgState }) {
+  if (!time && !state) return null;
   return (
-    <div className="flex" style={{ justifyContent: mine ? "flex-end" : "flex-start" }}>
-      <div
+    <div
+      className="flex items-center gap-1"
+      style={{
+        justifyContent: mine ? "flex-end" : "flex-start",
+        marginTop: 3,
+        paddingLeft: mine ? 0 : 6,
+        paddingRight: mine ? 6 : 0,
+      }}
+    >
+      {time && (
+        <span style={{ ...type.caption, fontSize: 11, color: colors.textMuted }}>{time}</span>
+      )}
+      {mine && state && <Ticks state={state} />}
+    </div>
+  );
+}
+
+function Bubble({
+  children,
+  mine,
+  groupPos = "single",
+  tail,
+  time,
+  state,
+  reactions,
+  entrance,
+}: {
+  children: React.ReactNode;
+  mine?: boolean;
+  groupPos?: GroupPos;
+  tail?: boolean;
+  time?: string;
+  state?: MsgState;
+  reactions?: string[];
+  entrance?: boolean;
+}) {
+  const isMine = !!mine;
+  return (
+    <div
+      className={`flex flex-col ${entrance ? (isMine ? "ds-msg-out" : "ds-msg-in") : ""}`}
+      style={{
+        alignItems: isMine ? "flex-end" : "flex-start",
+        marginTop: groupPos === "first" || groupPos === "single" ? 8 : 2,
+        marginBottom: reactions?.length ? 8 : 0,
+      }}
+    >
+      <div style={{ position: "relative", maxWidth: "80%" }}>
+        <div
+          style={{
+            padding: "9px 14px",
+            borderRadius: bubbleRadii(isMine, groupPos),
+            ...type.bodyLg,
+            fontSize: 15,
+            lineHeight: 1.35,
+            fontWeight: weights.medium,
+            color: "#fff",
+            background: isMine ? gradients.primaryButton : surfaces.glassSoft,
+            border: `1px solid ${isMine ? "transparent" : surfaces.border}`,
+            boxShadow: isMine ? shadows.primaryGlow : shadows.soft,
+            wordBreak: "break-word",
+          }}
+        >
+          {children}
+        </div>
+        {reactions?.length ? (
+          <div
+            className="ds-react-pop flex items-center gap-0.5 rounded-full"
+            style={{
+              position: "absolute",
+              bottom: -12,
+              [isMine ? "right" : "left"]: 10,
+              padding: "2px 7px",
+              background: "rgba(8,12,26,0.9)",
+              border: `1px solid ${surfaces.border}`,
+              boxShadow: shadows.soft,
+              fontSize: 12,
+            }}
+          >
+            {reactions.map((r, i) => (
+              <span key={i}>{r}</span>
+            ))}
+          </div>
+        ) : null}
+      </div>
+      {tail && <MetaRow mine={isMine} time={time} state={state} />}
+    </div>
+  );
+}
+
+function DayDivider({ label }: { label: string }) {
+  return (
+    <div className="flex items-center justify-center" style={{ margin: "4px 0 10px" }}>
+      <span
         style={{
-          maxWidth: "78%",
-          padding: "10px 16px",
-          borderRadius: radii.lg,
-          borderBottomRightRadius: mine ? 6 : radii.lg,
-          borderBottomLeftRadius: mine ? radii.lg : 6,
-          fontSize: 15,
-          fontWeight: 500,
-          color: "#fff",
-          background: mine ? gradients.primaryButton : surfaces.glassSoft,
-          border: `1px solid ${mine ? surfaces.borderStrong : surfaces.border}`,
-          boxShadow: mine ? shadows.primaryGlow : "none",
+          ...type.caption,
+          color: colors.textMuted,
+          background: surfaces.glassPill,
+          border: `1px solid ${surfaces.borderSoft}`,
+          padding: "3px 12px",
+          borderRadius: radii.pill,
         }}
       >
-        {children}
+        {label}
+      </span>
+    </div>
+  );
+}
+
+function ChatHeader() {
+  return (
+    <div
+      className="flex items-center gap-3"
+      style={{
+        padding: `${spacing[3]}px ${spacing[4]}px`,
+        borderBottom: `1px solid ${surfaces.borderSoft}`,
+        background: "rgba(8,12,26,0.5)",
+      }}
+    >
+      <button
+        aria-label="Back"
+        className="flex shrink-0 items-center justify-center rounded-full"
+        style={{ width: 36, height: 36, color: colors.primary }}
+      >
+        <ChevronLeft style={{ width: 24, height: 24 }} />
+      </button>
+      <Avatar src={ana} size="sm" status="online" />
+      <div className="min-w-0 flex-1">
+        <div style={{ ...type.titleMd, color: "#fff" }} className="truncate">
+          Ana Rivera
+        </div>
+        <div className="flex items-center gap-1.5">
+          <span
+            className="rounded-full"
+            style={{ width: 7, height: 7, background: colors.success, boxShadow: shadows.glow }}
+          />
+          <span style={{ ...type.caption, color: colors.success }}>Active now</span>
+        </div>
+      </div>
+      <button
+        aria-label="Voice call"
+        className="flex shrink-0 items-center justify-center rounded-full"
+        style={{ width: 40, height: 40, color: "#fff", background: surfaces.glassSoft, border: `1px solid ${surfaces.border}` }}
+      >
+        <Phone style={{ width: 18, height: 18 }} />
+      </button>
+      <button
+        aria-label="Video call"
+        className="flex shrink-0 items-center justify-center rounded-full"
+        style={{ width: 40, height: 40, color: "#fff", background: surfaces.glassSoft, border: `1px solid ${surfaces.border}` }}
+      >
+        <Video style={{ width: 18, height: 18 }} />
+      </button>
+    </div>
+  );
+}
+
+function TypingBubble() {
+  return (
+    <div className="ds-msg-in flex" style={{ marginTop: 8 }}>
+      <div
+        className="flex items-center gap-1.5"
+        style={{
+          padding: "12px 16px",
+          borderRadius: "22px 22px 22px 7px",
+          background: surfaces.glassSoft,
+          border: `1px solid ${surfaces.border}`,
+          boxShadow: shadows.soft,
+        }}
+      >
+        {[0, 1, 2].map((i) => (
+          <span
+            key={i}
+            className="rounded-full"
+            style={{
+              width: 7,
+              height: 7,
+              background: colors.textSecondary,
+              animation: `ds-typing 1.2s ${i * 0.15}s ease-in-out infinite`,
+            }}
+          />
+        ))}
       </div>
     </div>
   );
 }
+
+const WAVE_BARS = [0.4, 0.7, 1, 0.6, 0.85, 0.5, 0.75, 1, 0.55, 0.9, 0.45, 0.7, 0.3, 0.6, 0.8, 0.5];
+
+function VoiceMessage({ mine }: { mine?: boolean }) {
+  const isMine = !!mine;
+  return (
+    <Bubble mine={isMine} groupPos="single" tail time="9:43" state={isMine ? "read" : undefined}>
+      <div className="flex items-center gap-3" style={{ minWidth: 190 }}>
+        <button
+          aria-label="Play voice message"
+          className="flex shrink-0 items-center justify-center rounded-full"
+          style={{ width: 34, height: 34, background: "rgba(255,255,255,0.16)", color: "#fff" }}
+        >
+          <Play style={{ width: 15, height: 15, marginLeft: 1 }} fill="currentColor" />
+        </button>
+        <div className="flex flex-1 items-center gap-[3px]" style={{ height: 26 }}>
+          {WAVE_BARS.map((h, i) => (
+            <span
+              key={i}
+              style={{
+                flex: 1,
+                height: `${Math.round(h * 100)}%`,
+                borderRadius: 2,
+                background: i < 6 ? "#fff" : "rgba(255,255,255,0.4)",
+                transformOrigin: "center",
+              }}
+            />
+          ))}
+        </div>
+        <span style={{ ...type.caption, color: "rgba(255,255,255,0.85)" }}>0:12</span>
+      </div>
+    </Bubble>
+  );
+}
+
+function ImageMessage({ mine, time, state }: { mine?: boolean; time?: string; state?: MsgState }) {
+  const isMine = !!mine;
+  return (
+    <div
+      className="ds-msg-out flex flex-col"
+      style={{ alignItems: isMine ? "flex-end" : "flex-start", marginTop: 8 }}
+    >
+      <div
+        style={{
+          width: 200,
+          height: 148,
+          borderRadius: radii.md,
+          overflow: "hidden",
+          border: `1px solid ${surfaces.border}`,
+          boxShadow: shadows.medium,
+          background: gradients.blueGloss,
+          position: "relative",
+        }}
+      >
+        <div
+          className="ds-shimmer"
+          style={{ position: "absolute", inset: 0, opacity: 0.25 }}
+        />
+        <div
+          className="flex h-full w-full items-center justify-center"
+          style={{ position: "relative" }}
+        >
+          <Camera style={{ width: 30, height: 30, color: "rgba(255,255,255,0.9)" }} />
+        </div>
+      </div>
+      <MetaRow mine={isMine} time={time} state={state} />
+    </div>
+  );
+}
+
+function ComposerAction({
+  icon,
+  label,
+}: {
+  icon: React.ReactNode;
+  label: string;
+}) {
+  return (
+    <button
+      aria-label={label}
+      className="flex shrink-0 items-center justify-center rounded-full"
+      style={{ width: 38, height: 38, color: colors.textSecondary }}
+    >
+      {icon}
+    </button>
+  );
+}
+
+function Composer() {
+  return (
+    <div
+      className="flex items-end gap-2"
+      style={{
+        padding: `${spacing[2]}px ${spacing[3]}px calc(${spacing[3]}px + env(safe-area-inset-bottom, 0px))`,
+        borderTop: `1px solid ${surfaces.borderSoft}`,
+        background: "rgba(8,12,26,0.6)",
+      }}
+    >
+      <ComposerAction icon={<Plus style={{ width: 22, height: 22 }} />} label="Attachments" />
+      <div
+        className="flex flex-1 items-center gap-2"
+        style={{
+          minHeight: 42,
+          padding: "6px 8px 6px 16px",
+          borderRadius: radii.lg,
+          background: surfaces.glassSoft,
+          border: `1px solid ${surfaces.border}`,
+        }}
+      >
+        <span style={{ ...type.bodyLg, fontSize: 15, color: colors.textMuted, flex: 1 }}>
+          Message…
+        </span>
+        <button
+          aria-label="Camera"
+          className="flex shrink-0 items-center justify-center"
+          style={{ color: colors.textSecondary }}
+        >
+          <Camera style={{ width: 21, height: 21 }} />
+        </button>
+        <button
+          aria-label="Emoji"
+          className="flex shrink-0 items-center justify-center"
+          style={{ color: colors.textSecondary }}
+        >
+          <Smile style={{ width: 21, height: 21 }} />
+        </button>
+      </div>
+      <button
+        aria-label="Send"
+        className="flex shrink-0 items-center justify-center rounded-full"
+        style={{
+          width: 42,
+          height: 42,
+          background: gradients.primaryButton,
+          boxShadow: shadows.primaryGlow,
+          color: "#fff",
+        }}
+      >
+        <ArrowUp style={{ width: 20, height: 20 }} strokeWidth={2.5} />
+      </button>
+    </div>
+  );
+}
+
 
 function SettingRow({
   label,
