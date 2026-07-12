@@ -299,14 +299,14 @@ export function SwipeCard({
           {(card.departmentName || cls) && (
             <div
               className="mt-1 flex items-center gap-1.5"
-              style={{ color: colors.textSecondary, fontSize: 13, fontWeight: 500 }}
+              style={{ color: "#fff", fontSize: 13, fontWeight: 600, textShadow: "0 1px 3px rgba(0,0,0,0.55)" }}
             >
               <GraduationCap style={{ width: 14, height: 14 }} />
               {[card.departmentName, cls].filter(Boolean).join(" · ")}
             </div>
           )}
           {card.collegeName && (
-            <div style={{ color: "rgba(255,255,255,0.7)", fontSize: 12.5, marginTop: 2 }}>
+            <div style={{ color: "rgba(255,255,255,0.85)", fontSize: 12.5, marginTop: 2, textShadow: "0 1px 3px rgba(0,0,0,0.55)" }}>
               {card.collegeName}
               {card.sameCollege ? " · Same campus" : ""}
             </div>
