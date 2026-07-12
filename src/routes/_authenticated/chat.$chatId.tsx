@@ -551,8 +551,10 @@ function ChatThread() {
                       {m.body}
                     </Bubble>
                   </div>
-                );
-              })
+                )}
+              </div>
+            );
+          })
         )}
 
         {otherTyping && <TypingBubble />}
