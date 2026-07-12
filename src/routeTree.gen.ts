@@ -56,6 +56,7 @@ import { Route as AuthenticatedDiscoverIndexRouteImport } from './routes/_authen
 import { Route as AuthenticatedChatIndexRouteImport } from './routes/_authenticated/chat.index'
 import { Route as ApiPublicPushRouteImport } from './routes/api/public/push'
 import { Route as AuthenticatedSettingsPrivacyRouteImport } from './routes/_authenticated/settings.privacy'
+import { Route as AuthenticatedSettingsNotificationsRouteImport } from './routes/_authenticated/settings.notifications'
 import { Route as AuthenticatedSettingsAccountRouteImport } from './routes/_authenticated/settings.account'
 import { Route as AuthenticatedProfilePreviewRouteImport } from './routes/_authenticated/profile.preview'
 import { Route as AuthenticatedProfilePreferencesRouteImport } from './routes/_authenticated/profile.preferences'
@@ -322,6 +323,12 @@ const AuthenticatedSettingsPrivacyRoute =
     path: '/settings/privacy',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
+const AuthenticatedSettingsNotificationsRoute =
+  AuthenticatedSettingsNotificationsRouteImport.update({
+    id: '/settings/notifications',
+    path: '/settings/notifications',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const AuthenticatedSettingsAccountRoute =
   AuthenticatedSettingsAccountRouteImport.update({
     id: '/settings/account',
@@ -514,6 +521,7 @@ export interface FileRoutesByFullPath {
   '/profile/preferences': typeof AuthenticatedProfilePreferencesRoute
   '/profile/preview': typeof AuthenticatedProfilePreviewRoute
   '/settings/account': typeof AuthenticatedSettingsAccountRoute
+  '/settings/notifications': typeof AuthenticatedSettingsNotificationsRoute
   '/settings/privacy': typeof AuthenticatedSettingsPrivacyRoute
   '/api/public/push': typeof ApiPublicPushRoute
   '/chat/': typeof AuthenticatedChatIndexRoute
@@ -579,6 +587,7 @@ export interface FileRoutesByTo {
   '/profile/preferences': typeof AuthenticatedProfilePreferencesRoute
   '/profile/preview': typeof AuthenticatedProfilePreviewRoute
   '/settings/account': typeof AuthenticatedSettingsAccountRoute
+  '/settings/notifications': typeof AuthenticatedSettingsNotificationsRoute
   '/settings/privacy': typeof AuthenticatedSettingsPrivacyRoute
   '/api/public/push': typeof ApiPublicPushRoute
   '/chat': typeof AuthenticatedChatIndexRoute
@@ -653,6 +662,7 @@ export interface FileRoutesById {
   '/_authenticated/profile/preferences': typeof AuthenticatedProfilePreferencesRoute
   '/_authenticated/profile/preview': typeof AuthenticatedProfilePreviewRoute
   '/_authenticated/settings/account': typeof AuthenticatedSettingsAccountRoute
+  '/_authenticated/settings/notifications': typeof AuthenticatedSettingsNotificationsRoute
   '/_authenticated/settings/privacy': typeof AuthenticatedSettingsPrivacyRoute
   '/api/public/push': typeof ApiPublicPushRoute
   '/_authenticated/chat/': typeof AuthenticatedChatIndexRoute
@@ -726,6 +736,7 @@ export interface FileRouteTypes {
     | '/profile/preferences'
     | '/profile/preview'
     | '/settings/account'
+    | '/settings/notifications'
     | '/settings/privacy'
     | '/api/public/push'
     | '/chat/'
@@ -791,6 +802,7 @@ export interface FileRouteTypes {
     | '/profile/preferences'
     | '/profile/preview'
     | '/settings/account'
+    | '/settings/notifications'
     | '/settings/privacy'
     | '/api/public/push'
     | '/chat'
@@ -864,6 +876,7 @@ export interface FileRouteTypes {
     | '/_authenticated/profile/preferences'
     | '/_authenticated/profile/preview'
     | '/_authenticated/settings/account'
+    | '/_authenticated/settings/notifications'
     | '/_authenticated/settings/privacy'
     | '/api/public/push'
     | '/_authenticated/chat/'
@@ -1231,6 +1244,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedSettingsPrivacyRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/settings/notifications': {
+      id: '/_authenticated/settings/notifications'
+      path: '/settings/notifications'
+      fullPath: '/settings/notifications'
+      preLoaderRoute: typeof AuthenticatedSettingsNotificationsRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/settings/account': {
       id: '/_authenticated/settings/account'
       path: '/settings/account'
@@ -1538,6 +1558,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedProfilePreferencesRoute: typeof AuthenticatedProfilePreferencesRoute
   AuthenticatedProfilePreviewRoute: typeof AuthenticatedProfilePreviewRoute
   AuthenticatedSettingsAccountRoute: typeof AuthenticatedSettingsAccountRoute
+  AuthenticatedSettingsNotificationsRoute: typeof AuthenticatedSettingsNotificationsRoute
   AuthenticatedSettingsPrivacyRoute: typeof AuthenticatedSettingsPrivacyRoute
   AuthenticatedNotificationsIndexRoute: typeof AuthenticatedNotificationsIndexRoute
   AuthenticatedProfileIndexRoute: typeof AuthenticatedProfileIndexRoute
@@ -1558,6 +1579,8 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedProfilePreferencesRoute: AuthenticatedProfilePreferencesRoute,
   AuthenticatedProfilePreviewRoute: AuthenticatedProfilePreviewRoute,
   AuthenticatedSettingsAccountRoute: AuthenticatedSettingsAccountRoute,
+  AuthenticatedSettingsNotificationsRoute:
+    AuthenticatedSettingsNotificationsRoute,
   AuthenticatedSettingsPrivacyRoute: AuthenticatedSettingsPrivacyRoute,
   AuthenticatedNotificationsIndexRoute: AuthenticatedNotificationsIndexRoute,
   AuthenticatedProfileIndexRoute: AuthenticatedProfileIndexRoute,
