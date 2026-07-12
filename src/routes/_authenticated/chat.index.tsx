@@ -308,7 +308,7 @@ function ChatRow({
 
 function ChatListSkeleton() {
   return (
-    <DiscoverShell active="matches">
+    <DiscoverShell active="chat">
       <TopBar title="Messages" />
       <Skeleton style={{ height: 44, borderRadius: 12, marginTop: spacing[3] }} />
       <div className="flex flex-col" style={{ gap: spacing[2], marginTop: spacing[4] }}>
@@ -324,7 +324,7 @@ function ChatListError() {
   const navigate = useNavigate();
   const qc = useQueryClient();
   return (
-    <DiscoverShell active="matches">
+    <DiscoverShell active="chat">
       <TopBar title="Messages" />
       <div style={{ flex: 1, display: "flex", alignItems: "center", paddingTop: spacing[6] }}>
         <EmptyStateFromPreset
