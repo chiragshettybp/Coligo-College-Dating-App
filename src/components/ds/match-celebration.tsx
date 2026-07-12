@@ -267,7 +267,7 @@ export function MatchCelebration({
   const clusterStyle: React.CSSProperties = {
     transform: chat ? "translateY(-4px) scale(0.5)" : "translateY(0) scale(1)",
     transition: reduce ? "none" : `transform 0.66s ${SPRING}`,
-    marginBottom: chat ? spacing[1] : spacing[5],
+    marginBottom: chat ? spacing[1] : "clamp(8px, 2vh, 24px)",
     willChange: "transform",
   };
 
