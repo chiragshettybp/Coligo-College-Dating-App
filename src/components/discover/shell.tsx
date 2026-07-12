@@ -6,7 +6,7 @@
 // ============================================================================
 import { useState } from "react";
 import { useNavigate } from "@tanstack/react-router";
-import { Heart, Flame, Sparkles, UserRound } from "lucide-react";
+import { Heart, Flame, Sparkles, MessageCircle, UserRound } from "lucide-react";
 
 import { APP_BACKGROUND, FONT_FAMILY, spacing } from "@/lib/ds";
 import { Text } from "@/components/ds/glass";
