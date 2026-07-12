@@ -93,6 +93,9 @@ function ChatInbox() {
     <DiscoverShell active="matches" matchesBadge={totalUnread}>
       <TopBar title="Messages" />
 
+      <PushBanner />
+
+
       {chats.length === 0 ? (
         <div style={{ flex: 1, display: "flex", alignItems: "center", paddingTop: spacing[6] }}>
           <EmptyStateFromPreset
