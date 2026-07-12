@@ -6,7 +6,7 @@
 // ============================================================================
 import { useState } from "react";
 import { useNavigate } from "@tanstack/react-router";
-import { Heart, Flame, Sparkles, UserRound } from "lucide-react";
+import { Heart, Flame, Sparkles, MessageCircle, UserRound } from "lucide-react";
 
 import { APP_BACKGROUND, FONT_FAMILY, spacing } from "@/lib/ds";
 import { Text } from "@/components/ds/glass";
@@ -16,9 +16,9 @@ import {
   type BottomNavItem,
 } from "@/components/ds/navigation";
 
-export type DiscoverTab = "home" | "discover" | "matches" | "profile";
+export type DiscoverTab = "home" | "discover" | "matches" | "chat" | "profile";
 
-const ORDER: DiscoverTab[] = ["home", "discover", "matches", "profile"];
+const ORDER: DiscoverTab[] = ["home", "discover", "matches", "chat", "profile"];
 
 export function DiscoverShell({
   children,
@@ -38,6 +38,7 @@ export function DiscoverShell({
     { icon: (p) => <Heart {...p} fill="currentColor" />, label: "Home" },
     { icon: (p) => <Flame {...p} />, label: "Discover" },
     { icon: (p) => <Sparkles {...p} />, label: "Matches", badge: matchesBadge || undefined },
+    { icon: (p) => <MessageCircle {...p} />, label: "Chat" },
     { icon: (p) => <UserRound {...p} />, label: "Profile" },
   ];
 
@@ -84,6 +85,7 @@ export function DiscoverShell({
               if (tab === "home") navigate({ to: "/home" });
               else if (tab === "discover") navigate({ to: "/discover" });
               else if (tab === "matches") navigate({ to: "/matches" });
+              else if (tab === "chat") navigate({ to: "/chat" });
               else setComingSoon("Profile");
             }}
           />
