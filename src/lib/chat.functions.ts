@@ -195,7 +195,7 @@ export const getConversation = createServerFn({ method: "GET" })
     // then reverse to ascending for display.
     let q = supabase
       .from("messages")
-      .select("id, body, sender_id, created_at, read_at, kind, image_path, reply_to")
+      .select(MSG_COLS)
       .eq("match_id", data.chatId)
       .order("created_at", { ascending: false })
       .limit(limit + 1);
