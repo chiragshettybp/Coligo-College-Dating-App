@@ -54,6 +54,7 @@ import { Route as AuthenticatedHomeIndexRouteImport } from './routes/_authentica
 import { Route as AuthenticatedDiscoverIndexRouteImport } from './routes/_authenticated/discover.index'
 import { Route as AuthenticatedChatIndexRouteImport } from './routes/_authenticated/chat.index'
 import { Route as ApiPublicPushRouteImport } from './routes/api/public/push'
+import { Route as AuthenticatedProfilePreviewRouteImport } from './routes/_authenticated/profile.preview'
 import { Route as AuthenticatedProfilePreferencesRouteImport } from './routes/_authenticated/profile.preferences'
 import { Route as AuthenticatedProfilePhotosRouteImport } from './routes/_authenticated/profile.photos'
 import { Route as AuthenticatedProfileInterestsRouteImport } from './routes/_authenticated/profile.interests'
@@ -306,6 +307,12 @@ const ApiPublicPushRoute = ApiPublicPushRouteImport.update({
   path: '/api/public/push',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AuthenticatedProfilePreviewRoute =
+  AuthenticatedProfilePreviewRouteImport.update({
+    id: '/profile/preview',
+    path: '/profile/preview',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const AuthenticatedProfilePreferencesRoute =
   AuthenticatedProfilePreferencesRouteImport.update({
     id: '/profile/preferences',
@@ -484,6 +491,7 @@ export interface FileRoutesByFullPath {
   '/profile/interests': typeof AuthenticatedProfileInterestsRoute
   '/profile/photos': typeof AuthenticatedProfilePhotosRoute
   '/profile/preferences': typeof AuthenticatedProfilePreferencesRoute
+  '/profile/preview': typeof AuthenticatedProfilePreviewRoute
   '/api/public/push': typeof ApiPublicPushRoute
   '/chat/': typeof AuthenticatedChatIndexRoute
   '/discover/': typeof AuthenticatedDiscoverIndexRoute
@@ -545,6 +553,7 @@ export interface FileRoutesByTo {
   '/profile/interests': typeof AuthenticatedProfileInterestsRoute
   '/profile/photos': typeof AuthenticatedProfilePhotosRoute
   '/profile/preferences': typeof AuthenticatedProfilePreferencesRoute
+  '/profile/preview': typeof AuthenticatedProfilePreviewRoute
   '/api/public/push': typeof ApiPublicPushRoute
   '/chat': typeof AuthenticatedChatIndexRoute
   '/discover': typeof AuthenticatedDiscoverIndexRoute
@@ -615,6 +624,7 @@ export interface FileRoutesById {
   '/_authenticated/profile/interests': typeof AuthenticatedProfileInterestsRoute
   '/_authenticated/profile/photos': typeof AuthenticatedProfilePhotosRoute
   '/_authenticated/profile/preferences': typeof AuthenticatedProfilePreferencesRoute
+  '/_authenticated/profile/preview': typeof AuthenticatedProfilePreviewRoute
   '/api/public/push': typeof ApiPublicPushRoute
   '/_authenticated/chat/': typeof AuthenticatedChatIndexRoute
   '/_authenticated/discover/': typeof AuthenticatedDiscoverIndexRoute
@@ -684,6 +694,7 @@ export interface FileRouteTypes {
     | '/profile/interests'
     | '/profile/photos'
     | '/profile/preferences'
+    | '/profile/preview'
     | '/api/public/push'
     | '/chat/'
     | '/discover/'
@@ -745,6 +756,7 @@ export interface FileRouteTypes {
     | '/profile/interests'
     | '/profile/photos'
     | '/profile/preferences'
+    | '/profile/preview'
     | '/api/public/push'
     | '/chat'
     | '/discover'
@@ -814,6 +826,7 @@ export interface FileRouteTypes {
     | '/_authenticated/profile/interests'
     | '/_authenticated/profile/photos'
     | '/_authenticated/profile/preferences'
+    | '/_authenticated/profile/preview'
     | '/api/public/push'
     | '/_authenticated/chat/'
     | '/_authenticated/discover/'
@@ -1165,6 +1178,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiPublicPushRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/_authenticated/profile/preview': {
+      id: '/_authenticated/profile/preview'
+      path: '/profile/preview'
+      fullPath: '/profile/preview'
+      preLoaderRoute: typeof AuthenticatedProfilePreviewRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/profile/preferences': {
       id: '/_authenticated/profile/preferences'
       path: '/profile/preferences'
@@ -1456,6 +1476,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedProfileInterestsRoute: typeof AuthenticatedProfileInterestsRoute
   AuthenticatedProfilePhotosRoute: typeof AuthenticatedProfilePhotosRoute
   AuthenticatedProfilePreferencesRoute: typeof AuthenticatedProfilePreferencesRoute
+  AuthenticatedProfilePreviewRoute: typeof AuthenticatedProfilePreviewRoute
   AuthenticatedNotificationsIndexRoute: typeof AuthenticatedNotificationsIndexRoute
   AuthenticatedProfileIndexRoute: typeof AuthenticatedProfileIndexRoute
 }
@@ -1472,6 +1493,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedProfileInterestsRoute: AuthenticatedProfileInterestsRoute,
   AuthenticatedProfilePhotosRoute: AuthenticatedProfilePhotosRoute,
   AuthenticatedProfilePreferencesRoute: AuthenticatedProfilePreferencesRoute,
+  AuthenticatedProfilePreviewRoute: AuthenticatedProfilePreviewRoute,
   AuthenticatedNotificationsIndexRoute: AuthenticatedNotificationsIndexRoute,
   AuthenticatedProfileIndexRoute: AuthenticatedProfileIndexRoute,
 }
