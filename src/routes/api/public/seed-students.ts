@@ -152,6 +152,7 @@ export const Route = createFileRoute("/api/public/seed-students")({
           return new Response("Unauthorized", { status: 401 });
         }
 
+        try {
         const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
 
         // --- reference data -------------------------------------------------
