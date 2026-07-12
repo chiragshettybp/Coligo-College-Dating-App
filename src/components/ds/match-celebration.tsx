@@ -488,8 +488,8 @@ export function MatchCelebration({
         {chat && (
           <div className="w-full">
             <div style={chatIn(0)}>
-              <p style={{ ...type.headingSm, color: "#fff" }}>{right.name}</p>
-              <p style={{ ...type.caption, color: "rgba(255,255,255,0.55)", marginTop: 2 }}>
+              <p style={{ ...type.headingSm, color: colors.textPrimary }}>{right.name}</p>
+              <p style={{ ...type.caption, color: colors.textMuted, marginTop: 2 }}>
                 You matched just now · {shared.college}
               </p>
             </div>
@@ -503,9 +503,10 @@ export function MatchCelebration({
                   maxWidth: "84%",
                   borderRadius: `${radii.lg}px ${radii.lg}px ${radii.lg}px ${radii.sm}px`,
                   padding: `${spacing[2]}px ${spacing[3]}px`,
-                  background: "rgba(255,255,255,0.08)",
+                  background: "rgba(255,255,255,0.8)",
                   border: `1px solid ${surfaces.border}`,
-                  color: "rgba(255,255,255,0.92)",
+                  boxShadow: "0 1px 2px rgba(0,0,0,0.05)",
+                  color: colors.textPrimary,
                   ...type.body,
                 }}
               >
