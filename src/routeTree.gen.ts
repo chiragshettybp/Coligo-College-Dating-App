@@ -49,6 +49,7 @@ import { Route as AuthenticatedDiscoverRouteImport } from './routes/_authenticat
 import { Route as AuthenticatedMatchesIndexRouteImport } from './routes/_authenticated/matches.index'
 import { Route as AuthenticatedHomeIndexRouteImport } from './routes/_authenticated/home.index'
 import { Route as AuthenticatedDiscoverIndexRouteImport } from './routes/_authenticated/discover.index'
+import { Route as AuthenticatedMatchesMatchIdRouteImport } from './routes/_authenticated/matches.$matchId'
 import { Route as AuthenticatedHomeCollegeRankingsRouteImport } from './routes/_authenticated/home.college-rankings'
 import { Route as AuthenticatedDiscoverNoMoreProfilesRouteImport } from './routes/_authenticated/discover.no-more-profiles'
 import { Route as AuthenticatedHomeCollegeCollegeIdRouteImport } from './routes/_authenticated/home.college.$collegeId'
@@ -257,6 +258,12 @@ const AuthenticatedDiscoverIndexRoute =
     path: '/',
     getParentRoute: () => AuthenticatedDiscoverRoute,
   } as any)
+const AuthenticatedMatchesMatchIdRoute =
+  AuthenticatedMatchesMatchIdRouteImport.update({
+    id: '/$matchId',
+    path: '/$matchId',
+    getParentRoute: () => AuthenticatedMatchesRoute,
+  } as any)
 const AuthenticatedHomeCollegeRankingsRoute =
   AuthenticatedHomeCollegeRankingsRouteImport.update({
     id: '/college-rankings',
@@ -326,6 +333,7 @@ export interface FileRoutesByFullPath {
   '/onboarding/': typeof OnboardingIndexRoute
   '/discover/no-more-profiles': typeof AuthenticatedDiscoverNoMoreProfilesRoute
   '/home/college-rankings': typeof AuthenticatedHomeCollegeRankingsRoute
+  '/matches/$matchId': typeof AuthenticatedMatchesMatchIdRoute
   '/discover/': typeof AuthenticatedDiscoverIndexRoute
   '/home/': typeof AuthenticatedHomeIndexRoute
   '/matches/': typeof AuthenticatedMatchesIndexRoute
@@ -366,6 +374,7 @@ export interface FileRoutesByTo {
   '/onboarding': typeof OnboardingIndexRoute
   '/discover/no-more-profiles': typeof AuthenticatedDiscoverNoMoreProfilesRoute
   '/home/college-rankings': typeof AuthenticatedHomeCollegeRankingsRoute
+  '/matches/$matchId': typeof AuthenticatedMatchesMatchIdRoute
   '/discover': typeof AuthenticatedDiscoverIndexRoute
   '/home': typeof AuthenticatedHomeIndexRoute
   '/matches': typeof AuthenticatedMatchesIndexRoute
@@ -414,6 +423,7 @@ export interface FileRoutesById {
   '/onboarding/': typeof OnboardingIndexRoute
   '/_authenticated/discover/no-more-profiles': typeof AuthenticatedDiscoverNoMoreProfilesRoute
   '/_authenticated/home/college-rankings': typeof AuthenticatedHomeCollegeRankingsRoute
+  '/_authenticated/matches/$matchId': typeof AuthenticatedMatchesMatchIdRoute
   '/_authenticated/discover/': typeof AuthenticatedDiscoverIndexRoute
   '/_authenticated/home/': typeof AuthenticatedHomeIndexRoute
   '/_authenticated/matches/': typeof AuthenticatedMatchesIndexRoute
@@ -461,6 +471,7 @@ export interface FileRouteTypes {
     | '/onboarding/'
     | '/discover/no-more-profiles'
     | '/home/college-rankings'
+    | '/matches/$matchId'
     | '/discover/'
     | '/home/'
     | '/matches/'
@@ -501,6 +512,7 @@ export interface FileRouteTypes {
     | '/onboarding'
     | '/discover/no-more-profiles'
     | '/home/college-rankings'
+    | '/matches/$matchId'
     | '/discover'
     | '/home'
     | '/matches'
@@ -548,6 +560,7 @@ export interface FileRouteTypes {
     | '/onboarding/'
     | '/_authenticated/discover/no-more-profiles'
     | '/_authenticated/home/college-rankings'
+    | '/_authenticated/matches/$matchId'
     | '/_authenticated/discover/'
     | '/_authenticated/home/'
     | '/_authenticated/matches/'
@@ -850,6 +863,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedDiscoverIndexRouteImport
       parentRoute: typeof AuthenticatedDiscoverRoute
     }
+    '/_authenticated/matches/$matchId': {
+      id: '/_authenticated/matches/$matchId'
+      path: '/$matchId'
+      fullPath: '/matches/$matchId'
+      preLoaderRoute: typeof AuthenticatedMatchesMatchIdRouteImport
+      parentRoute: typeof AuthenticatedMatchesRoute
+    }
     '/_authenticated/home/college-rankings': {
       id: '/_authenticated/home/college-rankings'
       path: '/college-rankings'
@@ -927,10 +947,12 @@ const AuthenticatedHomeRouteWithChildren =
   AuthenticatedHomeRoute._addFileChildren(AuthenticatedHomeRouteChildren)
 
 interface AuthenticatedMatchesRouteChildren {
+  AuthenticatedMatchesMatchIdRoute: typeof AuthenticatedMatchesMatchIdRoute
   AuthenticatedMatchesIndexRoute: typeof AuthenticatedMatchesIndexRoute
 }
 
 const AuthenticatedMatchesRouteChildren: AuthenticatedMatchesRouteChildren = {
+  AuthenticatedMatchesMatchIdRoute: AuthenticatedMatchesMatchIdRoute,
   AuthenticatedMatchesIndexRoute: AuthenticatedMatchesIndexRoute,
 }
 
