@@ -188,7 +188,17 @@ export const getAdminUserDetail = createServerFn({ method: "GET" })
     const { data: res, error } = await context.supabase.rpc("admin_user_detail", { _user_id: data.userId });
     if (error) throw new Error(error.message);
     if (res && (res as Record<string, unknown>).error) throw new Error("Forbidden");
-    return (res as unknown as AdminUserDetail) ?? null;
+    if (!res) return null;
+    const detail = res as unknown as AdminUserDetail;
+    const signed = await signAdminPaths(context.supabase, [
+      detail.avatarUrl,
+      ...detail.photos.map((p) => p.path),
+    ]);
+    return {
+      ...detail,
+      avatarUrl: resolveAdminUrl(detail.avatarUrl, signed),
+      photos: detail.photos.map((p) => ({ ...p, path: resolveAdminUrl(p.path, signed) ?? p.path })),
+    };
   });
 
 export const getAdminUserStats = createServerFn({ method: "GET" })
