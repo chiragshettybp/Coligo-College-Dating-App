@@ -169,18 +169,14 @@ export const logAdminAction = createServerFn({ method: "POST" })
 const bootstrapSchema = z.object({
   phone: z.string().regex(/^[6-9]\d{9}$/, "Invalid Indian mobile number"),
   pin: z.string().regex(/^\d{6}$/, "PIN must be 6 digits"),
-  secret: z.string().min(1),
 });
 
 export const bootstrapAdmin = createServerFn({ method: "POST" })
   .inputValidator((d: unknown) => bootstrapSchema.parse(d))
   .handler(async ({ data }): Promise<{ ok: true; created: boolean }> => {
-    const seed = process.env.SEED_SECRET;
-    if (!seed || data.secret !== seed) throw new Error("Forbidden");
-
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
 
-    // Refuse if an admin already exists.
+    // Self-disabling first-run guard: refuse once ANY admin exists.
     const { count } = await supabaseAdmin
       .from("user_roles")
       .select("*", { count: "exact", head: true })
