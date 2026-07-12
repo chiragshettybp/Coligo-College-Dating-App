@@ -207,6 +207,13 @@ function UIShowcase() {
   const [sheetOpen, setSheetOpen] = useState(false);
   const [actionOpen, setActionOpen] = useState(false);
   const [headerCollapsed, setHeaderCollapsed] = useState(false);
+  const [setPrivate, setSetPrivate] = useState(true);
+  const [showOnline, setShowOnline] = useState(false);
+  const [readReceipts, setReadReceipts] = useState(true);
+  const [distance, setDistance] = useState(25);
+  const [theme, setTheme] = useState<"light" | "dark" | "system">("system");
+  const [ageRange, setAgeRange] = useState("18-24");
+  const [likesOnly, setLikesOnly] = useState(false);
 
   const toggleInterest = (i: string) =>
     setInterests((s) => (s.includes(i) ? s.filter((x) => x !== i) : [...s, i]));
