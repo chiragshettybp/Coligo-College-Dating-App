@@ -49,6 +49,7 @@ import { Route as AuthenticatedHomeIndexRouteImport } from './routes/_authentica
 import { Route as AuthenticatedDiscoverIndexRouteImport } from './routes/_authenticated/discover.index'
 import { Route as AuthenticatedHomeCollegeRankingsRouteImport } from './routes/_authenticated/home.college-rankings'
 import { Route as AuthenticatedHomeCollegeCollegeIdRouteImport } from './routes/_authenticated/home.college.$collegeId'
+import { Route as AuthenticatedDiscoverProfileUserIdRouteImport } from './routes/_authenticated/discover.profile.$userId'
 
 const UiRoute = UiRouteImport.update({
   id: '/ui',
@@ -253,6 +254,12 @@ const AuthenticatedHomeCollegeCollegeIdRoute =
     path: '/college/$collegeId',
     getParentRoute: () => AuthenticatedHomeRoute,
   } as any)
+const AuthenticatedDiscoverProfileUserIdRoute =
+  AuthenticatedDiscoverProfileUserIdRouteImport.update({
+    id: '/profile/$userId',
+    path: '/profile/$userId',
+    getParentRoute: () => AuthenticatedDiscoverRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof PublicIndexRoute
@@ -292,6 +299,7 @@ export interface FileRoutesByFullPath {
   '/home/college-rankings': typeof AuthenticatedHomeCollegeRankingsRoute
   '/discover/': typeof AuthenticatedDiscoverIndexRoute
   '/home/': typeof AuthenticatedHomeIndexRoute
+  '/discover/profile/$userId': typeof AuthenticatedDiscoverProfileUserIdRoute
   '/home/college/$collegeId': typeof AuthenticatedHomeCollegeCollegeIdRoute
 }
 export interface FileRoutesByTo {
@@ -328,6 +336,7 @@ export interface FileRoutesByTo {
   '/home/college-rankings': typeof AuthenticatedHomeCollegeRankingsRoute
   '/discover': typeof AuthenticatedDiscoverIndexRoute
   '/home': typeof AuthenticatedHomeIndexRoute
+  '/discover/profile/$userId': typeof AuthenticatedDiscoverProfileUserIdRoute
   '/home/college/$collegeId': typeof AuthenticatedHomeCollegeCollegeIdRoute
 }
 export interface FileRoutesById {
@@ -371,6 +380,7 @@ export interface FileRoutesById {
   '/_authenticated/home/college-rankings': typeof AuthenticatedHomeCollegeRankingsRoute
   '/_authenticated/discover/': typeof AuthenticatedDiscoverIndexRoute
   '/_authenticated/home/': typeof AuthenticatedHomeIndexRoute
+  '/_authenticated/discover/profile/$userId': typeof AuthenticatedDiscoverProfileUserIdRoute
   '/_authenticated/home/college/$collegeId': typeof AuthenticatedHomeCollegeCollegeIdRoute
 }
 export interface FileRouteTypes {
@@ -413,6 +423,7 @@ export interface FileRouteTypes {
     | '/home/college-rankings'
     | '/discover/'
     | '/home/'
+    | '/discover/profile/$userId'
     | '/home/college/$collegeId'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -449,6 +460,7 @@ export interface FileRouteTypes {
     | '/home/college-rankings'
     | '/discover'
     | '/home'
+    | '/discover/profile/$userId'
     | '/home/college/$collegeId'
   id:
     | '__root__'
@@ -491,6 +503,7 @@ export interface FileRouteTypes {
     | '/_authenticated/home/college-rankings'
     | '/_authenticated/discover/'
     | '/_authenticated/home/'
+    | '/_authenticated/discover/profile/$userId'
     | '/_authenticated/home/college/$collegeId'
   fileRoutesById: FileRoutesById
 }
@@ -788,15 +801,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedHomeCollegeCollegeIdRouteImport
       parentRoute: typeof AuthenticatedHomeRoute
     }
+    '/_authenticated/discover/profile/$userId': {
+      id: '/_authenticated/discover/profile/$userId'
+      path: '/profile/$userId'
+      fullPath: '/discover/profile/$userId'
+      preLoaderRoute: typeof AuthenticatedDiscoverProfileUserIdRouteImport
+      parentRoute: typeof AuthenticatedDiscoverRoute
+    }
   }
 }
 
 interface AuthenticatedDiscoverRouteChildren {
   AuthenticatedDiscoverIndexRoute: typeof AuthenticatedDiscoverIndexRoute
+  AuthenticatedDiscoverProfileUserIdRoute: typeof AuthenticatedDiscoverProfileUserIdRoute
 }
 
 const AuthenticatedDiscoverRouteChildren: AuthenticatedDiscoverRouteChildren = {
   AuthenticatedDiscoverIndexRoute: AuthenticatedDiscoverIndexRoute,
+  AuthenticatedDiscoverProfileUserIdRoute:
+    AuthenticatedDiscoverProfileUserIdRoute,
 }
 
 const AuthenticatedDiscoverRouteWithChildren =
