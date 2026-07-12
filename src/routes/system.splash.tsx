@@ -133,20 +133,13 @@ function SplashPage() {
       }}
     >
       <div style={{ width: "100%", maxWidth: 380, textAlign: "center" }}>
-        <span
-          aria-hidden
-          className="inline-flex items-center justify-center cm-splash-logo"
-          style={{
-            width: 76,
-            height: 76,
-            borderRadius: radii.lg,
-            background: gradients.primaryButton,
-            color: "#fff",
-            boxShadow: "0 12px 32px rgba(10,132,255,0.35)",
-          }}
-        >
-          <Heart style={{ width: 38, height: 38, fill: "currentColor" }} />
-        </span>
+        <BrandLogo
+          className="cm-splash-logo"
+          size={84}
+          showWordmark={false}
+          eager
+        />
+
 
         <Text variant="displaySm" color={colors.textPrimary} style={{ marginTop: spacing[4] }}>
           Coligo
