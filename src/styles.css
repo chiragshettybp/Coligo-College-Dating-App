@@ -312,6 +312,7 @@
   .ds-toast-in { animation: none; }
   .ds-feedback { transition: none; }
   .ds-feedback:hover { transform: none; filter: none; }
+  .ds-scrim-in, .ds-dialog-in, .ds-actionbar-in { animation: none; }
 }
 
 
