@@ -351,7 +351,7 @@ function UIShowcase() {
         {/* Buttons */}
         <Section
           title="Buttons"
-          description="Every variant, size and state — glass fills, primary glow, hover lift and press."
+          description="One tactile button system — every variant, size and state. Solid restrained surfaces, hairline borders, spring press and clear focus."
         >
           <div className="space-y-4">
             <div>
