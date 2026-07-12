@@ -189,7 +189,7 @@ function PushBanner() {
         <Bell style={{ width: 20, height: 20 }} />
       </div>
       <div className="min-w-0 flex-1">
-        <div style={{ ...ds.titleSm, color: colors.textPrimary, fontWeight: weights.semibold }}>Turn on notifications</div>
+        <div style={{ ...ds.titleMd, color: colors.textPrimary, fontWeight: weights.semibold }}>Turn on notifications</div>
         <div style={{ ...ds.caption, color: colors.textSecondary }}>Get alerted about new matches and messages.</div>
       </div>
       <button
