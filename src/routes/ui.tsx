@@ -847,7 +847,40 @@ function UIShowcase() {
             <Button size="sm" variant="secondary" onClick={() => pushToast("warning", <AlertTriangle style={{ width: 15, height: 15 }} />, "Photo upload slow")}>Warning</Button>
             <Button size="sm" variant="secondary" onClick={() => pushToast("danger", <WifiOff style={{ width: 15, height: 15 }} />, "Network error")}>Error</Button>
           </Row>
+
+          <div style={{ height: spacing[4] }} />
+          <Label>Confirmation dialog</Label>
+          <Row>
+            <Button size="sm" variant="secondary" onClick={() => setConfirmOpen(true)}>
+              Delete account
+            </Button>
+          </Row>
+
+          <div style={{ height: spacing[4] }} />
+          <Label>Bottom action bar</Label>
+          <div style={{ borderRadius: radii.lg, overflow: "hidden", border: `1px solid ${surfaces.borderSoft}` }}>
+            <div style={{ height: 96, background: "rgba(120,120,128,0.06)" }} />
+            <BottomActionBar>
+              <Button variant="ghost">Skip</Button>
+              <Button fullWidth variant="primary">Continue</Button>
+            </BottomActionBar>
+          </div>
         </Section>
+
+        <ConfirmDialog
+          open={confirmOpen}
+          tone="danger"
+          icon={<AlertTriangle style={{ width: 24, height: 24 }} />}
+          title="Delete account?"
+          body="This permanently removes your profile, matches and messages. This can't be undone."
+          confirmLabel="Delete"
+          cancelLabel="Keep account"
+          onConfirm={() => {
+            setConfirmOpen(false);
+            pushToast("success", <Check style={{ width: 15, height: 15 }} />, "Account deleted");
+          }}
+          onCancel={() => setConfirmOpen(false)}
+        />
 
 
         {/* Chat */}
