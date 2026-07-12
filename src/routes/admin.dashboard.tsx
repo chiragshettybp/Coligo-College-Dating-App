@@ -396,7 +396,7 @@ function RecentActivity({ events, loading }: { events?: ActivityEvent[]; loading
                 {m.icon}
               </span>
               <div style={{ minWidth: 0, flex: 1 }}>
-                <Text variant="body" color={colors.textPrimary} style={{ fontWeight: 600 }} numberOfLines={1}>
+                <Text variant="body" color={colors.textPrimary} truncate style={{ fontWeight: 600 }}>
                   {e.title}
                 </Text>
                 <Text variant="caption" tone="muted">{m.label} · {timeAgo(e.ts)}</Text>
