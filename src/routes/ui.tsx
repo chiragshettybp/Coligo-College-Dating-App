@@ -701,57 +701,305 @@ function Swatch({ name, value }: { name: string; value: string }) {
   );
 }
 
-function SwipeCard() {
+function MiniTag({ children }: { children: React.ReactNode }) {
   return (
-    <GlassPanel style={{ padding: 0, overflow: "hidden" }}>
-      <div style={{ position: "relative", height: 260 }}>
-        <img src={memoji5} alt="Profile" className="h-full w-full object-cover" />
+    <span
+      className="inline-flex items-center gap-1 backdrop-blur-md"
+      style={{
+        borderRadius: radii.pill,
+        padding: "5px 11px",
+        fontSize: 12,
+        fontWeight: 600,
+        color: "#fff",
+        background: "rgba(255,255,255,0.14)",
+        border: `1px solid ${surfaces.border}`,
+        boxShadow: "inset 0 1px 0 rgba(255,255,255,0.14)",
+      }}
+    >
+      {children}
+    </span>
+  );
+}
+
+function GlassPill({ children }: { children: React.ReactNode }) {
+  return (
+    <span
+      className="inline-flex items-center gap-1.5 backdrop-blur-xl"
+      style={{
+        borderRadius: radii.pill,
+        padding: "6px 12px",
+        fontSize: 12,
+        fontWeight: 700,
+        letterSpacing: "-0.005em",
+        color: "#fff",
+        background: "rgba(6,10,24,0.42)",
+        border: `1px solid ${surfaces.border}`,
+        boxShadow: "inset 0 1px 0 rgba(255,255,255,0.12)",
+      }}
+    >
+      {children}
+    </span>
+  );
+}
+
+function SwipeCard({ overlay }: { overlay?: "LIKE" | "NOPE" | "SUPER" | "BOOST" }) {
+  const overlayColor =
+    overlay === "NOPE"
+      ? colors.danger
+      : overlay === "SUPER"
+        ? colors.info
+        : overlay === "BOOST"
+          ? colors.accent
+          : colors.success;
+
+  return (
+    <GlassPanel style={{ padding: 0, overflow: "hidden", boxShadow: shadows.large }}>
+      <div style={{ position: "relative", height: 380 }}>
+        <img src={memoji5} alt="Jordan's profile" className="h-full w-full object-cover" />
+
+        {/* page indicator */}
+        <div
+          className="absolute flex gap-1.5"
+          style={{ top: spacing[2], left: spacing[3], right: spacing[3] }}
+        >
+          {[0, 1, 2].map((i) => (
+            <span
+              key={i}
+              style={{
+                flex: 1,
+                height: 3,
+                borderRadius: radii.pill,
+                background: i === 0 ? "#fff" : "rgba(255,255,255,0.32)",
+                boxShadow: i === 0 ? "0 0 8px rgba(255,255,255,0.6)" : "none",
+              }}
+            />
+          ))}
+        </div>
+
+        {/* top status row */}
+        <div
+          className="absolute flex items-center justify-between"
+          style={{ top: spacing[4], left: spacing[3], right: spacing[3] }}
+        >
+          <GlassPill>
+            <MapPin style={{ width: 12, height: 12 }} /> 2 km
+          </GlassPill>
+          <GlassPill>
+            <span
+              style={{
+                width: 7,
+                height: 7,
+                borderRadius: 999,
+                background: colors.success,
+                boxShadow: `0 0 8px ${colors.success}`,
+              }}
+            />
+            Online
+          </GlassPill>
+        </div>
+
+        {/* overlay stamp */}
+        {overlay && (
+          <div
+            className="absolute"
+            style={{ top: spacing[6], left: spacing[4], transform: "rotate(-12deg)" }}
+          >
+            <Stamp label={overlay} color={overlayColor} rotate={0} />
+          </div>
+        )}
+
+        {/* adaptive fade + vignette */}
         <div
           style={{
             position: "absolute",
             inset: 0,
-            background: "linear-gradient(180deg, transparent 40%, rgba(4,8,20,0.9) 100%)",
+            background:
+              "radial-gradient(120% 80% at 50% 0%, rgba(0,0,0,0.28) 0%, rgba(0,0,0,0) 45%)," +
+              "linear-gradient(180deg, transparent 42%, rgba(3,6,14,0.55) 72%, rgba(3,6,14,0.94) 100%)",
           }}
         />
-        <div style={{ position: "absolute", left: spacing[3], bottom: spacing[3], right: spacing[3] }}>
+
+        {/* info */}
+        <div
+          className="absolute"
+          style={{ left: spacing[4], right: spacing[4], bottom: spacing[4] }}
+        >
           <div className="flex items-center" style={{ gap: spacing[1] }}>
-            <span style={{ color: "#fff", fontSize: 22, fontWeight: 800 }}>Jordan, 20</span>
-            <Badge tone="success"><ShieldCheck style={{ width: 12, height: 12 }} /></Badge>
+            <span
+              style={{
+                color: "#fff",
+                fontSize: 27,
+                fontWeight: 800,
+                letterSpacing: "-0.02em",
+                lineHeight: 1.05,
+              }}
+            >
+              Jordan, 20
+            </span>
+            <Badge tone="success">
+              <ShieldCheck style={{ width: 12, height: 12 }} />
+            </Badge>
+            <span style={{ marginLeft: "auto" }}>
+              <span
+                className="inline-flex items-center gap-1"
+                style={{
+                  borderRadius: radii.pill,
+                  padding: "4px 10px",
+                  fontSize: 12,
+                  fontWeight: 800,
+                  color: "#fff",
+                  background: gradients.success,
+                  boxShadow: shadows.glow,
+                }}
+              >
+                <Sparkles style={{ width: 12, height: 12 }} /> 92%
+              </span>
+            </span>
           </div>
-          <div className="mt-1 flex items-center gap-1" style={{ color: colors.textSecondary, fontSize: 13 }}>
-            <MapPin style={{ width: 13, height: 13 }} /> Design · 2km away
+          <div
+            className="mt-1 flex items-center gap-1.5"
+            style={{ color: colors.textSecondary, fontSize: 13, fontWeight: 500 }}
+          >
+            <GraduationCap style={{ width: 14, height: 14 }} /> Design · Class of '27
+          </div>
+          <p
+            style={{
+              color: "rgba(255,255,255,0.82)",
+              fontSize: 13,
+              lineHeight: 1.4,
+              marginTop: spacing[1],
+            }}
+          >
+            Sketching by day, playlists by night. Looking for a museum-and-coffee person.
+          </p>
+          <div className="mt-3 flex flex-wrap" style={{ gap: spacing[1] }}>
+            <MiniTag>☕ Coffee</MiniTag>
+            <MiniTag>🎧 Indie</MiniTag>
+            <MiniTag>🎨 Design</MiniTag>
           </div>
         </div>
       </div>
-      <div className="flex items-center justify-center" style={{ gap: spacing[4], padding: spacing[3] }}>
-        <IconButton size={48} style={{ color: colors.danger }}>
-          <X style={{ width: 22, height: 22 }} strokeWidth={2.6} />
-        </IconButton>
-        <IconButton size={56} primary style={{ boxShadow: shadows.glow }}>
+
+      {/* on-card controls */}
+      <div className="flex items-center justify-center" style={{ gap: spacing[3], padding: spacing[3] }}>
+        <SwipeControl size={46} tint={colors.danger}>
+          <X style={{ width: 22, height: 22 }} strokeWidth={2.8} />
+        </SwipeControl>
+        <SwipeControl size={52} tint={colors.info}>
+          <Star style={{ width: 22, height: 22 }} fill="currentColor" />
+        </SwipeControl>
+        <SwipeControl size={58} tint={colors.success} primary>
           <Heart style={{ width: 26, height: 26 }} fill="#fff" />
-        </IconButton>
-        <IconButton size={48} style={{ color: colors.info }}>
-          <Star style={{ width: 22, height: 22 }} />
-        </IconButton>
+        </SwipeControl>
       </div>
     </GlassPanel>
+  );
+}
+
+function SwipeDeck() {
+  return (
+    <div style={{ position: "relative" }}>
+      {/* third card */}
+      <div
+        className="absolute inset-0"
+        style={{ transform: "translateY(22px) scale(0.9)", opacity: 0.35 }}
+      >
+        <div
+          style={{
+            height: "100%",
+            borderRadius: radii.lg,
+            background: surfaces.glass,
+            border: `1px solid ${surfaces.borderSoft}`,
+            boxShadow: shadows.medium,
+          }}
+        />
+      </div>
+      {/* second card */}
+      <div
+        className="absolute inset-0"
+        style={{ transform: "translateY(11px) scale(0.95)", opacity: 0.6 }}
+      >
+        <div
+          style={{
+            height: "100%",
+            borderRadius: radii.lg,
+            background: surfaces.glass,
+            border: `1px solid ${surfaces.border}`,
+            boxShadow: shadows.medium,
+          }}
+        />
+      </div>
+      {/* top card */}
+      <div style={{ position: "relative", transform: "rotate(-1.5deg)" }}>
+        <SwipeCard overlay="LIKE" />
+      </div>
+    </div>
+  );
+}
+
+function SwipeControl({
+  children,
+  label,
+  size = 52,
+  tint,
+  primary = false,
+}: {
+  children: React.ReactNode;
+  label?: string;
+  size?: number;
+  tint: string;
+  primary?: boolean;
+}) {
+  return (
+    <div className="flex flex-col items-center" style={{ gap: spacing[1] }}>
+      <IconButton
+        size={size}
+        primary={primary}
+        aria-label={label}
+        style={{
+          color: primary ? "#fff" : tint,
+          background: primary
+            ? `linear-gradient(160deg, ${tint} 0%, ${tint}cc 100%)`
+            : gradients.glassButton,
+          border: `1px solid ${primary ? "rgba(255,255,255,0.28)" : surfaces.border}`,
+          boxShadow: `inset 0 1px 0 rgba(255,255,255,0.18), 0 10px 24px ${tint}55`,
+        }}
+      >
+        {children}
+      </IconButton>
+      {label && (
+        <span
+          style={{
+            fontSize: 11,
+            fontWeight: 700,
+            letterSpacing: "0.04em",
+            textTransform: "uppercase",
+            color: colors.textMuted,
+          }}
+        >
+          {label}
+        </span>
+      )}
+    </div>
   );
 }
 
 function Stamp({ label, color, rotate }: { label: string; color: string; rotate: number }) {
   return (
     <span
+      className="inline-block backdrop-blur-md"
       style={{
-        display: "inline-block",
         transform: `rotate(${rotate}deg)`,
-        padding: "6px 16px",
+        padding: "7px 16px",
         borderRadius: radii.sm,
-        border: `3px solid ${color}`,
+        border: `2.5px solid ${color}`,
+        background: `${color}1f`,
         color,
         fontSize: 22,
-        fontWeight: 900,
-        letterSpacing: "0.06em",
-        textShadow: `0 0 20px ${color}`,
+        fontWeight: 800,
+        letterSpacing: "0.08em",
+        textShadow: `0 0 24px ${color}`,
+        boxShadow: `0 0 30px ${color}55, inset 0 0 20px ${color}22`,
       }}
     >
       {label}
