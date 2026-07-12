@@ -140,7 +140,7 @@ function DiscoverFeedPage() {
   const canUndo = !!lastSwipe.current && !lastSwipe.current.matched;
 
   return (
-    <DiscoverShell active="discover" matchesBadge={0}>
+    <DiscoverShell active="discover">
       <TopBar
         title="Discover"
         trailing={

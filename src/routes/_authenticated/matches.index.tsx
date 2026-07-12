@@ -185,7 +185,7 @@ function MatchesPage() {
   }, [matches, search, filters, sort, onlineIds]);
 
   return (
-    <DiscoverShell active="matches" matchesBadge={totalUnread}>
+    <DiscoverShell active="matches" chatBadge={totalUnread}>
       <TopBar
         title="Matches"
         trailing={

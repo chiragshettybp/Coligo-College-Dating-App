@@ -90,7 +90,7 @@ function ChatInbox() {
   }, [chats, search]);
 
   return (
-    <DiscoverShell active="matches" matchesBadge={totalUnread}>
+    <DiscoverShell active="chat" chatBadge={totalUnread}>
       <TopBar title="Messages" />
 
       <PushBanner />
