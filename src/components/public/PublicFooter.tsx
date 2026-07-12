@@ -1,8 +1,9 @@
 import { Link } from "@tanstack/react-router";
-import { Heart, Mail, Instagram, Twitter, Linkedin } from "lucide-react";
+import { Mail, Instagram, Twitter, Linkedin } from "lucide-react";
 
 import { Text } from "@/components/ds/glass";
-import { colors, radii, spacing, surfaces, gradients } from "@/lib/ds";
+import { BrandLogo } from "@/components/brand/BrandLogo";
+import { colors, radii, spacing, surfaces } from "@/lib/ds";
 
 const LEGAL_LINKS = [
   { to: "/privacy", label: "Privacy Policy" },
