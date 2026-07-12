@@ -10,32 +10,41 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as UiRouteImport } from './routes/ui'
+import { Route as PublicRouteRouteImport } from './routes/_public/route'
 
 const UiRoute = UiRouteImport.update({
   id: '/ui',
   path: '/ui',
   getParentRoute: () => rootRouteImport,
 } as any)
+const PublicRouteRoute = PublicRouteRouteImport.update({
+  id: '/_public',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
+  '/': typeof PublicRouteRoute
   '/ui': typeof UiRoute
 }
 export interface FileRoutesByTo {
+  '/': typeof PublicRouteRoute
   '/ui': typeof UiRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
+  '/_public': typeof PublicRouteRoute
   '/ui': typeof UiRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/ui'
+  fullPaths: '/' | '/ui'
   fileRoutesByTo: FileRoutesByTo
-  to: '/ui'
-  id: '__root__' | '/ui'
+  to: '/' | '/ui'
+  id: '__root__' | '/_public' | '/ui'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
+  PublicRouteRoute: typeof PublicRouteRoute
   UiRoute: typeof UiRoute
 }
 
@@ -48,10 +57,18 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof UiRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/_public': {
+      id: '/_public'
+      path: ''
+      fullPath: '/'
+      preLoaderRoute: typeof PublicRouteRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
 const rootRouteChildren: RootRouteChildren = {
+  PublicRouteRoute: PublicRouteRoute,
   UiRoute: UiRoute,
 }
 export const routeTree = rootRouteImport
