@@ -1263,7 +1263,7 @@ export type Database = {
       unread_notifications_count: { Args: never; Returns: number }
     }
     Enums: {
-      account_status: "active" | "suspended" | "deleted"
+      account_status: "active" | "suspended" | "deleted" | "banned"
       app_role: "user" | "moderator" | "admin"
       gender_option: "woman" | "man" | "nonbinary" | "other"
       looking_for_option: "women" | "men" | "everyone"
@@ -1395,7 +1395,7 @@ export type CompositeTypes<
 export const Constants = {
   public: {
     Enums: {
-      account_status: ["active", "suspended", "deleted"],
+      account_status: ["active", "suspended", "deleted", "banned"],
       app_role: ["user", "moderator", "admin"],
       gender_option: ["woman", "man", "nonbinary", "other"],
       looking_for_option: ["women", "men", "everyone"],
