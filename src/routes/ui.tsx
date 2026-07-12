@@ -476,30 +476,68 @@ function UIShowcase() {
           </div>
         </Section>
 
-        {/* Swipe controls */}
+        {/* Swipe system */}
         <Section
-          title="Swipe Controls"
-          description="Floating gesture buttons and stamps for the deck."
+          title="Swipe System"
+          description="The flagship interaction — a stacked, depth-layered deck, tactile gesture controls and premium overlays."
         >
-          <div className="flex items-center" style={{ gap: spacing[4] }}>
-            <IconButton size={58} style={{ color: colors.danger }}>
-              <X style={{ width: 26, height: 26 }} strokeWidth={2.6} />
-            </IconButton>
-            <IconButton size={52} style={{ color: colors.info }}>
-              <Star style={{ width: 22, height: 22 }} />
-            </IconButton>
-            <IconButton size={64} primary style={{ boxShadow: shadows.glow }}>
-              <Heart style={{ width: 30, height: 30 }} fill="#fff" />
-            </IconButton>
-            <IconButton size={52} style={{ color: colors.warning }}>
-              <Flame style={{ width: 22, height: 22 }} />
-            </IconButton>
+          {/* Stacked deck */}
+          <SwipeDeck />
+
+          {/* Controls */}
+          <div style={{ marginTop: spacing[5] }}>
+            <Label>Gesture controls</Label>
+            <div
+              className="flex items-end justify-center"
+              style={{ gap: spacing[3], marginTop: spacing[2] }}
+            >
+              <SwipeControl label="Undo" size={46} tint={colors.warning}>
+                <RotateCcw style={{ width: 20, height: 20 }} strokeWidth={2.4} />
+              </SwipeControl>
+              <SwipeControl label="Nope" size={58} tint={colors.danger}>
+                <X style={{ width: 26, height: 26 }} strokeWidth={2.8} />
+              </SwipeControl>
+              <SwipeControl label="Super" size={52} tint={colors.info}>
+                <Star style={{ width: 22, height: 22 }} fill="currentColor" />
+              </SwipeControl>
+              <SwipeControl label="Like" size={68} tint={colors.success} primary>
+                <Heart style={{ width: 30, height: 30 }} fill="#fff" />
+              </SwipeControl>
+              <SwipeControl label="Boost" size={52} tint={colors.accent}>
+                <Zap style={{ width: 22, height: 22 }} fill="currentColor" />
+              </SwipeControl>
+            </div>
           </div>
-          <Row>
-            <Stamp label="LIKE" color={colors.success} rotate={-12} />
-            <Stamp label="NOPE" color={colors.danger} rotate={12} />
-            <Stamp label="SUPER" color={colors.info} rotate={-6} />
-          </Row>
+
+          {/* Overlays */}
+          <div style={{ marginTop: spacing[5] }}>
+            <Label>Swipe overlays</Label>
+            <div className="flex flex-wrap items-center" style={{ gap: spacing[3], marginTop: spacing[2] }}>
+              <Stamp label="LIKE" color={colors.success} rotate={-10} />
+              <Stamp label="NOPE" color={colors.danger} rotate={10} />
+              <Stamp label="SUPER" color={colors.info} rotate={-6} />
+              <Stamp label="BOOST" color={colors.accent} rotate={6} />
+            </div>
+          </div>
+
+          {/* Loading skeleton */}
+          <div style={{ marginTop: spacing[5] }}>
+            <Label>Loading deck</Label>
+            <div style={{ marginTop: spacing[2] }}>
+              <GlassPanel style={{ padding: 0, overflow: "hidden" }}>
+                <Skeleton style={{ height: 300, borderRadius: 0 }} />
+                <div style={{ padding: spacing[4] }}>
+                  <Skeleton style={{ height: 20, width: "55%" }} />
+                  <Skeleton style={{ height: 13, width: "38%", marginTop: spacing[2] }} />
+                  <div className="flex" style={{ gap: spacing[1], marginTop: spacing[3] }}>
+                    <Skeleton style={{ height: 28, width: 70, borderRadius: radii.pill }} />
+                    <Skeleton style={{ height: 28, width: 84, borderRadius: radii.pill }} />
+                    <Skeleton style={{ height: 28, width: 60, borderRadius: radii.pill }} />
+                  </div>
+                </div>
+              </GlassPanel>
+            </div>
+          </div>
         </Section>
 
         {/* Badges */}
