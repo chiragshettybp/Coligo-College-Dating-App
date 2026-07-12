@@ -52,6 +52,19 @@ import {
 } from "@/lib/ds";
 import { haptic, type HapticToken } from "@/lib/haptics";
 import {
+  Card,
+  CardHeader,
+  CardBody,
+  CardFooter,
+  CardMedia,
+  StatCard,
+  AlertCard,
+  EmptyStateCard,
+  InfoCard,
+  SettingsCard,
+  SettingsRow,
+} from "@/components/ds/card";
+import {
   Avatar,
   Badge,
   IdentityBadge,
