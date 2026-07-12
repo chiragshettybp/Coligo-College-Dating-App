@@ -244,7 +244,11 @@ export function Chip({
 }) {
   return (
     <button
-      onClick={onClick}
+      onClick={() => {
+        haptic("selection");
+        onClick?.();
+      }}
+
       className={cn(
         "inline-flex items-center gap-1.5 backdrop-blur-md will-change-transform",
         "hover:-translate-y-[1px] active:scale-95",
