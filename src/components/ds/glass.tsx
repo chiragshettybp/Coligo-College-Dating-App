@@ -362,10 +362,10 @@ export function Badge({
   const t = badgeTone[tone];
   return (
     <span
-      className={cn("inline-flex items-center gap-1.5 backdrop-blur-md", className)}
+      className={cn("inline-flex items-center gap-1.5", className)}
       style={{
         borderRadius: radii.pill,
-        padding: dot ? "4px 11px 4px 9px" : "4px 11px",
+        padding: dot ? "3px 10px 3px 8px" : "3px 10px",
         fontSize: 12,
         lineHeight: 1,
         fontWeight: 600,
@@ -374,7 +374,6 @@ export function Badge({
         background: t.background,
         color: t.color,
         border: `1px solid ${t.border}`,
-        boxShadow: "inset 0 1px 0 rgba(255,255,255,0.10), 0 1px 2px rgba(0,0,0,0.25)",
       }}
     >
       {dot && (
@@ -385,12 +384,96 @@ export function Badge({
             height: 6,
             borderRadius: 999,
             background: t.dot,
-            boxShadow: `0 0 8px ${t.dot}`,
           }}
         />
       )}
       {children}
     </span>
+  );
+}
+
+/* --------------------------------------------------------- Identity badges */
+
+// One semantic system so every screen renders the same badge for the same
+// meaning. Icons are sized/aligned once here; callers never restyle.
+const IB_ICON = { width: 12, height: 12 } as const;
+
+export type IdentityBadgeType =
+  | "verified"
+  | "premium"
+  | "sameCollege"
+  | "sameDepartment"
+  | "sameSemester"
+  | "new"
+  | "popular"
+  | "trending"
+  | "mutualInterests";
+
+const identityPresets: Record<
+  IdentityBadgeType,
+  { tone: BadgeTone; icon?: React.ReactNode; label: string }
+> = {
+  verified: { tone: "primary", icon: <ShieldCheck style={IB_ICON} />, label: "Verified" },
+  premium: { tone: "accent", icon: <Sparkles style={IB_ICON} />, label: "Premium" },
+  sameCollege: { tone: "primary", icon: <GraduationCap style={IB_ICON} />, label: "Same college" },
+  sameDepartment: { tone: "primary", icon: <Building2 style={IB_ICON} />, label: "Same department" },
+  sameSemester: { tone: "primary", icon: <CalendarDays style={IB_ICON} />, label: "Same semester" },
+  new: { tone: "info", label: "New" },
+  popular: { tone: "warning", icon: <Star style={IB_ICON} />, label: "Popular" },
+  trending: { tone: "warning", icon: <Flame style={IB_ICON} />, label: "Trending" },
+  mutualInterests: { tone: "primary", icon: <Users style={IB_ICON} />, label: "Mutual interests" },
+};
+
+/** Semantic identity badge — pass a type; label/icon/tone come from the system. */
+export function IdentityBadge({
+  type,
+  label,
+  className,
+}: {
+  type: IdentityBadgeType;
+  /** Override the default label (e.g. "3 mutual interests"). */
+  label?: string;
+  className?: string;
+}) {
+  const preset = identityPresets[type];
+  return (
+    <Badge tone={preset.tone} className={className}>
+      {preset.icon}
+      {label ?? preset.label}
+    </Badge>
+  );
+}
+
+/** Online / offline presence — dot cue, no color reliance. */
+export function PresenceBadge({
+  online,
+  className,
+}: {
+  online: boolean;
+  className?: string;
+}) {
+  return (
+    <Badge tone={online ? "success" : "neutral"} dot pulse={online} className={className}>
+      {online ? "Online" : "Offline"}
+    </Badge>
+  );
+}
+
+/** Compatibility / match percentage — the one badge allowed a warmer accent. */
+export function CompatibilityBadge({
+  value,
+  label = "match",
+  className,
+}: {
+  value: number;
+  label?: string;
+  className?: string;
+}) {
+  return (
+    <Badge tone="accent" className={className}>
+      <Heart style={IB_ICON} fill="currentColor" />
+      {value}% {label}
+    </Badge>
   );
 }
 
