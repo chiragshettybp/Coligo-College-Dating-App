@@ -42,6 +42,8 @@ import {
   shadows,
   spacing,
   surfaces,
+  type,
+  weights,
 } from "@/lib/ds";
 import {
   Avatar,
