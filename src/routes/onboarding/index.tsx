@@ -1,0 +1,17 @@
+// /onboarding — resume: send the member to their saved step (or complete).
+import { createFileRoute, Navigate } from "@tanstack/react-router";
+
+import { useOnboardingState } from "@/components/onboarding/useOnboarding";
+import { ONBOARDING_STEPS, maxAllowedIndex } from "@/lib/onboarding";
+
+export const Route = createFileRoute("/onboarding/")({
+  head: () => ({ meta: [{ title: "Set up your profile — CampusMatch" }, { name: "robots", content: "noindex" }] }),
+  component: OnboardingResume,
+});
+
+function OnboardingResume() {
+  const state = useOnboardingState();
+  if (state.onboardingCompleted) return <Navigate to="/app" replace />;
+  const target = ONBOARDING_STEPS[maxAllowedIndex(state.onboardingStep)];
+  return <Navigate to={`/onboarding/${target}`} replace />;
+}
