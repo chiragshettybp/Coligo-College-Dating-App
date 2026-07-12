@@ -189,6 +189,10 @@ function UIShowcase() {
   const [toasts, setToasts] = useState<ToastItem[]>([]);
   const [matchOpen, setMatchOpen] = useState(false);
   const [confirmOpen, setConfirmOpen] = useState(false);
+  const [navSearch, setNavSearch] = useState("");
+  const [sheetOpen, setSheetOpen] = useState(false);
+  const [actionOpen, setActionOpen] = useState(false);
+  const [headerCollapsed, setHeaderCollapsed] = useState(false);
 
   const toggleInterest = (i: string) =>
     setInterests((s) => (s.includes(i) ? s.filter((x) => x !== i) : [...s, i]));
