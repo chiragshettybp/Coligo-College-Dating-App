@@ -459,6 +459,7 @@ function QuickActions({ pending }: { pending: number }) {
           onClick={() => {
             if (a.to === "/admin/users") navigate({ to: "/admin/users" });
             else if (a.to === "/admin/colleges") navigate({ to: "/admin/colleges" });
+            else if (a.to === "/admin/reports") navigate({ to: "/admin/reports" });
             /* other modules — future dashboard entry points */
           }}
         />
