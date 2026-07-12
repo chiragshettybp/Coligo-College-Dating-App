@@ -647,26 +647,92 @@ function UIShowcase() {
         </Section>
 
         {/* Badges */}
-        <Section title="Badges" description="Verification, status and metadata tags.">
+        <Section
+          title="Badges"
+          description="Identity, status and metadata tokens — one glass recipe, color-independent cues, elegant enough to feel collectible."
+        >
+          <Label>Status</Label>
+          <Row>
+            <Badge tone="success" dot pulse>Online</Badge>
+            <Badge tone="warning" dot>Away</Badge>
+            <Badge tone="neutral" dot>Offline</Badge>
+            <Badge tone="info" dot pulse>Typing…</Badge>
+          </Row>
+          <div style={{ height: spacing[3] }} />
+          <Label>Identity</Label>
           <Row>
             <Badge tone="success"><ShieldCheck style={{ width: 12, height: 12 }} /> Verified</Badge>
             <Badge tone="primary"><Sparkles style={{ width: 12, height: 12 }} /> Premium</Badge>
             <Badge tone="info">New</Badge>
-            <Badge tone="warning">Popular</Badge>
-            <Badge tone="danger">Trending</Badge>
+            <Badge tone="warning"><Flame style={{ width: 12, height: 12 }} /> Trending</Badge>
             <Badge tone="neutral"><GraduationCap style={{ width: 12, height: 12 }} /> CS · Year 2</Badge>
+          </Row>
+          <div style={{ height: spacing[3] }} />
+          <Label>Match</Label>
+          <Row>
+            <Badge tone="success"><Heart style={{ width: 12, height: 12 }} fill="currentColor" /> 96% match</Badge>
+            <Badge tone="primary"><MapPin style={{ width: 12, height: 12 }} /> Same campus</Badge>
+            <Badge tone="info"><Sparkles style={{ width: 12, height: 12 }} /> 3 shared interests</Badge>
+            <Badge tone="neutral" dot>Active recently</Badge>
           </Row>
         </Section>
 
-        {/* Alerts */}
-        <Section title="Alerts & Toasts" description="Success, warning, error and info feedback surfaces.">
-          <div className="space-y-3">
-            <Alert tone="success" icon={<Check style={{ width: 18, height: 18 }} />} title="Profile saved" body="Your changes are live." />
-            <Alert tone="warning" icon={<AlertTriangle style={{ width: 18, height: 18 }} />} title="Add more photos" body="Profiles with 4+ photos get 3x more matches." />
-            <Alert tone="danger" icon={<X style={{ width: 18, height: 18 }} />} title="Something went wrong" body="We couldn't send your message." />
-            <Alert tone="info" icon={<Info style={{ width: 18, height: 18 }} />} title="New feature" body="You can now filter by department." />
+        {/* Feedback: alerts, toasts, banners */}
+        <Section
+          title="Alerts, Toasts & Banners"
+          description="A calm feedback language — glass surfaces, restrained accents, tone-tinted icons and one motion system. Every surface says what happened and what to do next at a glance."
+        >
+          <Label>Inline banners</Label>
+          <div className="space-y-2">
+            <Banner tone="danger" icon={<WifiOff style={{ width: 16, height: 16 }} />} title="You're offline" action={{ label: "Retry" }} />
+            <Banner tone="info" icon={<Download style={{ width: 16, height: 16 }} />} title="Update available" action={{ label: "Install" }} />
+            <Banner tone="warning" icon={<BellRing style={{ width: 16, height: 16 }} />} title="Enable notifications to never miss a match" action={{ label: "Allow" }} />
           </div>
+
+          <div style={{ height: spacing[4] }} />
+          <Label>Alert cards</Label>
+          <div className="space-y-3">
+            <Alert
+              tone="success"
+              icon={<Check style={{ width: 18, height: 18 }} />}
+              title="Profile saved"
+              body="Your changes are live and visible to matches."
+            />
+            <Alert
+              tone="warning"
+              icon={<AlertTriangle style={{ width: 18, height: 18 }} />}
+              title="Add more photos"
+              body="Profiles with 4+ photos get 3× more matches."
+              primaryAction={{ label: "Add photos" }}
+              secondaryAction={{ label: "Later" }}
+            />
+            <Alert
+              tone="danger"
+              icon={<X style={{ width: 18, height: 18 }} />}
+              title="Couldn't send message"
+              body="Check your connection and try again."
+              primaryAction={{ label: "Retry" }}
+              onDismiss={() => {}}
+            />
+            <Alert
+              tone="info"
+              icon={<Info style={{ width: 18, height: 18 }} />}
+              title="New feature"
+              body="You can now filter matches by department."
+              onDismiss={() => {}}
+            />
+          </div>
+
+          <div style={{ height: spacing[4] }} />
+          <Label>Floating toasts</Label>
+          <Row>
+            <Button size="sm" variant="secondary" onClick={() => pushToast("success", <Check style={{ width: 15, height: 15 }} />, "Profile saved")}>Success</Button>
+            <Button size="sm" variant="secondary" onClick={() => pushToast("info", <Info style={{ width: 15, height: 15 }} />, "Filter applied")}>Info</Button>
+            <Button size="sm" variant="secondary" onClick={() => pushToast("warning", <AlertTriangle style={{ width: 15, height: 15 }} />, "Photo upload slow")}>Warning</Button>
+            <Button size="sm" variant="secondary" onClick={() => pushToast("danger", <WifiOff style={{ width: 15, height: 15 }} />, "Network error")}>Error</Button>
+          </Row>
         </Section>
+
 
         {/* Chat */}
         <Section
