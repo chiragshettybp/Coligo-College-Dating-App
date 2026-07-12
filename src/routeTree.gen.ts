@@ -10,6 +10,7 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as UiRouteImport } from './routes/ui'
+import { Route as AuthRouteImport } from './routes/auth'
 import { Route as PublicRouteRouteImport } from './routes/_public/route'
 import { Route as PublicIndexRouteImport } from './routes/_public/index'
 import { Route as PublicTermsRouteImport } from './routes/_public/terms'
@@ -21,6 +22,11 @@ import { Route as PublicAboutRouteImport } from './routes/_public/about'
 const UiRoute = UiRouteImport.update({
   id: '/ui',
   path: '/ui',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthRoute = AuthRouteImport.update({
+  id: '/auth',
+  path: '/auth',
   getParentRoute: () => rootRouteImport,
 } as any)
 const PublicRouteRoute = PublicRouteRouteImport.update({
@@ -61,6 +67,7 @@ const PublicAboutRoute = PublicAboutRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof PublicIndexRoute
+  '/auth': typeof AuthRoute
   '/ui': typeof UiRoute
   '/about': typeof PublicAboutRoute
   '/community-guidelines': typeof PublicCommunityGuidelinesRoute
@@ -69,6 +76,7 @@ export interface FileRoutesByFullPath {
   '/terms': typeof PublicTermsRoute
 }
 export interface FileRoutesByTo {
+  '/auth': typeof AuthRoute
   '/ui': typeof UiRoute
   '/about': typeof PublicAboutRoute
   '/community-guidelines': typeof PublicCommunityGuidelinesRoute
@@ -80,6 +88,7 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/_public': typeof PublicRouteRouteWithChildren
+  '/auth': typeof AuthRoute
   '/ui': typeof UiRoute
   '/_public/about': typeof PublicAboutRoute
   '/_public/community-guidelines': typeof PublicCommunityGuidelinesRoute
@@ -92,6 +101,7 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/auth'
     | '/ui'
     | '/about'
     | '/community-guidelines'
@@ -100,6 +110,7 @@ export interface FileRouteTypes {
     | '/terms'
   fileRoutesByTo: FileRoutesByTo
   to:
+    | '/auth'
     | '/ui'
     | '/about'
     | '/community-guidelines'
@@ -110,6 +121,7 @@ export interface FileRouteTypes {
   id:
     | '__root__'
     | '/_public'
+    | '/auth'
     | '/ui'
     | '/_public/about'
     | '/_public/community-guidelines'
@@ -121,6 +133,7 @@ export interface FileRouteTypes {
 }
 export interface RootRouteChildren {
   PublicRouteRoute: typeof PublicRouteRouteWithChildren
+  AuthRoute: typeof AuthRoute
   UiRoute: typeof UiRoute
 }
 
@@ -131,6 +144,13 @@ declare module '@tanstack/react-router' {
       path: '/ui'
       fullPath: '/ui'
       preLoaderRoute: typeof UiRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/auth': {
+      id: '/auth'
+      path: '/auth'
+      fullPath: '/auth'
+      preLoaderRoute: typeof AuthRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/_public': {
@@ -209,6 +229,7 @@ const PublicRouteRouteWithChildren = PublicRouteRoute._addFileChildren(
 
 const rootRouteChildren: RootRouteChildren = {
   PublicRouteRoute: PublicRouteRouteWithChildren,
+  AuthRoute: AuthRoute,
   UiRoute: UiRoute,
 }
 export const routeTree = rootRouteImport
