@@ -607,7 +607,7 @@ export const SwipeDeck = forwardRef<
       </div>
     </div>
   );
-}
+});
 
 /* ------------------------------------------------------------ SwipeControls */
 
