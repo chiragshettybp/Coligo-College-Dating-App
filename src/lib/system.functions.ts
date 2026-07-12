@@ -132,7 +132,7 @@ const reportErrorSchema = z.object({
   stack: z.string().trim().max(20000).optional().default(""),
   sessionId: z.string().trim().max(128).optional().default(""),
   userId: z.string().uuid().nullable().optional().default(null),
-  deviceInfo: z.record(z.string(), z.unknown()).optional().default({}),
+  deviceInfo: z.record(z.string(), z.string()).optional().default({}),
 });
 
 function makeErrorId(): string {
