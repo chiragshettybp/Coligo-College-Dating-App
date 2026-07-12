@@ -894,7 +894,9 @@ function UIShowcase() {
           <code style={{ color: colors.info }}>@/components/ds/glass</code>.
         </footer>
       </div>
+      <ToastHost toasts={toasts} onDismiss={dismissToast} />
     </main>
+
   );
 }
 
