@@ -2518,9 +2518,9 @@ function Bubble({
             fontSize: 15,
             lineHeight: 1.35,
             fontWeight: weights.medium,
-            color: "#fff",
+            color: isMine ? "#ffffff" : colors.textPrimary,
             background: isMine ? gradients.primaryButton : surfaces.glassSoft,
-            border: `1px solid ${isMine ? "transparent" : surfaces.border}`,
+            border: `1px solid ${isMine ? "transparent" : surfaces.borderSoft}`,
             boxShadow: isMine ? shadows.primaryGlow : shadows.soft,
             wordBreak: "break-word",
           }}
@@ -2535,8 +2535,8 @@ function Bubble({
               bottom: -12,
               [isMine ? "right" : "left"]: 10,
               padding: "2px 7px",
-              background: "rgba(8,12,26,0.9)",
-              border: `1px solid ${surfaces.border}`,
+              background: surfaces.glassSoft,
+              border: `1px solid ${surfaces.borderSoft}`,
               boxShadow: shadows.soft,
               fontSize: 12,
             }}
