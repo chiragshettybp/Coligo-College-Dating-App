@@ -10,7 +10,7 @@ import { useServerFn } from "@tanstack/react-start";
 import { toast } from "sonner";
 import { HeartOff } from "lucide-react";
 
-import { matchDetailQuery, matchesQuery, unmatch } from "@/lib/matches.functions";
+import { matchDetailQuery, matchesQuery, unmatch, type MatchListItem } from "@/lib/matches.functions";
 import { colors, spacing, radii, surfaces } from "@/lib/ds";
 import { Text, Button, Avatar, Skeleton } from "@/components/ds/glass";
 import { Card, CardBody } from "@/components/ds/card";
