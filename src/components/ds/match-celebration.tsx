@@ -443,7 +443,7 @@ export function MatchCelebration({
 
             {/* CTAs emerge with a small spring lift. */}
             <div className="w-full" style={{ marginTop: spacing[5] }}>
-              <div style={reveal(4 + indicators.length)}>
+              <div style={reveal(5 + indicators.length)}>
                 <Button
                   variant="primary"
                   size="lg"
@@ -455,7 +455,7 @@ export function MatchCelebration({
                   Send Message
                 </Button>
               </div>
-              <div style={{ ...reveal(5 + indicators.length), marginTop: spacing[2] }}>
+              <div style={{ ...reveal(6 + indicators.length), marginTop: spacing[2] }}>
                 <Button variant="glass" size="lg" pill fullWidth onClick={onClose}>
                   Keep Swiping
                 </Button>
