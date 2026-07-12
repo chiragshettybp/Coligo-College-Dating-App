@@ -40,7 +40,7 @@ export type ContactInput = z.infer<typeof contactSchema>;
 
 export const submitContactMessage = createServerFn({ method: "POST" })
   .inputValidator((input) => contactSchema.parse(input))
-  .handler(async ({ data }): Promise<{ ok: true; id: string }> => {
+  .handler(async ({ data }): Promise<{ ok: true }> => {
     const supabase = createClient<Database>(
       process.env.SUPABASE_URL!,
       process.env.SUPABASE_PUBLISHABLE_KEY!,
@@ -49,21 +49,18 @@ export const submitContactMessage = createServerFn({ method: "POST" })
 
     const userAgent = getRequestHeader("user-agent") ?? null;
 
-    const { data: row, error } = await supabase
-      .from("contact_messages")
-      .insert({
-        name: data.name,
-        email: data.email,
-        subject: data.subject,
-        category: data.category,
-        message: data.message,
-        status: "new",
-        user_agent: userAgent,
-        source: "web",
-      })
-      .select("id")
-      .single();
+    // No .select() back: anon has INSERT-only access (no SELECT policy) by design.
+    const { error } = await supabase.from("contact_messages").insert({
+      name: data.name,
+      email: data.email,
+      subject: data.subject,
+      category: data.category,
+      message: data.message,
+      status: "new",
+      user_agent: userAgent,
+      source: "web",
+    });
 
     if (error) throw new Error(error.message);
-    return { ok: true, id: row.id };
+    return { ok: true };
   });
