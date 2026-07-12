@@ -402,12 +402,19 @@ export function BottomNav({
               color: isActive ? "#fff" : colors.textMuted,
               background: isActive ? gradients.primaryButton : "transparent",
               boxShadow: isActive ? shadows.primaryGlow : "none",
-              transition: `flex ${T_BASE}, background ${T_BASE}, color ${T_FAST}, padding ${T_BASE}`,
+              // Snappy spring so the active pill and label feel instant and tactile.
+              transition:
+                "flex 260ms cubic-bezier(0.34,1.56,0.64,1), background 160ms ease-out, color 120ms ease-out, padding 260ms cubic-bezier(0.34,1.56,0.64,1)",
             }}
           >
             <span style={{ position: "relative", display: "flex" }}>
               <Icon
-                style={{ width: 22, height: 22 }}
+                style={{
+                  width: 22,
+                  height: 22,
+                  transform: isActive ? "scale(1.08)" : "scale(1)",
+                  transition: "transform 220ms cubic-bezier(0.34,1.56,0.64,1)",
+                }}
                 strokeWidth={isActive ? 2.4 : 2}
               />
               {item.badge && !isActive ? <NavBadge count={item.badge} /> : null}
