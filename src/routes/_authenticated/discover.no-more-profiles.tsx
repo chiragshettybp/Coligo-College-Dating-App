@@ -42,17 +42,23 @@ function NoMoreProfilesPage() {
     }
   };
 
-  // Realtime: a newly onboarded/active profile may now be eligible.
+  // Realtime: a newly onboarded profile may now be eligible. Only react to a
+  // profile that flips onboarding_completed → true (a genuine new member),
+  // not every profile update (logins, edits) which would spam the toast.
   useEffect(() => {
     const channel = supabase
       .channel("discover:no-more")
       .on(
         "postgres_changes",
-        { event: "*", schema: "public", table: "profiles" },
-        () => {
-          toast("New students just joined", {
-            action: { label: "Refresh", onClick: retry },
-          });
+        { event: "UPDATE", schema: "public", table: "profiles" },
+        (payload) => {
+          const before = payload.old as { onboarding_completed?: boolean };
+          const after = payload.new as { onboarding_completed?: boolean };
+          if (!before?.onboarding_completed && after?.onboarding_completed) {
+            toast("New students just joined", {
+              action: { label: "Refresh", onClick: retry },
+            });
+          }
         },
       )
       .subscribe();

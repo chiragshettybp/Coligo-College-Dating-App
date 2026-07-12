@@ -348,16 +348,14 @@ export const sendMatchNote = createServerFn({ method: "POST" })
   )
   .handler(async ({ context, data }): Promise<{ ok: true }> => {
     const { supabase, userId } = context;
+    // matches.last_message_at is maintained by the touch_match_last_message
+    // trigger — matches has no UPDATE policy, so writing it here would no-op.
     const { error } = await supabase.from("messages").insert({
       match_id: data.matchId,
       sender_id: userId,
       body: data.body,
     });
     if (error) throw new Error(error.message);
-    await supabase
-      .from("matches")
-      .update({ last_message_at: new Date().toISOString() })
-      .eq("id", data.matchId);
     return { ok: true };
   });
 
