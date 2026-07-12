@@ -541,3 +541,121 @@ export const reportStatusQuery = (chatId: string) =>
     queryFn: () => getChatInfo({ data: { chatId } }),
     staleTime: 30_000,
   });
+
+// ----------------------------------------------------- Delivered receipts ----
+export const markConversationDelivered = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((input: { chatId: string }) =>
+    z.object({ chatId: z.string().uuid() }).parse(input),
+  )
+  .handler(async ({ context, data }): Promise<{ ok: true }> => {
+    const { supabase } = context;
+    const { error } = await supabase.rpc("mark_delivered", { _match_id: data.chatId });
+    if (error) throw new Error(error.message);
+    return { ok: true };
+  });
+
+// --------------------------------------------------------- Reactions ---------
+export const toggleReaction = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((input: { messageId: string; emoji: string }) =>
+    z.object({ messageId: z.string().uuid(), emoji: z.string().min(1).max(16) }).parse(input),
+  )
+  .handler(async ({ context, data }): Promise<Record<string, string[]>> => {
+    const { supabase } = context;
+    const { data: res, error } = await supabase.rpc("toggle_reaction", {
+      _message_id: data.messageId,
+      _emoji: data.emoji,
+    });
+    if (error) throw new Error(error.message);
+    return parseReactions(res);
+  });
+
+// --------------------------------------------------- Voice note upload -------
+export const createChatAudioUpload = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((input: { chatId: string; ext: string }) =>
+    z
+      .object({
+        chatId: z.string().uuid(),
+        ext: z.enum(["webm", "mp4", "m4a", "ogg", "mp3", "wav"]),
+      })
+      .parse(input),
+  )
+  .handler(async ({ context, data }): Promise<{ path: string; token: string }> => {
+    const { supabase, userId } = context;
+    const name = `voice-${Date.now()}-${crypto.randomUUID()}.${data.ext}`;
+    const path = `${data.chatId}/${userId}/${name}`;
+    const { data: signed, error } = await supabase.storage
+      .from(CHAT_BUCKET)
+      .createSignedUploadUrl(path);
+    if (error || !signed) throw new Error(error?.message ?? "Could not prepare upload");
+    return { path, token: signed.token };
+  });
+
+// ------------------------------------------------ Web push subscriptions -----
+export const VAPID_PUBLIC_KEY =
+  "BFKmhpvmC3nGuP6XPLFVMHNv4IrreDl9IMjgXHqWHN4xtJz-PS1hxZ3mRoTfmCdnrX19v8nOt4MYJRgotzlyO_I";
+
+export const savePushSubscription = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((input: { subscription: unknown }) =>
+    z
+      .object({
+        subscription: z.object({
+          endpoint: z.string().url(),
+          keys: z.object({ p256dh: z.string(), auth: z.string() }),
+        }),
+      })
+      .parse(input),
+  )
+  .handler(async ({ context, data }): Promise<{ ok: true }> => {
+    const { supabase, userId } = context;
+    const token = JSON.stringify(data.subscription);
+    // De-dupe by endpoint: drop any prior row for this endpoint, then insert.
+    const { data: existing } = await supabase
+      .from("device_tokens")
+      .select("id, token, user_id")
+      .eq("user_id", userId)
+      .eq("platform", "web");
+    for (const row of existing ?? []) {
+      try {
+        const parsed = JSON.parse((row as { token: string }).token) as { endpoint?: string };
+        if (parsed.endpoint === data.subscription.endpoint) {
+          await supabase.from("device_tokens").delete().eq("id", (row as { id: string }).id);
+        }
+      } catch {
+        /* ignore malformed rows */
+      }
+    }
+    const { error } = await supabase
+      .from("device_tokens")
+      .insert({ user_id: userId, platform: "web", token });
+    if (error) throw new Error(error.message);
+    return { ok: true };
+  });
+
+export const deletePushSubscription = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((input: { endpoint: string }) =>
+    z.object({ endpoint: z.string().url() }).parse(input),
+  )
+  .handler(async ({ context, data }): Promise<{ ok: true }> => {
+    const { supabase, userId } = context;
+    const { data: existing } = await supabase
+      .from("device_tokens")
+      .select("id, token")
+      .eq("user_id", userId)
+      .eq("platform", "web");
+    for (const row of existing ?? []) {
+      try {
+        const parsed = JSON.parse((row as { token: string }).token) as { endpoint?: string };
+        if (parsed.endpoint === data.endpoint) {
+          await supabase.from("device_tokens").delete().eq("id", (row as { id: string }).id);
+        }
+      } catch {
+        /* ignore */
+      }
+    }
+    return { ok: true };
+  });
