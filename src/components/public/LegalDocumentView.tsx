@@ -99,9 +99,9 @@ export function LegalDocumentView({ doc }: { doc: LegalDocument }) {
 export function LegalDocumentSkeleton() {
   return (
     <div style={{ display: "grid", gap: spacing[4] }}>
-      <Card variant="plain" style={{ height: 90 }} />
+      <Skeleton style={{ height: 90 }} />
       {[0, 1, 2, 3].map((i) => (
-        <Card key={i} variant="plain" style={{ height: 140 }} />
+        <Skeleton key={i} style={{ height: 140 }} />
       ))}
     </div>
   );
