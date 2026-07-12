@@ -375,7 +375,7 @@ export function MatchCelebration({
             <h2
               style={{
                 ...reveal(1),
-                fontSize: "clamp(38px, 10vw, 52px)",
+                fontSize: "clamp(30px, 8vw, 48px)",
                 fontWeight: 800,
                 lineHeight: 1.02,
                 letterSpacing: "-0.03em",
@@ -388,7 +388,7 @@ export function MatchCelebration({
             >
               It’s a match
             </h2>
-            <p style={{ ...reveal(2), ...type.bodyLg, color: colors.textSecondary, marginTop: 8 }}>
+            <p style={{ ...reveal(2), ...type.bodyLg, color: colors.textSecondary, marginTop: 6 }}>
               You and <span style={{ color: colors.textPrimary, fontWeight: 600 }}>{right.name}</span> liked each other
             </p>
 
