@@ -63,6 +63,7 @@ import { Route as AuthenticatedDiscoverIndexRouteImport } from './routes/_authen
 import { Route as AuthenticatedChatIndexRouteImport } from './routes/_authenticated/chat.index'
 import { Route as ApiPublicPushRouteImport } from './routes/api/public/push'
 import { Route as AdminUsersUserIdRouteImport } from './routes/admin.users.$userId'
+import { Route as AdminReportsReportIdRouteImport } from './routes/admin.reports.$reportId'
 import { Route as AdminCollegesNewRouteImport } from './routes/admin.colleges.new'
 import { Route as AdminCollegesCollegeIdRouteImport } from './routes/admin.colleges.$collegeId'
 import { Route as AuthenticatedSettingsSecurityRouteImport } from './routes/_authenticated/settings.security'
@@ -379,6 +380,11 @@ const AdminUsersUserIdRoute = AdminUsersUserIdRouteImport.update({
   path: '/users/$userId',
   getParentRoute: () => AdminRoute,
 } as any)
+const AdminReportsReportIdRoute = AdminReportsReportIdRouteImport.update({
+  id: '/reports/$reportId',
+  path: '/reports/$reportId',
+  getParentRoute: () => AdminRoute,
+} as any)
 const AdminCollegesNewRoute = AdminCollegesNewRouteImport.update({
   id: '/colleges/new',
   path: '/colleges/new',
@@ -683,6 +689,7 @@ export interface FileRoutesByFullPath {
   '/settings/security': typeof AuthenticatedSettingsSecurityRoute
   '/admin/colleges/$collegeId': typeof AdminCollegesCollegeIdRouteWithChildren
   '/admin/colleges/new': typeof AdminCollegesNewRoute
+  '/admin/reports/$reportId': typeof AdminReportsReportIdRoute
   '/admin/users/$userId': typeof AdminUsersUserIdRoute
   '/api/public/push': typeof ApiPublicPushRoute
   '/chat/': typeof AuthenticatedChatIndexRoute
@@ -770,6 +777,7 @@ export interface FileRoutesByTo {
   '/settings/security': typeof AuthenticatedSettingsSecurityRoute
   '/admin/colleges/$collegeId': typeof AdminCollegesCollegeIdRouteWithChildren
   '/admin/colleges/new': typeof AdminCollegesNewRoute
+  '/admin/reports/$reportId': typeof AdminReportsReportIdRoute
   '/admin/users/$userId': typeof AdminUsersUserIdRoute
   '/api/public/push': typeof ApiPublicPushRoute
   '/chat': typeof AuthenticatedChatIndexRoute
@@ -867,6 +875,7 @@ export interface FileRoutesById {
   '/_authenticated/settings/security': typeof AuthenticatedSettingsSecurityRoute
   '/admin/colleges/$collegeId': typeof AdminCollegesCollegeIdRouteWithChildren
   '/admin/colleges/new': typeof AdminCollegesNewRoute
+  '/admin/reports/$reportId': typeof AdminReportsReportIdRoute
   '/admin/users/$userId': typeof AdminUsersUserIdRoute
   '/api/public/push': typeof ApiPublicPushRoute
   '/_authenticated/chat/': typeof AuthenticatedChatIndexRoute
@@ -963,6 +972,7 @@ export interface FileRouteTypes {
     | '/settings/security'
     | '/admin/colleges/$collegeId'
     | '/admin/colleges/new'
+    | '/admin/reports/$reportId'
     | '/admin/users/$userId'
     | '/api/public/push'
     | '/chat/'
@@ -1050,6 +1060,7 @@ export interface FileRouteTypes {
     | '/settings/security'
     | '/admin/colleges/$collegeId'
     | '/admin/colleges/new'
+    | '/admin/reports/$reportId'
     | '/admin/users/$userId'
     | '/api/public/push'
     | '/chat'
@@ -1146,6 +1157,7 @@ export interface FileRouteTypes {
     | '/_authenticated/settings/security'
     | '/admin/colleges/$collegeId'
     | '/admin/colleges/new'
+    | '/admin/reports/$reportId'
     | '/admin/users/$userId'
     | '/api/public/push'
     | '/_authenticated/chat/'
@@ -1566,6 +1578,13 @@ declare module '@tanstack/react-router' {
       path: '/users/$userId'
       fullPath: '/admin/users/$userId'
       preLoaderRoute: typeof AdminUsersUserIdRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/reports/$reportId': {
+      id: '/admin/reports/$reportId'
+      path: '/reports/$reportId'
+      fullPath: '/admin/reports/$reportId'
+      preLoaderRoute: typeof AdminReportsReportIdRouteImport
       parentRoute: typeof AdminRoute
     }
     '/admin/colleges/new': {
@@ -2135,6 +2154,7 @@ interface AdminRouteChildren {
   AdminIndexRoute: typeof AdminIndexRoute
   AdminCollegesCollegeIdRoute: typeof AdminCollegesCollegeIdRouteWithChildren
   AdminCollegesNewRoute: typeof AdminCollegesNewRoute
+  AdminReportsReportIdRoute: typeof AdminReportsReportIdRoute
   AdminUsersUserIdRoute: typeof AdminUsersUserIdRoute
   AdminCollegesIndexRoute: typeof AdminCollegesIndexRoute
   AdminReportsIndexRoute: typeof AdminReportsIndexRoute
@@ -2147,6 +2167,7 @@ const AdminRouteChildren: AdminRouteChildren = {
   AdminIndexRoute: AdminIndexRoute,
   AdminCollegesCollegeIdRoute: AdminCollegesCollegeIdRouteWithChildren,
   AdminCollegesNewRoute: AdminCollegesNewRoute,
+  AdminReportsReportIdRoute: AdminReportsReportIdRoute,
   AdminUsersUserIdRoute: AdminUsersUserIdRoute,
   AdminCollegesIndexRoute: AdminCollegesIndexRoute,
   AdminReportsIndexRoute: AdminReportsIndexRoute,

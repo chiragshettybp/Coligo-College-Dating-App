@@ -451,15 +451,8 @@ function ReportDetail() {
 function Wrap({ children, onBack }: { children: React.ReactNode; onBack: () => void }) {
   return (
     <div style={{ maxWidth: 820, margin: "0 auto", padding: spacing[4], paddingBottom: spacing[9] }}>
-      <TopBar
-        title="Report detail"
-        onBack={onBack}
-        leading={
-          <button onClick={onBack} aria-label="Back" style={{ display: "flex", padding: 8, color: colors.textSecondary, background: "transparent", border: "none", cursor: "pointer" }}>
-            <ArrowLeft style={{ width: 20, height: 20 }} />
-          </button>
-        }
-      />
+      <TopBar title="Report detail" onBack={onBack} />
+
       <div style={{ marginTop: spacing[3] }}>{children}</div>
     </div>
   );
