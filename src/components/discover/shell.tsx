@@ -16,9 +16,9 @@ import {
   type BottomNavItem,
 } from "@/components/ds/navigation";
 
-export type DiscoverTab = "home" | "discover" | "matches" | "profile";
+export type DiscoverTab = "home" | "discover" | "matches" | "chat" | "profile";
 
-const ORDER: DiscoverTab[] = ["home", "discover", "matches", "profile"];
+const ORDER: DiscoverTab[] = ["home", "discover", "matches", "chat", "profile"];
 
 export function DiscoverShell({
   children,
