@@ -8,7 +8,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useSuspenseQuery, useQueryClient } from "@tanstack/react-query";
-import { Search, MessageCircle, ChevronRight } from "lucide-react";
+import { Search, MessageCircle, ChevronRight, Bell, X } from "lucide-react";
 
 import { supabase } from "@/integrations/supabase/client";
 import { chatListQuery, type ChatListItem } from "@/lib/chat.functions";
