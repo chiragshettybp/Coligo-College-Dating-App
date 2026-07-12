@@ -176,7 +176,9 @@ export const listAdminUsers = createServerFn({ method: "GET" })
     });
     if (error) throw new Error(error.message);
     const list = (rows as unknown as AdminUserRow[]) ?? [];
-    return { rows: list, total: list.length > 0 ? Number(list[0].total_count) : 0 };
+    const signed = await signAdminPaths(context.supabase, list.map((r) => r.avatar));
+    const withAvatars = list.map((r) => ({ ...r, avatar: resolveAdminUrl(r.avatar, signed) }));
+    return { rows: withAvatars, total: withAvatars.length > 0 ? Number(withAvatars[0].total_count) : 0 };
   });
 
 export const getAdminUserDetail = createServerFn({ method: "GET" })
