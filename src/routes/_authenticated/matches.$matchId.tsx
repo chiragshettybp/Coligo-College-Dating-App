@@ -85,10 +85,7 @@ function MatchDetailPage() {
   const cls = other.graduationYear ? `Class of '${String(other.graduationYear).slice(-2)}` : null;
   const mutual = new Set(other.mutualInterests);
 
-  const openChat = () =>
-    match.noteSent
-      ? navigate({ to: "/matches/$matchId/note", params: { matchId } })
-      : navigate({ to: "/matches/$matchId/note", params: { matchId } });
+  const openChat = () => navigate({ to: "/matches/$matchId/note", params: { matchId } });
 
   return (
     <DiscoverShell active="matches">
