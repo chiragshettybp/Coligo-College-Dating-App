@@ -17,6 +17,12 @@ export const Route = createFileRoute("/")({
 // fill a mobile screen without distorting any proportion.
 const u = (px: number) => `${(px / 5.24).toFixed(3)}cqw`;
 
+const INK = "#1c1c1e";
+const INK_SOFT = "rgba(60,60,67,0.72)";
+const INK_MUTED = "rgba(60,60,67,0.5)";
+const HAIRLINE = "rgba(0,0,0,0.08)";
+const ACCENT = "#0a84ff";
+
 const contacts = [memoji1, memoji2, memoji3, memoji4, memoji5];
 
 function Index() {
@@ -24,35 +30,36 @@ function Index() {
     <main
       className="relative flex min-h-screen w-full items-center justify-center overflow-hidden"
       style={{
-        fontFamily: "Nunito, ui-sans-serif, system-ui, sans-serif",
+        fontFamily:
+          '-apple-system, BlinkMacSystemFont, "SF Pro Display", "Inter", ui-sans-serif, system-ui, sans-serif',
+        color: INK,
         background:
-          "radial-gradient(75% 65% at 16% 80%, rgba(56,104,240,0.55) 0%, rgba(56,104,240,0) 60%)," +
-          "radial-gradient(70% 60% at 55% 112%, rgba(40,60,210,0.5) 0%, rgba(40,60,210,0) 55%)," +
-          "linear-gradient(215deg, #010208 0%, #04102f 32%, #0c2270 66%, #14309a 100%)",
+          "radial-gradient(120% 80% at 50% -20%, #ffffff 0%, rgba(255,255,255,0) 60%)," +
+          "linear-gradient(180deg, #f8f8f7 0%, #f6f7f9 52%, #f4f5f7 100%)",
       }}
     >
       {/* Poster corner labels */}
       <span
-        className="pointer-events-none absolute left-[5vw] top-[4vw] text-white/95 sm:top-8"
-        style={{ fontSize: "clamp(15px, 3vw, 22px)", fontWeight: 500 }}
+        className="pointer-events-none absolute left-[5vw] top-[4vw] sm:top-8"
+        style={{ color: INK_MUTED, fontSize: "clamp(13px, 2.6vw, 18px)", fontWeight: 500 }}
       >
         Design Showcase
       </span>
       <span
-        className="pointer-events-none absolute right-[5vw] top-[4vw] tabular-nums text-white/95 sm:top-8"
-        style={{ fontSize: "clamp(15px, 3vw, 22px)", fontWeight: 500 }}
+        className="pointer-events-none absolute right-[5vw] top-[4vw] tabular-nums sm:top-8"
+        style={{ color: INK_MUTED, fontSize: "clamp(13px, 2.6vw, 18px)", fontWeight: 500 }}
       >
         01/07
       </span>
       <span
-        className="pointer-events-none absolute bottom-[4vw] left-[5vw] text-white/95 sm:bottom-8"
-        style={{ fontSize: "clamp(15px, 3vw, 22px)", fontWeight: 500 }}
+        className="pointer-events-none absolute bottom-[4vw] left-[5vw] sm:bottom-8"
+        style={{ color: INK_MUTED, fontSize: "clamp(13px, 2.6vw, 18px)", fontWeight: 500 }}
       >
         @memento___studios
       </span>
       <span
-        className="pointer-events-none absolute bottom-[4vw] right-[5vw] text-white/95 sm:bottom-8"
-        style={{ fontSize: "clamp(15px, 3vw, 22px)", fontWeight: 500 }}
+        className="pointer-events-none absolute bottom-[4vw] right-[5vw] sm:bottom-8"
+        style={{ color: INK_MUTED, fontSize: "clamp(13px, 2.6vw, 18px)", fontWeight: 500 }}
       >
         Save for later
       </span>
@@ -69,42 +76,36 @@ function WalletCard() {
       style={{
         width: "min(524px, 92vw)",
         containerType: "inline-size",
-        borderRadius: u(50),
+        borderRadius: u(46),
         padding: u(15),
-        background:
-          "linear-gradient(160deg, rgba(28,37,69,0.72) 0%, rgba(19,26,54,0.72) 42%, rgba(14,20,48,0.72) 100%)",
-        border: `${u(1)} solid rgba(255,255,255,0.12)`,
+        background: "#ffffff",
+        border: `${u(1)} solid ${HAIRLINE}`,
         boxShadow:
-          `0 ${u(2)} 0 rgba(255,255,255,0.06) inset,` +
-          `0 ${u(40)} ${u(70)} rgba(0,0,0,0.55)`,
+          `0 ${u(2)} ${u(6)} rgba(0,0,0,0.05),` +
+          `0 ${u(16)} ${u(40)} rgba(0,0,0,0.08)`,
       }}
     >
-      <div
-        className="absolute inset-0 backdrop-blur-2xl"
-        style={{ borderRadius: u(50) }}
-        aria-hidden
-      />
       <div className="relative">
-        {/* Blue glossy header */}
+        {/* Header — calm off-white surface, hierarchy from type not color */}
         <div
           className="relative overflow-hidden"
           style={{
-            borderRadius: u(38),
-            padding: `${u(18)} ${u(20)} ${u(30)}`,
-            background:
-              "radial-gradient(120% 90% at 50% -10%, #57b0f6 0%, #3ea0f2 34%, #2f83e6 72%, #2a75dd 100%)",
-            boxShadow: `0 ${u(1)} 0 rgba(255,255,255,0.35) inset`,
+            borderRadius: u(34),
+            padding: `${u(20)} ${u(20)} ${u(32)}`,
+            background: "#f6f7f9",
+            border: `${u(1)} solid ${HAIRLINE}`,
           }}
         >
           {/* top row: Ana + info */}
           <div className="flex items-center justify-between">
-            <div className="flex items-center" style={{ gap: u(8) }}>
+            <div className="flex items-center" style={{ gap: u(10) }}>
               <div
-                className="overflow-hidden rounded-full bg-white/70"
+                className="overflow-hidden rounded-full"
                 style={{
-                  width: u(36),
-                  height: u(36),
-                  border: `${u(1.5)} solid rgba(255,255,255,0.55)`,
+                  width: u(38),
+                  height: u(38),
+                  border: `${u(1.5)} solid #ffffff`,
+                  boxShadow: `0 ${u(1)} ${u(3)} rgba(0,0,0,0.12)`,
                 }}
               >
                 <img
@@ -116,19 +117,18 @@ function WalletCard() {
                   className="h-full w-full object-cover"
                 />
               </div>
-              <span
-                className="text-white"
-                style={{ fontSize: u(17), fontWeight: 600 }}
-              >
+              <span style={{ color: INK, fontSize: u(17), fontWeight: 600 }}>
                 Ana
               </span>
             </div>
             <div
-              className="flex items-center justify-center rounded-full text-white/90 backdrop-blur-sm"
+              className="flex items-center justify-center rounded-full"
               style={{
                 width: u(30),
                 height: u(30),
-                background: "rgba(255,255,255,0.22)",
+                background: "#ffffff",
+                border: `${u(1)} solid ${HAIRLINE}`,
+                color: INK_SOFT,
                 fontSize: u(16),
                 fontStyle: "italic",
                 fontFamily: "Georgia, 'Times New Roman', serif",
@@ -139,35 +139,36 @@ function WalletCard() {
             </div>
           </div>
 
-          {/* balance pill */}
-          <div className="flex justify-center" style={{ marginTop: u(14) }}>
+          {/* balance label */}
+          <div className="flex justify-center" style={{ marginTop: u(18) }}>
             <span
-              className="text-white/95 backdrop-blur-sm"
               style={{
-                background: "rgba(18,52,120,0.42)",
-                borderRadius: u(999),
-                padding: `${u(7)} ${u(18)}`,
-                fontSize: u(15),
+                color: INK_MUTED,
+                fontSize: u(13),
                 fontWeight: 600,
-                letterSpacing: "0.06em",
+                letterSpacing: "0.08em",
+                textTransform: "uppercase",
               }}
             >
-              YOUR BALANCE
+              Your Balance
             </span>
           </div>
 
           {/* balance amount */}
           <div
-            className="text-center text-white"
+            className="text-center"
             style={{
-              marginTop: u(10),
-              fontSize: u(53),
+              color: INK,
+              marginTop: u(8),
+              fontSize: u(52),
               fontWeight: 700,
-              letterSpacing: "-0.01em",
+              letterSpacing: "-0.02em",
               lineHeight: 1,
             }}
           >
-            <span style={{ fontWeight: 500, marginRight: u(16) }}>$</span>
+            <span style={{ fontWeight: 500, color: INK_MUTED, marginRight: u(12) }}>
+              $
+            </span>
             52,002.50
           </div>
         </div>
@@ -175,17 +176,17 @@ function WalletCard() {
         {/* Contacts row (overlaps header bottom) */}
         <div
           className="relative z-10 flex justify-center"
-          style={{ gap: u(24), marginTop: u(-32) }}
+          style={{ gap: u(24), marginTop: u(-30) }}
         >
           {contacts.map((src, i) => (
             <div
               key={i}
               className="overflow-hidden rounded-full"
               style={{
-                width: u(58),
-                height: u(58),
-                border: `${u(3)} solid rgba(255,255,255,0.92)`,
-                boxShadow: `0 ${u(4)} ${u(10)} rgba(0,0,0,0.35)`,
+                width: u(56),
+                height: u(56),
+                border: `${u(3)} solid #ffffff`,
+                boxShadow: `0 ${u(2)} ${u(8)} rgba(0,0,0,0.10)`,
               }}
             >
               <img
@@ -202,31 +203,24 @@ function WalletCard() {
 
         {/* Last transaction card */}
         <div
-          className="backdrop-blur-md"
           style={{
             marginTop: u(28),
-            borderRadius: u(26),
-            padding: `${u(16)} ${u(18)}`,
-            background: "rgba(38,50,96,0.42)",
-            border: `${u(1)} solid rgba(255,255,255,0.08)`,
+            borderRadius: u(24),
+            padding: `${u(18)} ${u(18)}`,
+            background: "#ffffff",
+            border: `${u(1)} solid ${HAIRLINE}`,
+            boxShadow: `0 ${u(1)} ${u(3)} rgba(0,0,0,0.04)`,
           }}
         >
           <div className="flex items-center justify-between">
-            <span
-              style={{
-                color: "rgba(205,214,238,0.72)",
-                fontSize: u(15),
-                fontWeight: 500,
-              }}
-            >
+            <span style={{ color: INK_SOFT, fontSize: u(15), fontWeight: 500 }}>
               Last transaction
             </span>
             <span
-              className="text-white underline"
               style={{
+                color: ACCENT,
                 fontSize: u(15),
-                fontWeight: 500,
-                textUnderlineOffset: u(3),
+                fontWeight: 600,
               }}
             >
               View all
@@ -235,35 +229,33 @@ function WalletCard() {
 
           <div
             className="flex items-center"
-            style={{ marginTop: u(14), gap: u(14) }}
+            style={{ marginTop: u(16), gap: u(14) }}
           >
             <div
               className="flex items-center justify-center rounded-full"
               style={{
                 width: u(46),
                 height: u(46),
-                background:
-                  "radial-gradient(120% 120% at 30% 20%, #f3c6dd 0%, #ea6fa6 45%, #d0418a 100%)",
-                boxShadow: `0 ${u(3)} ${u(8)} rgba(0,0,0,0.3)`,
+                background: "#ff375f",
+                boxShadow: `0 ${u(2)} ${u(6)} rgba(255,55,95,0.22)`,
               }}
             >
               <Dribbble
                 color="#fff"
-                style={{ width: u(26), height: u(26) }}
+                style={{ width: u(24), height: u(24) }}
                 strokeWidth={2}
               />
             </div>
             <div className="flex-1">
               <div
-                className="text-white"
-                style={{ fontSize: u(20), fontWeight: 700, lineHeight: 1.15 }}
+                style={{ color: INK, fontSize: u(19), fontWeight: 600, lineHeight: 1.2 }}
               >
                 Dribbble Pro
               </div>
               <div
                 style={{
-                  color: "rgba(205,214,238,0.6)",
-                  fontSize: u(14.5),
+                  color: INK_MUTED,
+                  fontSize: u(14),
                   fontWeight: 500,
                   marginTop: u(2),
                 }}
@@ -271,10 +263,7 @@ function WalletCard() {
                 Jan 17 &nbsp;•&nbsp; 20:12
               </div>
             </div>
-            <div
-              className="text-white"
-              style={{ fontSize: u(22), fontWeight: 700 }}
-            >
+            <div style={{ color: INK, fontSize: u(20), fontWeight: 700 }}>
               $60.00
             </div>
           </div>
@@ -287,30 +276,30 @@ function WalletCard() {
         >
           <IconButton label="Scan">
             <Aperture
-              color="#e7ecff"
-              style={{ width: u(26), height: u(26) }}
+              color={INK}
+              style={{ width: u(24), height: u(24) }}
               strokeWidth={1.9}
             />
           </IconButton>
           <IconButton label="Swap">
             <ArrowUpDown
-              color="#e7ecff"
-              style={{ width: u(24), height: u(24) }}
+              color={INK}
+              style={{ width: u(22), height: u(22) }}
               strokeWidth={2}
             />
           </IconButton>
 
           <PillButton label="Receive">
             <ArrowDown
-              color="#fff"
-              style={{ width: u(23), height: u(23) }}
+              color={INK}
+              style={{ width: u(21), height: u(21) }}
               strokeWidth={2.4}
             />
           </PillButton>
           <PillButton label="Send" primary>
             <ArrowUp
               color="#fff"
-              style={{ width: u(23), height: u(23) }}
+              style={{ width: u(21), height: u(21) }}
               strokeWidth={2.4}
             />
           </PillButton>
@@ -330,15 +319,12 @@ function IconButton({
   return (
     <button
       aria-label={label}
-      className="flex shrink-0 items-center justify-center rounded-full backdrop-blur-xl transition-all duration-200 will-change-transform hover:-translate-y-[2%] hover:brightness-110 active:scale-95"
+      className="flex shrink-0 items-center justify-center rounded-full transition-all duration-200 will-change-transform hover:-translate-y-[2%] active:scale-95"
       style={{
         width: u(58),
-        background:
-          "linear-gradient(160deg, rgba(255,255,255,0.12) 0%, rgba(255,255,255,0.04) 100%)",
-        border: `${u(1)} solid rgba(255,255,255,0.14)`,
-        boxShadow:
-          `0 ${u(1)} 0 rgba(255,255,255,0.15) inset,` +
-          `0 ${u(6)} ${u(14)} rgba(0,0,0,0.35)`,
+        background: "#ffffff",
+        border: `${u(1)} solid ${HAIRLINE}`,
+        boxShadow: `0 ${u(1)} ${u(3)} rgba(0,0,0,0.06)`,
       }}
     >
       {children}
@@ -357,18 +343,17 @@ function PillButton({
 }) {
   return (
     <button
-      className="flex flex-1 items-center justify-center rounded-full text-white backdrop-blur-xl transition-all duration-200 will-change-transform hover:-translate-y-[2%] hover:brightness-110 active:scale-[0.97]"
+      className="flex flex-1 items-center justify-center rounded-full transition-all duration-200 will-change-transform hover:-translate-y-[2%] active:scale-[0.97]"
       style={{
         gap: u(8),
-        fontSize: u(21),
+        fontSize: u(19),
         fontWeight: 600,
-        background: primary
-          ? "linear-gradient(160deg, rgba(74,166,248,0.92) 0%, rgba(47,131,232,0.92) 55%, rgba(38,115,222,0.92) 100%)"
-          : "linear-gradient(160deg, rgba(255,255,255,0.12) 0%, rgba(255,255,255,0.04) 100%)",
-        border: `${u(1)} solid rgba(255,255,255,${primary ? 0.28 : 0.14})`,
+        color: primary ? "#fff" : INK,
+        background: primary ? ACCENT : "#ffffff",
+        border: `${u(1)} solid ${primary ? ACCENT : HAIRLINE}`,
         boxShadow: primary
-          ? `0 ${u(1)} 0 rgba(255,255,255,0.25) inset, 0 ${u(8)} ${u(18)} rgba(45,120,230,0.45)`
-          : `0 ${u(1)} 0 rgba(255,255,255,0.15) inset, 0 ${u(6)} ${u(14)} rgba(0,0,0,0.35)`,
+          ? `0 ${u(2)} ${u(8)} rgba(10,132,255,0.22)`
+          : `0 ${u(1)} ${u(3)} rgba(0,0,0,0.06)`,
       }}
     >
       {label}
