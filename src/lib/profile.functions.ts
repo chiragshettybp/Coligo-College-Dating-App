@@ -6,6 +6,8 @@ import { queryOptions } from "@tanstack/react-query";
 
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 
+export type AccountStatus = "active" | "suspended" | "deleted";
+
 export type MyProfile = {
   id: string;
   phone: string | null;
@@ -13,6 +15,7 @@ export type MyProfile = {
   avatarUrl: string | null;
   verificationStatus: string;
   onboardingCompleted: boolean;
+  accountStatus: AccountStatus;
   lastLoginAt: string | null;
 };
 
@@ -23,7 +26,7 @@ export const getMyProfile = createServerFn({ method: "GET" })
     const { data, error } = await supabase
       .from("profiles")
       .select(
-        "id, phone, display_name, avatar_url, verification_status, onboarding_completed, last_login_at",
+        "id, phone, display_name, avatar_url, verification_status, onboarding_completed, account_status, last_login_at",
       )
       .eq("id", userId)
       .maybeSingle();
@@ -36,6 +39,7 @@ export const getMyProfile = createServerFn({ method: "GET" })
       avatarUrl: data.avatar_url,
       verificationStatus: data.verification_status ?? "unverified",
       onboardingCompleted: data.onboarding_completed ?? false,
+      accountStatus: (data.account_status ?? "active") as AccountStatus,
       lastLoginAt: data.last_login_at,
     };
   });

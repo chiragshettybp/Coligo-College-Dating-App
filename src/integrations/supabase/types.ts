@@ -14,6 +14,72 @@ export type Database = {
   }
   public: {
     Tables: {
+      app_versions: {
+        Row: {
+          created_at: string
+          force_update: boolean
+          id: string
+          min_supported: string | null
+          platform: string
+          released_at: string
+          version: string
+        }
+        Insert: {
+          created_at?: string
+          force_update?: boolean
+          id?: string
+          min_supported?: string | null
+          platform?: string
+          released_at?: string
+          version: string
+        }
+        Update: {
+          created_at?: string
+          force_update?: boolean
+          id?: string
+          min_supported?: string | null
+          platform?: string
+          released_at?: string
+          version?: string
+        }
+        Relationships: []
+      }
+      application_settings: {
+        Row: {
+          created_at: string
+          estimated_completion: string | null
+          id: string
+          maintenance_enabled: boolean
+          maintenance_message: string
+          maintenance_title: string
+          min_app_version: string | null
+          support_email: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          estimated_completion?: string | null
+          id?: string
+          maintenance_enabled?: boolean
+          maintenance_message?: string
+          maintenance_title?: string
+          min_app_version?: string | null
+          support_email?: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          estimated_completion?: string | null
+          id?: string
+          maintenance_enabled?: boolean
+          maintenance_message?: string
+          maintenance_title?: string
+          min_app_version?: string | null
+          support_email?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       company_information: {
         Row: {
           body: string
@@ -95,6 +161,36 @@ export type Database = {
         }
         Relationships: []
       }
+      device_sessions: {
+        Row: {
+          created_at: string
+          device_token: string | null
+          id: string
+          last_seen_at: string
+          platform: string
+          revoked: boolean
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          device_token?: string | null
+          id?: string
+          last_seen_at?: string
+          platform?: string
+          revoked?: boolean
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          device_token?: string | null
+          id?: string
+          last_seen_at?: string
+          platform?: string
+          revoked?: boolean
+          user_id?: string
+        }
+        Relationships: []
+      }
       device_tokens: {
         Row: {
           created_at: string
@@ -119,6 +215,45 @@ export type Database = {
           token?: string
           updated_at?: string
           user_id?: string
+        }
+        Relationships: []
+      }
+      error_reports: {
+        Row: {
+          created_at: string
+          device_info: Json
+          error_id: string
+          id: string
+          message: string | null
+          route: string | null
+          session_id: string | null
+          stack: string | null
+          status: string
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          device_info?: Json
+          error_id: string
+          id?: string
+          message?: string | null
+          route?: string | null
+          session_id?: string | null
+          stack?: string | null
+          status?: string
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          device_info?: Json
+          error_id?: string
+          id?: string
+          message?: string | null
+          route?: string | null
+          session_id?: string | null
+          stack?: string | null
+          status?: string
+          user_id?: string | null
         }
         Relationships: []
       }
@@ -151,6 +286,33 @@ export type Database = {
           id?: string
           is_published?: boolean
           question?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      feature_flags: {
+        Row: {
+          created_at: string
+          enabled: boolean
+          id: string
+          key: string
+          payload: Json
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          enabled?: boolean
+          id?: string
+          key: string
+          payload?: Json
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          enabled?: boolean
+          id?: string
+          key?: string
+          payload?: Json
           updated_at?: string
         }
         Relationships: []
@@ -295,6 +457,7 @@ export type Database = {
       }
       profiles: {
         Row: {
+          account_status: Database["public"]["Enums"]["account_status"]
           avatar_url: string | null
           created_at: string
           display_name: string | null
@@ -306,6 +469,7 @@ export type Database = {
           verification_status: string
         }
         Insert: {
+          account_status?: Database["public"]["Enums"]["account_status"]
           avatar_url?: string | null
           created_at?: string
           display_name?: string | null
@@ -317,6 +481,7 @@ export type Database = {
           verification_status?: string
         }
         Update: {
+          account_status?: Database["public"]["Enums"]["account_status"]
           avatar_url?: string | null
           created_at?: string
           display_name?: string | null
@@ -353,6 +518,36 @@ export type Database = {
           push_enabled?: boolean
           updated_at?: string
           user_id?: string
+        }
+        Relationships: []
+      }
+      system_logs: {
+        Row: {
+          created_at: string
+          event_type: string
+          id: string
+          metadata: Json
+          path: string | null
+          referrer: string | null
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          event_type?: string
+          id?: string
+          metadata?: Json
+          path?: string | null
+          referrer?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          event_type?: string
+          id?: string
+          metadata?: Json
+          path?: string | null
+          referrer?: string | null
+          user_id?: string | null
         }
         Relationships: []
       }
@@ -396,6 +591,7 @@ export type Database = {
       phone_available: { Args: { _e164: string }; Returns: boolean }
     }
     Enums: {
+      account_status: "active" | "suspended" | "deleted"
       app_role: "user" | "moderator" | "admin"
     }
     CompositeTypes: {
@@ -524,6 +720,7 @@ export type CompositeTypes<
 export const Constants = {
   public: {
     Enums: {
+      account_status: ["active", "suspended", "deleted"],
       app_role: ["user", "moderator", "admin"],
     },
   },

@@ -1,64 +1,76 @@
-# Authentication Module — Implementation Plan
+# System Module — Implementation Plan
 
-Build the full `/auth` module for CampusMatch: 5 routes, real Supabase auth, phone (+91) identity, protected routing, and a database foundation the rest of the app will build on. Everything reuses the existing design system in `src/components/ds/*` — no new visual language.
+The System module becomes the app's startup + infrastructure layer: a real splash/initialization engine, Supabase-controlled maintenance mode, and production 404/500 recovery. Everything reuses the existing `src/components/ds` design system and `src/lib/ds.ts` tokens — no redesign, no new visual language.
 
-## Key decisions & tradeoffs (please confirm on approval)
+## What exists today (reused, not rebuilt)
+- Design system: `Button`, `Text`, `GlassPanel`, `Skeleton`, `ProgressBar`, `Avatar` in `src/components/ds/glass.tsx`; tokens (`APP_BACKGROUND`, `colors`, `spacing`, `gradients`, `FONT_FAMILY`) in `src/lib/ds.ts`.
+- Auth module: `profiles` (with `onboarding_completed`), `settings`, `user_roles` + `has_role()`, `handle_new_user()` trigger, `_authenticated/route.tsx` gate, session wiring in `__root.tsx`.
+- A root `NotFoundComponent` + `errorComponent` already live in `__root.tsx` (will be redirected to the new pages).
 
-1. **Identity = phone (+91) + password, via Supabase.** OTP/SMS requires a paid SMS provider that isn't configured, and you asked to disable OTP for now. So each account is created in Supabase with a **stable internal email alias derived from the phone** (`91XXXXXXXXXX@phone.campusmatch.app`) plus the user's password. This is real Supabase auth (real sessions, refresh, RLS) and works today with zero SMS setup. The real +91 number is stored on the profile and shown everywhere. When you later enable an SMS provider, we swap the alias for native Supabase phone auth without redesigning the UI.
-2. **OTP disabled mode.** `/auth/verify-otp` is built to spec but runs behind an `OTP_ENABLED = false` flag: signup goes phone → set password → account created immediately, skipping OTP. Re-enabling later is a config flip, not a rebuild.
-3. **Password recovery while OTP is off.** With no SMS/email channel for phone accounts, `/auth/forgot-password` verifies the number exists and routes to `/auth/reset-password` directly. This is acceptable only in OTP-disabled dev mode and is **not production-safe** (anyone knowing a number could reset it). It becomes secure automatically once OTP is enabled. Flagged clearly in code.
-4. **Roles live in a separate `user_roles` table** (never on profiles) with a `has_role()` security-definer function, per security best practice.
+---
 
-## Phase 1 — Database foundation (migration)
+## Phase 1 — Database & Security (one migration)
+Add profile account-state column and six system tables. Every `public` table gets GRANTs → RLS → policies.
 
-- `app_role` enum (`user`, `moderator`, `admin`).
-- `profiles`: `id` (FK auth.users, cascade), `phone` (unique, E.164), `display_name`, `avatar_url`, `verification_status`, `onboarding_completed` (bool default false), `last_login_at`, timestamps.
-- `settings`: per-user preferences row (notifications, discovery prefs placeholder columns), FK to auth.users.
-- `device_tokens`: `user_id`, `token`, `platform`, timestamps (for future push).
-- `user_roles`: `user_id`, `role`, unique(user_id, role).
-- `has_role(_user_id, _role)` security-definer function.
-- `handle_new_user()` trigger on `auth.users` insert → creates `profiles` + `settings` row + default `user` role.
-- `update_updated_at_column` triggers on all tables.
-- RLS: users read/update only their own profile/settings/device_tokens; `user_roles` readable by authenticated self; all GRANTs (`authenticated`, `service_role`) per table.
+1. `profiles.account_status` — enum `account_status` (`active`, `suspended`, `deleted`), default `active`, not null. Splash reads it.
+2. `application_settings` — single-row config: `maintenance_enabled bool`, `maintenance_title`, `maintenance_message`, `estimated_completion timestamptz`, `support_email`, `min_app_version`, timestamps. Public `SELECT TO anon, authenticated`; write only via `has_role(auth.uid(),'admin')`. Seed one row.
+3. `feature_flags` — `key` unique, `enabled bool`, `payload jsonb`. Public read, admin write.
+4. `app_versions` — `version`, `platform`, `min_supported`, `force_update bool`, `released_at`. Public read, admin write.
+5. `system_logs` — analytics for unknown routes: `event_type`, `path`, `referrer`, `user_id nullable`, `metadata jsonb`, `created_at`. INSERT allowed to `anon`+`authenticated`; SELECT admin-only (no PII leak).
+6. `error_reports` — `error_id` unique, `route`, `message`, `stack` (server-only), `user_id nullable`, `session_id`, `device_info jsonb`, `status`, `created_at`. INSERT to `anon`+`authenticated`; SELECT admin-only.
+7. `device_sessions` — `user_id`, `device_token`, `platform`, `last_seen_at`, `revoked bool`. Owner-scoped RLS (`auth.uid() = user_id`).
+8. Realtime: `ALTER PUBLICATION supabase_realtime ADD TABLE public.application_settings;` so maintenance toggles push instantly.
+9. `update_updated_at_column` triggers on the mutable tables.
 
-## Phase 2 — Auth infrastructure
+## Phase 2 — Server functions & client helpers
+- `src/lib/system.functions.ts` (`createServerFn`, anon publishable client for reads):
+  - `getAppConfig` — returns `application_settings` + active `feature_flags` + latest `app_versions` in one call.
+  - `logUnknownRoute({ path, referrer })` — inserts a `system_logs` row (fire-and-forget).
+  - `reportError({ route, message, stack, sessionId, deviceInfo })` — inserts `error_reports`, returns generated `error_id`.
+  - `createSupportTicket({ errorId, message })` — inserts a `contact_messages`/ticket row linked to the error (reuses existing contact table).
+- `src/lib/system.ts` (client-safe): TanStack Query options (`appConfigQuery`), device-info collector, `resolveDestination(state)` pure function implementing the redirect matrix, session-id helper.
+- `src/lib/profile.functions.ts`: extend `myProfileQuery` result to include `accountStatus` (already fetches profile).
 
-- `src/routes/_authenticated/route.tsx` — integration-managed gate (`ssr: false`, redirect to `/auth/login`).
-- Root session wiring in `__root.tsx`: single `onAuthStateChange` → `router.invalidate()` + query invalidation (identity transitions only).
-- `src/lib/auth.ts` (client-safe): `phoneToAlias()`, `formatPhoneIN()`, zod schemas (phone, password strength, OTP), `OTP_ENABLED` flag, post-auth redirect resolver (reads `onboarding_completed`).
-- `src/lib/profile.functions.ts`: `getMyProfile` (requireSupabaseAuth), `checkPhoneAvailable` (public server fn, anon), `touchLastLogin`.
+## Phase 3 — Splash screen (`/system/splash`)
+New route `src/routes/system.splash.tsx` (public route — it runs the auth check itself; `ssr:false` to read the browser session).
+- Sequential-but-parallelized init pipeline, each task with a timeout wrapper and progress messaging driven by `ProgressBar`/`Skeleton`:
+  1. connect Supabase + `supabase.auth.getUser()` (refreshes token automatically)
+  2. if no user → redirect Landing (`/`)
+  3. load profile + settings via `myProfileQuery`
+  4. `getAppConfig`
+  5. branch via `resolveDestination`:
+     - `maintenance_enabled` → `/system/maintenance`
+     - `account_status = suspended|deleted` → `supabase.auth.signOut()` → `/`
+     - onboarding incomplete → onboarding route (falls back to `/app` until Onboarding module ships)
+     - else → Home (`/app`)
+  6. register device token into `device_sessions`, subscribe realtime.
+- Network failure → inline retry with auto-retry backoff (no blank screen). Reduced-motion respected. Loop-guard: splash never redirects to itself; a `?from=` guard prevents flicker.
+- Logo animation reuses existing brand mark + `gradients.primaryButton`.
 
-## Phase 3 — Route restructure
+## Phase 4 — Maintenance page (`/system/maintenance`)
+`src/routes/system.maintenance.tsx` — public route.
+- Reads `appConfigQuery`; shows `maintenance_title`, `maintenance_message`, `estimated_completion` (relative), `support_email` contact link, and a **Retry** button.
+- Realtime subscription on `application_settings`: when `maintenance_enabled` flips false, auto-continue to `/system/splash`. Manual Retry re-fetches; auto-retry every few minutes.
+- If opened while maintenance is OFF, immediately bounce to `/system/splash` (prevents dead-end).
 
-- Convert single `src/routes/auth.tsx` into a layout + children:
-  `auth.tsx` (shared shell/branding + `<Outlet/>`), `auth.login.tsx`, `auth.signup.tsx`, `auth.verify-otp.tsx`, `auth.forgot-password.tsx`, `auth.reset-password.tsx`.
-- `/auth` redirects to `/auth/login`.
-- Update `PublicNav` + landing CTAs: "Login" → `/auth/login`, "Get Started" → `/auth/signup`. Legal links stay reachable in the auth shell footer.
+## Phase 5 — 404 & 500 pages
+- `src/routes/404.tsx` + wire `__root.tsx` `notFoundComponent` to render it. Content: friendly copy, **Home** (auth-aware: `/app` vs `/`), **Back** (history, fallback Home), **Contact support**. On mount, calls `logUnknownRoute` with path/referrer/user.
+- `src/routes/500.tsx` + wire `__root.tsx` `errorComponent` + router `defaultErrorComponent` to render it. Content: friendly copy, **Retry** (`router.invalidate()` + `reset()`), **Home**, **Report Issue** (calls `reportError` → shows `error_id`, then optional `createSupportTicket`). Stack captured server-side only, never shown to users. Integrates with existing `error-capture.ts`/`lovable-error-reporting.ts`.
+- Direct routes `/404` and `/500` also exist for explicit navigation/testing.
 
-## Phase 4 — Pages (mobile-first, DS components only)
+## Phase 6 — Integration & wiring
+- Auth handoff: after login / signup / password reset / session restore, redirect to `/system/splash` (instead of `/app`) so splash becomes the single routing engine. Update `auth.login.tsx`, `auth.signup.tsx`, `auth.reset-password.tsx`, and the `_authenticated` post-auth path.
+- `_authenticated/route.tsx`: on gate entry, if `application_settings.maintenance_enabled` (from cached config) → redirect maintenance, preserving the session. Root realtime listener already in `__root.tsx` extended to invalidate config on maintenance change so any authenticated screen can react.
+- Landing "Get started" / CTAs unchanged (still → `/auth`).
 
-Each page uses `TextField`, `Button`, `SegmentControl`, `Text`, `GlassPanel`, `Checkbox` from `src/components/ds`, with loading states, disabled-on-submit, inline validation, `role="alert"`/`aria-live`, focus management, and reduced-motion support.
-
-- **Login**: +91 phone, password + show/hide, remember-me, submit → `signInWithPassword({email: alias, password})` → resolve redirect. Handles wrong password / disabled / network / rate messages generically.
-- **Signup**: +91 phone → `checkPhoneAvailable` → (OTP off) set-password step → `signUp` → profile created by trigger → redirect.
-- **Verify-OTP**: 6-box auto-advance + paste + countdown + resend/change-number UI, built but bypassed while `OTP_ENABLED=false`.
-- **Forgot-password**: phone input, generic response, → reset (dev mode).
-- **Reset-password**: new/confirm password, live strength meter + requirements checklist, submit disabled until met, `updateUser({password})`.
-
-## Phase 5 — Post-auth handoff
-
-- Redirect resolver sends new users to onboarding and completed users home. Since Splash/Onboarding/Home are separate future modules, this module lands on a minimal protected `/app` route confirming the session so the flow completes end-to-end (clearly marked as the handoff point for the next module).
-
-## Phase 6 — Verification
-
+## Phase 7 — Verification
 - `tsgo --noEmit` clean.
-- Playwright: render all 5 routes, complete a real signup → account in DB → session persists across refresh → login → protected redirect works → unauthenticated access to `/app` bounces to `/auth/login`. Confirm zero console/runtime errors.
+- Playwright end-to-end: splash redirect matrix (guest→landing, authed→home), toggle `maintenance_enabled` in DB → confirm realtime redirect, visit unknown URL → 404 logs a `system_logs` row, force a thrown error → 500 writes an `error_reports` row and returns an `error_id`. Screenshot each page at mobile (375px) and desktop widths.
+
+---
 
 ## Technical notes
-
-- Server functions only for DB access; `requireSupabaseAuth` for user-scoped reads, publishable-anon client for `checkPhoneAvailable`.
-- No secrets in client; bearer attachment already wired via `attachSupabaseAuth` in `src/start.ts`.
-- All validation duplicated client + server (zod).
-- Architecture leaves clean extension points for real OTP, MFA, social login, device management, and admin controls without redesign.
-
-Approve and I'll build Phase 1 → 6 in order.
+- All reads use an anon publishable-key server client + narrow `TO anon` SELECT policies; writes to logs/errors are INSERT-only for anon (no read-back). Admin-only tables never expose stack traces or PII to non-admins.
+- Splash and maintenance are `ssr:false` public routes because they depend on the browser Supabase session.
+- No mock data, no fake timers: every delay is a real awaited init task with timeout protection.
+- Extension points kept open for forced updates (`app_versions.force_update`), feature-flag rollouts, and an Admin dashboard — no redesign needed later.

@@ -11,10 +11,14 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as UiRouteImport } from './routes/ui'
 import { Route as AuthRouteImport } from './routes/auth'
+import { Route as R500RouteImport } from './routes/500'
+import { Route as R404RouteImport } from './routes/404'
 import { Route as PublicRouteRouteImport } from './routes/_public/route'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as AuthIndexRouteImport } from './routes/auth.index'
 import { Route as PublicIndexRouteImport } from './routes/_public/index'
+import { Route as SystemSplashRouteImport } from './routes/system.splash'
+import { Route as SystemMaintenanceRouteImport } from './routes/system.maintenance'
 import { Route as AuthVerifyOtpRouteImport } from './routes/auth.verify-otp'
 import { Route as AuthSignupRouteImport } from './routes/auth.signup'
 import { Route as AuthResetPasswordRouteImport } from './routes/auth.reset-password'
@@ -37,6 +41,16 @@ const AuthRoute = AuthRouteImport.update({
   path: '/auth',
   getParentRoute: () => rootRouteImport,
 } as any)
+const R500Route = R500RouteImport.update({
+  id: '/500',
+  path: '/500',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const R404Route = R404RouteImport.update({
+  id: '/404',
+  path: '/404',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const PublicRouteRoute = PublicRouteRouteImport.update({
   id: '/_public',
   getParentRoute: () => rootRouteImport,
@@ -54,6 +68,16 @@ const PublicIndexRoute = PublicIndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => PublicRouteRoute,
+} as any)
+const SystemSplashRoute = SystemSplashRouteImport.update({
+  id: '/system/splash',
+  path: '/system/splash',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SystemMaintenanceRoute = SystemMaintenanceRouteImport.update({
+  id: '/system/maintenance',
+  path: '/system/maintenance',
+  getParentRoute: () => rootRouteImport,
 } as any)
 const AuthVerifyOtpRoute = AuthVerifyOtpRouteImport.update({
   id: '/verify-otp',
@@ -114,6 +138,8 @@ const AuthenticatedAppRoute = AuthenticatedAppRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof PublicIndexRoute
+  '/404': typeof R404Route
+  '/500': typeof R500Route
   '/auth': typeof AuthRouteWithChildren
   '/ui': typeof UiRoute
   '/app': typeof AuthenticatedAppRoute
@@ -127,10 +153,14 @@ export interface FileRoutesByFullPath {
   '/auth/reset-password': typeof AuthResetPasswordRoute
   '/auth/signup': typeof AuthSignupRoute
   '/auth/verify-otp': typeof AuthVerifyOtpRoute
+  '/system/maintenance': typeof SystemMaintenanceRoute
+  '/system/splash': typeof SystemSplashRoute
   '/auth/': typeof AuthIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof PublicIndexRoute
+  '/404': typeof R404Route
+  '/500': typeof R500Route
   '/ui': typeof UiRoute
   '/app': typeof AuthenticatedAppRoute
   '/about': typeof PublicAboutRoute
@@ -143,12 +173,16 @@ export interface FileRoutesByTo {
   '/auth/reset-password': typeof AuthResetPasswordRoute
   '/auth/signup': typeof AuthSignupRoute
   '/auth/verify-otp': typeof AuthVerifyOtpRoute
+  '/system/maintenance': typeof SystemMaintenanceRoute
+  '/system/splash': typeof SystemSplashRoute
   '/auth': typeof AuthIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
   '/_public': typeof PublicRouteRouteWithChildren
+  '/404': typeof R404Route
+  '/500': typeof R500Route
   '/auth': typeof AuthRouteWithChildren
   '/ui': typeof UiRoute
   '/_authenticated/app': typeof AuthenticatedAppRoute
@@ -162,6 +196,8 @@ export interface FileRoutesById {
   '/auth/reset-password': typeof AuthResetPasswordRoute
   '/auth/signup': typeof AuthSignupRoute
   '/auth/verify-otp': typeof AuthVerifyOtpRoute
+  '/system/maintenance': typeof SystemMaintenanceRoute
+  '/system/splash': typeof SystemSplashRoute
   '/_public/': typeof PublicIndexRoute
   '/auth/': typeof AuthIndexRoute
 }
@@ -169,6 +205,8 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/404'
+    | '/500'
     | '/auth'
     | '/ui'
     | '/app'
@@ -182,10 +220,14 @@ export interface FileRouteTypes {
     | '/auth/reset-password'
     | '/auth/signup'
     | '/auth/verify-otp'
+    | '/system/maintenance'
+    | '/system/splash'
     | '/auth/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/404'
+    | '/500'
     | '/ui'
     | '/app'
     | '/about'
@@ -198,11 +240,15 @@ export interface FileRouteTypes {
     | '/auth/reset-password'
     | '/auth/signup'
     | '/auth/verify-otp'
+    | '/system/maintenance'
+    | '/system/splash'
     | '/auth'
   id:
     | '__root__'
     | '/_authenticated'
     | '/_public'
+    | '/404'
+    | '/500'
     | '/auth'
     | '/ui'
     | '/_authenticated/app'
@@ -216,6 +262,8 @@ export interface FileRouteTypes {
     | '/auth/reset-password'
     | '/auth/signup'
     | '/auth/verify-otp'
+    | '/system/maintenance'
+    | '/system/splash'
     | '/_public/'
     | '/auth/'
   fileRoutesById: FileRoutesById
@@ -223,8 +271,12 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
   PublicRouteRoute: typeof PublicRouteRouteWithChildren
+  R404Route: typeof R404Route
+  R500Route: typeof R500Route
   AuthRoute: typeof AuthRouteWithChildren
   UiRoute: typeof UiRoute
+  SystemMaintenanceRoute: typeof SystemMaintenanceRoute
+  SystemSplashRoute: typeof SystemSplashRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -241,6 +293,20 @@ declare module '@tanstack/react-router' {
       path: '/auth'
       fullPath: '/auth'
       preLoaderRoute: typeof AuthRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/500': {
+      id: '/500'
+      path: '/500'
+      fullPath: '/500'
+      preLoaderRoute: typeof R500RouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/404': {
+      id: '/404'
+      path: '/404'
+      fullPath: '/404'
+      preLoaderRoute: typeof R404RouteImport
       parentRoute: typeof rootRouteImport
     }
     '/_public': {
@@ -270,6 +336,20 @@ declare module '@tanstack/react-router' {
       fullPath: '/'
       preLoaderRoute: typeof PublicIndexRouteImport
       parentRoute: typeof PublicRouteRoute
+    }
+    '/system/splash': {
+      id: '/system/splash'
+      path: '/system/splash'
+      fullPath: '/system/splash'
+      preLoaderRoute: typeof SystemSplashRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/system/maintenance': {
+      id: '/system/maintenance'
+      path: '/system/maintenance'
+      fullPath: '/system/maintenance'
+      preLoaderRoute: typeof SystemMaintenanceRouteImport
+      parentRoute: typeof rootRouteImport
     }
     '/auth/verify-otp': {
       id: '/auth/verify-otp'
@@ -407,8 +487,12 @@ const AuthRouteWithChildren = AuthRoute._addFileChildren(AuthRouteChildren)
 const rootRouteChildren: RootRouteChildren = {
   AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
   PublicRouteRoute: PublicRouteRouteWithChildren,
+  R404Route: R404Route,
+  R500Route: R500Route,
   AuthRoute: AuthRouteWithChildren,
   UiRoute: UiRoute,
+  SystemMaintenanceRoute: SystemMaintenanceRoute,
+  SystemSplashRoute: SystemSplashRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
