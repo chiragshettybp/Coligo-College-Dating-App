@@ -950,7 +950,9 @@ function SharedGallery({ images }: { images: string[] }) {
         {images.map((src, i) => (
           <button
             key={i}
-            ref={(el) => (thumbRefs.current[i] = el)}
+            ref={(el) => {
+              thumbRefs.current[i] = el;
+            }}
             onClick={() => open(i)}
             className="ds-press overflow-hidden"
             aria-label={`Open photo ${i + 1}`}
