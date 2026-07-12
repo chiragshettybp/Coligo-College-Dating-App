@@ -153,9 +153,19 @@ function UIShowcase() {
   const [activeTab, setActiveTab] = useState(0);
   const [segment, setSegment] = useState(0);
   const [scrollTab, setScrollTab] = useState("For You");
+  const [toasts, setToasts] = useState<ToastItem[]>([]);
 
   const toggleInterest = (i: string) =>
     setInterests((s) => (s.includes(i) ? s.filter((x) => x !== i) : [...s, i]));
+
+  const dismissToast = (id: number) => setToasts((s) => s.filter((t) => t.id !== id));
+  const pushToast = (tone: FeedbackTone, icon: React.ReactNode, message: string) => {
+    const id = Date.now() + Math.random();
+    setToasts((s) => [...s, { id, tone, icon, message }].slice(-3));
+    haptic(tone === "success" ? "softSuccess" : tone === "danger" ? "warning" : "selection");
+    window.setTimeout(() => dismissToast(id), 3200);
+  };
+
 
   return (
     <main
