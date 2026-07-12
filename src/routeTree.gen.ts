@@ -44,9 +44,14 @@ import { Route as PublicContactRouteImport } from './routes/_public/contact'
 import { Route as PublicCommunityGuidelinesRouteImport } from './routes/_public/community-guidelines'
 import { Route as PublicAboutRouteImport } from './routes/_public/about'
 import { Route as AuthenticatedHomeRouteImport } from './routes/_authenticated/home'
+import { Route as AuthenticatedDiscoverRouteImport } from './routes/_authenticated/discover'
 import { Route as AuthenticatedHomeIndexRouteImport } from './routes/_authenticated/home.index'
+import { Route as AuthenticatedDiscoverIndexRouteImport } from './routes/_authenticated/discover.index'
 import { Route as AuthenticatedHomeCollegeRankingsRouteImport } from './routes/_authenticated/home.college-rankings'
+import { Route as AuthenticatedDiscoverNoMoreProfilesRouteImport } from './routes/_authenticated/discover.no-more-profiles'
 import { Route as AuthenticatedHomeCollegeCollegeIdRouteImport } from './routes/_authenticated/home.college.$collegeId'
+import { Route as AuthenticatedDiscoverProfileUserIdRouteImport } from './routes/_authenticated/discover.profile.$userId'
+import { Route as AuthenticatedDiscoverMatchMatchIdRouteImport } from './routes/_authenticated/discover.match.$matchId'
 
 const UiRoute = UiRouteImport.update({
   id: '/ui',
@@ -223,22 +228,51 @@ const AuthenticatedHomeRoute = AuthenticatedHomeRouteImport.update({
   path: '/home',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedDiscoverRoute = AuthenticatedDiscoverRouteImport.update({
+  id: '/discover',
+  path: '/discover',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
 const AuthenticatedHomeIndexRoute = AuthenticatedHomeIndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => AuthenticatedHomeRoute,
 } as any)
+const AuthenticatedDiscoverIndexRoute =
+  AuthenticatedDiscoverIndexRouteImport.update({
+    id: '/',
+    path: '/',
+    getParentRoute: () => AuthenticatedDiscoverRoute,
+  } as any)
 const AuthenticatedHomeCollegeRankingsRoute =
   AuthenticatedHomeCollegeRankingsRouteImport.update({
     id: '/college-rankings',
     path: '/college-rankings',
     getParentRoute: () => AuthenticatedHomeRoute,
   } as any)
+const AuthenticatedDiscoverNoMoreProfilesRoute =
+  AuthenticatedDiscoverNoMoreProfilesRouteImport.update({
+    id: '/no-more-profiles',
+    path: '/no-more-profiles',
+    getParentRoute: () => AuthenticatedDiscoverRoute,
+  } as any)
 const AuthenticatedHomeCollegeCollegeIdRoute =
   AuthenticatedHomeCollegeCollegeIdRouteImport.update({
     id: '/college/$collegeId',
     path: '/college/$collegeId',
     getParentRoute: () => AuthenticatedHomeRoute,
+  } as any)
+const AuthenticatedDiscoverProfileUserIdRoute =
+  AuthenticatedDiscoverProfileUserIdRouteImport.update({
+    id: '/profile/$userId',
+    path: '/profile/$userId',
+    getParentRoute: () => AuthenticatedDiscoverRoute,
+  } as any)
+const AuthenticatedDiscoverMatchMatchIdRoute =
+  AuthenticatedDiscoverMatchMatchIdRouteImport.update({
+    id: '/match/$matchId',
+    path: '/match/$matchId',
+    getParentRoute: () => AuthenticatedDiscoverRoute,
   } as any)
 
 export interface FileRoutesByFullPath {
@@ -248,6 +282,7 @@ export interface FileRoutesByFullPath {
   '/500': typeof R500Route
   '/auth': typeof AuthRouteWithChildren
   '/ui': typeof UiRoute
+  '/discover': typeof AuthenticatedDiscoverRouteWithChildren
   '/home': typeof AuthenticatedHomeRouteWithChildren
   '/about': typeof PublicAboutRoute
   '/community-guidelines': typeof PublicCommunityGuidelinesRoute
@@ -275,8 +310,12 @@ export interface FileRoutesByFullPath {
   '/system/splash': typeof SystemSplashRoute
   '/auth/': typeof AuthIndexRoute
   '/onboarding/': typeof OnboardingIndexRoute
+  '/discover/no-more-profiles': typeof AuthenticatedDiscoverNoMoreProfilesRoute
   '/home/college-rankings': typeof AuthenticatedHomeCollegeRankingsRoute
+  '/discover/': typeof AuthenticatedDiscoverIndexRoute
   '/home/': typeof AuthenticatedHomeIndexRoute
+  '/discover/match/$matchId': typeof AuthenticatedDiscoverMatchMatchIdRoute
+  '/discover/profile/$userId': typeof AuthenticatedDiscoverProfileUserIdRoute
   '/home/college/$collegeId': typeof AuthenticatedHomeCollegeCollegeIdRoute
 }
 export interface FileRoutesByTo {
@@ -310,8 +349,12 @@ export interface FileRoutesByTo {
   '/system/splash': typeof SystemSplashRoute
   '/auth': typeof AuthIndexRoute
   '/onboarding': typeof OnboardingIndexRoute
+  '/discover/no-more-profiles': typeof AuthenticatedDiscoverNoMoreProfilesRoute
   '/home/college-rankings': typeof AuthenticatedHomeCollegeRankingsRoute
+  '/discover': typeof AuthenticatedDiscoverIndexRoute
   '/home': typeof AuthenticatedHomeIndexRoute
+  '/discover/match/$matchId': typeof AuthenticatedDiscoverMatchMatchIdRoute
+  '/discover/profile/$userId': typeof AuthenticatedDiscoverProfileUserIdRoute
   '/home/college/$collegeId': typeof AuthenticatedHomeCollegeCollegeIdRoute
 }
 export interface FileRoutesById {
@@ -323,6 +366,7 @@ export interface FileRoutesById {
   '/500': typeof R500Route
   '/auth': typeof AuthRouteWithChildren
   '/ui': typeof UiRoute
+  '/_authenticated/discover': typeof AuthenticatedDiscoverRouteWithChildren
   '/_authenticated/home': typeof AuthenticatedHomeRouteWithChildren
   '/_public/about': typeof PublicAboutRoute
   '/_public/community-guidelines': typeof PublicCommunityGuidelinesRoute
@@ -351,8 +395,12 @@ export interface FileRoutesById {
   '/_public/': typeof PublicIndexRoute
   '/auth/': typeof AuthIndexRoute
   '/onboarding/': typeof OnboardingIndexRoute
+  '/_authenticated/discover/no-more-profiles': typeof AuthenticatedDiscoverNoMoreProfilesRoute
   '/_authenticated/home/college-rankings': typeof AuthenticatedHomeCollegeRankingsRoute
+  '/_authenticated/discover/': typeof AuthenticatedDiscoverIndexRoute
   '/_authenticated/home/': typeof AuthenticatedHomeIndexRoute
+  '/_authenticated/discover/match/$matchId': typeof AuthenticatedDiscoverMatchMatchIdRoute
+  '/_authenticated/discover/profile/$userId': typeof AuthenticatedDiscoverProfileUserIdRoute
   '/_authenticated/home/college/$collegeId': typeof AuthenticatedHomeCollegeCollegeIdRoute
 }
 export interface FileRouteTypes {
@@ -364,6 +412,7 @@ export interface FileRouteTypes {
     | '/500'
     | '/auth'
     | '/ui'
+    | '/discover'
     | '/home'
     | '/about'
     | '/community-guidelines'
@@ -391,8 +440,12 @@ export interface FileRouteTypes {
     | '/system/splash'
     | '/auth/'
     | '/onboarding/'
+    | '/discover/no-more-profiles'
     | '/home/college-rankings'
+    | '/discover/'
     | '/home/'
+    | '/discover/match/$matchId'
+    | '/discover/profile/$userId'
     | '/home/college/$collegeId'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -426,8 +479,12 @@ export interface FileRouteTypes {
     | '/system/splash'
     | '/auth'
     | '/onboarding'
+    | '/discover/no-more-profiles'
     | '/home/college-rankings'
+    | '/discover'
     | '/home'
+    | '/discover/match/$matchId'
+    | '/discover/profile/$userId'
     | '/home/college/$collegeId'
   id:
     | '__root__'
@@ -438,6 +495,7 @@ export interface FileRouteTypes {
     | '/500'
     | '/auth'
     | '/ui'
+    | '/_authenticated/discover'
     | '/_authenticated/home'
     | '/_public/about'
     | '/_public/community-guidelines'
@@ -466,8 +524,12 @@ export interface FileRouteTypes {
     | '/_public/'
     | '/auth/'
     | '/onboarding/'
+    | '/_authenticated/discover/no-more-profiles'
     | '/_authenticated/home/college-rankings'
+    | '/_authenticated/discover/'
     | '/_authenticated/home/'
+    | '/_authenticated/discover/match/$matchId'
+    | '/_authenticated/discover/profile/$userId'
     | '/_authenticated/home/college/$collegeId'
   fileRoutesById: FileRoutesById
 }
@@ -730,12 +792,26 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedHomeRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/discover': {
+      id: '/_authenticated/discover'
+      path: '/discover'
+      fullPath: '/discover'
+      preLoaderRoute: typeof AuthenticatedDiscoverRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/home/': {
       id: '/_authenticated/home/'
       path: '/'
       fullPath: '/home/'
       preLoaderRoute: typeof AuthenticatedHomeIndexRouteImport
       parentRoute: typeof AuthenticatedHomeRoute
+    }
+    '/_authenticated/discover/': {
+      id: '/_authenticated/discover/'
+      path: '/'
+      fullPath: '/discover/'
+      preLoaderRoute: typeof AuthenticatedDiscoverIndexRouteImport
+      parentRoute: typeof AuthenticatedDiscoverRoute
     }
     '/_authenticated/home/college-rankings': {
       id: '/_authenticated/home/college-rankings'
@@ -744,6 +820,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedHomeCollegeRankingsRouteImport
       parentRoute: typeof AuthenticatedHomeRoute
     }
+    '/_authenticated/discover/no-more-profiles': {
+      id: '/_authenticated/discover/no-more-profiles'
+      path: '/no-more-profiles'
+      fullPath: '/discover/no-more-profiles'
+      preLoaderRoute: typeof AuthenticatedDiscoverNoMoreProfilesRouteImport
+      parentRoute: typeof AuthenticatedDiscoverRoute
+    }
     '/_authenticated/home/college/$collegeId': {
       id: '/_authenticated/home/college/$collegeId'
       path: '/college/$collegeId'
@@ -751,8 +834,44 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedHomeCollegeCollegeIdRouteImport
       parentRoute: typeof AuthenticatedHomeRoute
     }
+    '/_authenticated/discover/profile/$userId': {
+      id: '/_authenticated/discover/profile/$userId'
+      path: '/profile/$userId'
+      fullPath: '/discover/profile/$userId'
+      preLoaderRoute: typeof AuthenticatedDiscoverProfileUserIdRouteImport
+      parentRoute: typeof AuthenticatedDiscoverRoute
+    }
+    '/_authenticated/discover/match/$matchId': {
+      id: '/_authenticated/discover/match/$matchId'
+      path: '/match/$matchId'
+      fullPath: '/discover/match/$matchId'
+      preLoaderRoute: typeof AuthenticatedDiscoverMatchMatchIdRouteImport
+      parentRoute: typeof AuthenticatedDiscoverRoute
+    }
   }
 }
+
+interface AuthenticatedDiscoverRouteChildren {
+  AuthenticatedDiscoverNoMoreProfilesRoute: typeof AuthenticatedDiscoverNoMoreProfilesRoute
+  AuthenticatedDiscoverIndexRoute: typeof AuthenticatedDiscoverIndexRoute
+  AuthenticatedDiscoverMatchMatchIdRoute: typeof AuthenticatedDiscoverMatchMatchIdRoute
+  AuthenticatedDiscoverProfileUserIdRoute: typeof AuthenticatedDiscoverProfileUserIdRoute
+}
+
+const AuthenticatedDiscoverRouteChildren: AuthenticatedDiscoverRouteChildren = {
+  AuthenticatedDiscoverNoMoreProfilesRoute:
+    AuthenticatedDiscoverNoMoreProfilesRoute,
+  AuthenticatedDiscoverIndexRoute: AuthenticatedDiscoverIndexRoute,
+  AuthenticatedDiscoverMatchMatchIdRoute:
+    AuthenticatedDiscoverMatchMatchIdRoute,
+  AuthenticatedDiscoverProfileUserIdRoute:
+    AuthenticatedDiscoverProfileUserIdRoute,
+}
+
+const AuthenticatedDiscoverRouteWithChildren =
+  AuthenticatedDiscoverRoute._addFileChildren(
+    AuthenticatedDiscoverRouteChildren,
+  )
 
 interface AuthenticatedHomeRouteChildren {
   AuthenticatedHomeCollegeRankingsRoute: typeof AuthenticatedHomeCollegeRankingsRoute
@@ -771,10 +890,12 @@ const AuthenticatedHomeRouteWithChildren =
   AuthenticatedHomeRoute._addFileChildren(AuthenticatedHomeRouteChildren)
 
 interface AuthenticatedRouteRouteChildren {
+  AuthenticatedDiscoverRoute: typeof AuthenticatedDiscoverRouteWithChildren
   AuthenticatedHomeRoute: typeof AuthenticatedHomeRouteWithChildren
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
+  AuthenticatedDiscoverRoute: AuthenticatedDiscoverRouteWithChildren,
   AuthenticatedHomeRoute: AuthenticatedHomeRouteWithChildren,
 }
 

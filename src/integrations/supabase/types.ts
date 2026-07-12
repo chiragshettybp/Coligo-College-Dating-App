@@ -119,6 +119,27 @@ export type Database = {
         }
         Relationships: []
       }
+      blocks: {
+        Row: {
+          blocked_id: string
+          blocker_id: string
+          created_at: string
+          id: string
+        }
+        Insert: {
+          blocked_id: string
+          blocker_id: string
+          created_at?: string
+          id?: string
+        }
+        Update: {
+          blocked_id?: string
+          blocker_id?: string
+          created_at?: string
+          id?: string
+        }
+        Relationships: []
+      }
       colleges: {
         Row: {
           banner_url: string | null
@@ -585,22 +606,60 @@ export type Database = {
         Row: {
           created_at: string
           id: string
+          last_message_at: string | null
           user_a: string
           user_b: string
         }
         Insert: {
           created_at?: string
           id?: string
+          last_message_at?: string | null
           user_a: string
           user_b: string
         }
         Update: {
           created_at?: string
           id?: string
+          last_message_at?: string | null
           user_a?: string
           user_b?: string
         }
         Relationships: []
+      }
+      messages: {
+        Row: {
+          body: string
+          created_at: string
+          id: string
+          match_id: string
+          read_at: string | null
+          sender_id: string
+        }
+        Insert: {
+          body: string
+          created_at?: string
+          id?: string
+          match_id: string
+          read_at?: string | null
+          sender_id: string
+        }
+        Update: {
+          body?: string
+          created_at?: string
+          id?: string
+          match_id?: string
+          read_at?: string | null
+          sender_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "messages_match_id_fkey"
+            columns: ["match_id"]
+            isOneToOne: false
+            referencedRelation: "matches"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       photos: {
         Row: {
@@ -716,6 +775,36 @@ export type Database = {
           },
         ]
       }
+      reports: {
+        Row: {
+          created_at: string
+          details: string | null
+          id: string
+          reason: string
+          reported_id: string
+          reporter_id: string
+          status: string
+        }
+        Insert: {
+          created_at?: string
+          details?: string | null
+          id?: string
+          reason: string
+          reported_id: string
+          reporter_id: string
+          status?: string
+        }
+        Update: {
+          created_at?: string
+          details?: string | null
+          id?: string
+          reason?: string
+          reported_id?: string
+          reporter_id?: string
+          status?: string
+        }
+        Relationships: []
+      }
       settings: {
         Row: {
           created_at: string
@@ -740,6 +829,30 @@ export type Database = {
           push_enabled?: boolean
           updated_at?: string
           user_id?: string
+        }
+        Relationships: []
+      }
+      swipes: {
+        Row: {
+          action: Database["public"]["Enums"]["swipe_action"]
+          actor_id: string
+          created_at: string
+          id: string
+          target_id: string
+        }
+        Insert: {
+          action: Database["public"]["Enums"]["swipe_action"]
+          actor_id: string
+          created_at?: string
+          id?: string
+          target_id: string
+        }
+        Update: {
+          action?: Database["public"]["Enums"]["swipe_action"]
+          actor_id?: string
+          created_at?: string
+          id?: string
+          target_id?: string
         }
         Relationships: []
       }
@@ -846,6 +959,30 @@ export type Database = {
         Args: { _e164: string; _password: string }
         Returns: boolean
       }
+      discover_candidates: {
+        Args: { _limit?: number }
+        Returns: {
+          age: number
+          avatar_url: string
+          bio: string
+          college_id: string
+          college_name: string
+          department_id: string
+          department_name: string
+          full_name: string
+          gender: Database["public"]["Enums"]["gender_option"]
+          graduation_year: number
+          id: string
+          interests: Json
+          last_login_at: string
+          mutual_interests: Json
+          photos: Json
+          same_college: boolean
+          semester: number
+          shared_interests: number
+        }[]
+      }
+      discover_profile: { Args: { _target: string }; Returns: Json }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
@@ -853,6 +990,20 @@ export type Database = {
         }
         Returns: boolean
       }
+      match_participants: {
+        Args: { _match_id: string }
+        Returns: {
+          avatar_url: string
+          college_name: string
+          created_at: string
+          full_name: string
+          is_me: boolean
+          match_id: string
+          semester: number
+          user_id: string
+        }[]
+      }
+      match_screen: { Args: { _match_id: string }; Returns: Json }
       my_matches_today: { Args: { _user_id: string }; Returns: Json }
       new_members: {
         Args: { _limit?: number }
@@ -866,12 +1017,20 @@ export type Database = {
       }
       phone_available: { Args: { _e164: string }; Returns: boolean }
       platform_stats: { Args: never; Returns: Json }
+      swipe_profile: {
+        Args: {
+          _action: Database["public"]["Enums"]["swipe_action"]
+          _target: string
+        }
+        Returns: Json
+      }
     }
     Enums: {
       account_status: "active" | "suspended" | "deleted"
       app_role: "user" | "moderator" | "admin"
       gender_option: "woman" | "man" | "nonbinary" | "other"
       looking_for_option: "women" | "men" | "everyone"
+      swipe_action: "like" | "pass" | "super"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -1003,6 +1162,7 @@ export const Constants = {
       app_role: ["user", "moderator", "admin"],
       gender_option: ["woman", "man", "nonbinary", "other"],
       looking_for_option: ["women", "men", "everyone"],
+      swipe_action: ["like", "pass", "super"],
     },
   },
 } as const

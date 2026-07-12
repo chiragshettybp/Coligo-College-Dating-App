@@ -553,7 +553,7 @@ function HomeDashboardPage() {
             items={navItems}
             active={0}
             onChange={(i) => {
-              if (i === 1) setComingSoon("Discovery");
+              if (i === 1) navigate({ to: "/discover" });
               else if (i === 2) setComingSoon("Matches");
               else if (i === 3) setComingSoon("Profile");
             }}

@@ -1,81 +1,75 @@
-# Home Module — Implementation Plan
+# Discovery & Swipe Module — Implementation Plan
 
-Builds the post-onboarding dashboard: `/home`, `/home/college-rankings`, `/home/college/:collegeId`. Every number is real Supabase data — college stats and rankings are **derived** from the `profiles` table (there is no stats table and no per-college student count column today), announcements come from a new table, and "online now" uses Supabase Realtime presence.
+Builds `/discover`, `/discover/profile/$userId`, `/discover/match/$matchId`, and `/discover/no-more-profiles` as a fully backed, realtime, mobile-first swipe experience. Every swipe, match, block, and report persists to Supabase; UI is assembled strictly from the `/ui` design system (swipe card/deck/controls/overlays + `MatchCelebration`).
 
-## Data reality check (important)
+## Scope confirmation
+Only the four routes above plus the backend and shared swipe components they require. No Chat UI is built here — but the `messages` table and "Send Note" write are created so a match can seed the first message for the future Chat module.
 
-The current DB supports most of this directly. Three prompt items depend on modules that don't exist yet — handled honestly, no fakes:
+---
 
-- **Matches today** → a minimal real `matches` table is created now so the counter reads a true value (0 until Discovery ships). No fabricated number.
-- **Messages exchanged today** → the Chat module and a messages table don't exist. This stat is **omitted** from Quick Stats until Chat ships (rather than showing a fake counter). Everything else in Quick Stats is real.
-- **Departments per college** → `departments` is a global list not linked to colleges. "Departments available" and department distribution are derived from distinct `department_id` values on that college's `profiles`.
+## Phase 1 — Database foundations (migration)
 
-## Phase 0 — Backend foundation (migrations)
+New tables (all with RLS + GRANTs + timestamps):
 
-One migration, reviewed before code:
+- **swipes** — `actor_id`, `target_id`, `action` enum `swipe_action('like','pass','super')`, `created_at`. `UNIQUE(actor_id, target_id)`. Enables reciprocal checks + future Undo.
+- **messages** — `match_id`→matches, `sender_id`, `body`, `read_at`, `created_at`. Seeds first note; consumed later by Chat.
+- **blocks** — `blocker_id`, `blocked_id`, `created_at`, `UNIQUE(blocker_id, blocked_id)`.
+- **reports** — `reporter_id`, `reported_id`, `reason`, `details`, `status` default `open`, `created_at`.
 
-1. **`colleges`** — add nullable presentation columns: `logo_url`, `banner_url`, `description`. Ranking/counts stay derived (never stored/stale).
-2. **`announcements`** table: `title`, `body`, `priority` (int), `is_pinned` (bool), `published_at`, `expires_at` (nullable), `is_active`. GRANTs: `SELECT` to `anon`+`authenticated`, `ALL` to `service_role`. RLS: public read policy limited to active, published, non-expired rows. (Admin writes come via a later Admin module / service role.)
-3. **`matches`** table (minimal, real): `user_a`, `user_b`, `created_at`, unique pair. GRANTs + RLS scoped so a user only sees their own matches (`auth.uid() in (user_a,user_b)`); aggregate "today" count is served by a SECURITY DEFINER function.
-4. **SECURITY DEFINER aggregate functions** (so counts never expose individual rows through RLS):
-   - `college_stats(_college_id uuid)` → verified student count, gender ratio, department count, grad-year distribution, top interests.
-   - `college_rankings(_limit, _offset, _search)` → colleges ranked by verified student count, with growth (new verified profiles in trailing 30 days).
-   - `platform_stats()` → total verified students, participating colleges, active users (last_login in 24h), matches today.
-   - `new_members(_limit)` → recent verified, onboarding-complete profiles (safe columns only: id, full_name, avatar_url, college name).
-   Each `GRANT EXECUTE` to `authenticated`.
-5. **Realtime**: `ALTER PUBLICATION supabase_realtime ADD TABLE announcements;` (rankings/stats refresh via presence + invalidation, not row streams).
+Alter existing **matches**: add `last_message_at`, add a canonical-order guard (`CHECK user_a < user_b`) + `UNIQUE(user_a, user_b)` to make duplicate matches impossible.
 
-## Phase 1 — Server functions & queries (`src/lib/home.functions.ts`)
+RLS summary (plain English):
+- Swipes: a user reads and creates only their own.
+- Matches: a user sees only matches they are part of; inserts happen only through the match RPC.
+- Messages: only the two people in a match can read or send in it.
+- Blocks/Reports: a user manages only their own rows.
 
-Authenticated `createServerFn` (via `requireSupabaseAuth`) wrapping the RPCs and reads, each with a `queryOptions` factory and sensible `staleTime`:
+## Phase 2 — Server logic (SECURITY DEFINER RPCs)
 
-- `getHomeDashboard` — one batched call returning profile summary, user's college + its stats, rankings preview (top 5), platform stats, new members, active announcements. Minimizes round-trips (addresses "reduce backend requests").
-- `getCollegeRankings({ search, limit, offset })` — paginated/infinite list.
-- `getCollegeDetail(collegeId)` — full college profile + aggregated stats; `notFound()` on missing/inactive.
-- `listAnnouncements` — cached, realtime-invalidated.
-- College logo/banner images resolved from Storage where present, else DS avatar/placeholder.
+- **`discover_candidates(_limit)`** — returns eligible target ids + core card fields (name, dob→age, college, department, semester, grad year, bio). Excludes: self, non-active/`account_status`, incomplete onboarding, `discovery_enabled=false`, already-swiped, blocked either direction, reported-by-me. Enforces mutual gender/`looking_for` preference (viewer wants target AND target wants viewer; 18+). Ordered to support future ranking (shared interests / same college first).
+- **`swipe_profile(_target, _action)`** — single transaction: upsert swipe; if `action` in (like,super) AND reciprocal like/super exists, create the match in canonical order (`ON CONFLICT DO NOTHING`) and return `{ matched: true, match_id }`, else `{ matched: false }`. Advisory-lock on the ordered pair to prevent race/duplicate.
+- **`match_participants(_match_id)`** — returns both profiles for the celebration screen, only if caller is a participant.
 
-## Phase 2 — `/home` dashboard (`src/routes/_authenticated/home.tsx`)
+## Phase 3 — Server functions (`src/lib/discover.functions.ts`)
 
-Replaces the current placeholder. Loader primes `getHomeDashboard`; component uses `useSuspenseQuery`. Mobile-first vertical scroll, `BottomNav` shell, everything composed from `/ui` DS components (`Card`, `StatCard`, `Avatar`, `Chip`, `Skeleton`, `EmptyState`, `Button`, `Text`, `LargeTitleHeader`). Sections:
+All `createServerFn` + `requireSupabaseAuth`, RLS-scoped:
+- `getDiscoveryFeed()` — calls `discover_candidates`, then batch-loads photos + interests, computes mutual interests vs. me, and signs private photo URLs with the RLS-scoped client (storage policy already allows reading active members' photos). Returns ready-to-render cards.
+- `getDiscoverProfile(userId)` — full public profile + gallery + interests + mutual interests; guards deleted/blocked/private/self.
+- `submitSwipe({ targetId, action })` — calls `swipe_profile`; returns match result.
+- `getMatch(matchId)` — celebration data via `match_participants` + signed avatars + shared context (college/semester/interests/compatibility, seeded opener).
+- `sendMatchNote({ matchId, body })` / `skipMatch({ matchId })` — insert first message or no-op; update `last_message_at`.
+- `blockUser({ userId })`, `reportUser({ userId, reason, details })`.
+Query option factories + query keys for cache wiring.
 
-- **Header** — time-based greeting + first name, avatar (Storage → placeholder fallback), notification + settings `NavIconButton`s. Avatar tap → Profile.
-- **College card** — logo, name, derived ranking, verified count, gender ratio, department count, Quick View → `/home/college/:id`. Handles missing/deleted college.
-- **Rankings preview** — top 5 `StatCard`/rows with rank, name, count, growth; "View all" → rankings.
-- **Students online** — college + national counts from presence (Phase 5).
-- **Matches today** — personal + total (real from `matches`), tap → Matches (route stub/coming-soon until built).
-- **New members** — horizontal avatars; tap → discovery preview (stub until Discovery ships).
-- **Start swiping** — prominent primary CTA card → Discovery (stub until built).
-- **Quick stats** — verified students, participating colleges, active users, matches (messages omitted per data-reality note).
-- **Announcements** — pinned first then priority/newest; tap opens detail (`BottomSheet`).
+## Phase 4 — Shared swipe components (design-system extraction)
 
-Skeleton loaders per section, empty states, retry actions, no layout shift, disabled-while-loading.
+Promote the `/ui` showcase patterns into reusable, data-driven `src/components/ds` components (same tokens/motion, no redesign):
+- `SwipeCard` — photo carousel (lazy/progressive/fallback), identity/presence badges, expandable bio, interest chips, mutual-interest badges.
+- `SwipeDeck` — card stack with pointer/touch drag physics, LIKE/NOPE/SUPER overlays, mouse-drag on desktop, arrow-key shortcuts, reduced-motion fallback, prefetch of next cards.
+- `SwipeControls` — Undo/Pass/Super/Like/Boost buttons wired to the same backend calls as gestures, disabled during in-flight requests to prevent duplicates.
+Reuse existing `MatchCelebration`, `EmptyState`/presets, `TopBar`, `BottomSheet`.
 
-## Phase 3 — `/home/college-rankings`
+## Phase 5 — Routes & flows (under `_authenticated/`)
 
-`TopBar` back nav, `SearchBar` (debounced, local filter after first fetch), sort (rank/name/growth via `SegmentControl`), infinite scroll (IntersectionObserver) over `getCollegeRankings`. Row → college detail. Empty / slow / error / large-dataset handling.
+- **`/discover`** — loads feed (skeletons while fetching), renders `SwipeDeck` + `SwipeControls`. Swipe/like → optimistic card exit → `submitSwipe`; on `matched` navigate to `/discover/match/$matchId`; on empty queue navigate to `/discover/no-more-profiles`. Realtime: subscribe to my new matches, to blocks targeting me (drop card instantly), and to new eligible `profiles` inserts (offer refresh). Onboarding guard inherited from `/home`-style layout loader.
+- **`/discover/profile/$userId`** — full profile via shared-element expand; Like/Pass/Back preserve queue order (state via router/query cache); handles invalid/deleted/blocked/private.
+- **`/discover/match/$matchId`** — `MatchCelebration`; Send Note (`sendMatchNote`) / Skip (`skipMatch`) / Open Chat (routes to future chat path, guarded). Prevents duplicate match/chat.
+- **`/discover/no-more-profiles`** — friendly empty state; Retry re-runs feed; realtime auto-detects new users and offers refresh; Return Home.
 
-## Phase 4 — `/home/college/:collegeId`
+## Phase 6 — Realtime, integration & verification
 
-Dynamic route (`$collegeId`). Banner + logo, name, ranking, verified count, gender ratio, department distribution, grad-year distribution, top interests, students online, description. Back to Home / Rankings. Invalid/deleted → DS `EmptyState` + notFound handling. Loader-fed `head()` metadata.
+- Enable realtime on `matches`, `messages`, `blocks`; keep RLS so subscribers only get permitted rows.
+- Wire Home/BottomNav "Discover" + "Matches" badge to real counts.
+- Verify end-to-end with two seeded test profiles (via migration seed): mutual like → single match row → celebration → note persists; pass hides profile; block/report remove from feed; typecheck + lint clean; no console/runtime errors.
 
-## Phase 5 — Realtime, navigation, a11y, verification
-
-- **Presence**: shared `useOnlinePresence` hook — one Supabase presence channel keyed by user+college, tracked in `useEffect` with cleanup (`removeChannel`). Powers college + national online counts; handles disconnect/recovery/offline.
-- **Announcements realtime**: subscribe in `useEffect`, invalidate query on change.
-- **Rankings/stats**: refresh on presence sync + on window focus (avoids heavy row streaming).
-- **Navigation**: `BottomNav` wired (Home active; Discovery/Matches/Profile/Settings shortcuts route to existing or coming-soon stubs), deep-linking, back nav, invalid route → 404.
-- **Access rules**: only authenticated + `onboardingCompleted` users (loader redirect to `/onboarding`, already enforced by `_authenticated` gate + splash).
-- **Accessibility**: keyboard nav, ARIA labels, focus states, semantic HTML, reduced-motion respected (DS already does), responsive type.
-- **Verify**: `tsgo` typecheck, Supabase linter after migration, and a Playwright pass on `/home` + subroutes (using the injected session) with screenshots.
+---
 
 ## Technical notes
+- **Photos**: single private `profile-photos` bucket; the existing "members read active member photos" storage policy already lets the RLS-scoped client sign other members' gallery URLs — no service-role key needed.
+- **No duplicate matches / race safety**: canonical ordering (`user_a < user_b`) + `UNIQUE` + advisory lock inside `swipe_profile`.
+- **Preference matching enum mapping**: `woman→women`, `man→men`, `nonbinary/other→everyone`; match requires mutual want.
+- **Extensibility**: `swipes.action` enum + candidate ordering leave room for Super Likes, Boosts, and ranking without schema redesign.
+- **Age**: computed from `date_of_birth`, 18+ enforced; numeric range deferred (no range field in `settings` yet).
+- **State**: TanStack Query for feed/queue with prefetch; optimistic swipe UI with rollback on failure so swipe state is never lost.
 
-- No profile rows are exposed for aggregates — all counts flow through SECURITY DEFINER RPCs returning only numbers/safe columns.
-- Rankings are computed live (ordered by verified student count); growth = trailing-30-day new verified profiles.
-- Caching: reference/stat queries get `staleTime` (30–120s) + realtime/focus invalidation to satisfy "never fetch identical data twice".
-- Design system is reused verbatim from `/ui`; no new visual patterns.
-
-## Out of scope (dependent on later modules)
-
-Discovery swiping, Matches list, Chat/messages, Notifications feed, and Admin announcement management are stubbed as coming-soon destinations and wired in when those modules are built.
+Approve and I'll implement phase by phase, starting with the migration.
