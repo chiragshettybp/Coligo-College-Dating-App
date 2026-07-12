@@ -31,6 +31,9 @@ import {
   Camera,
   Smile,
   ArrowUp,
+  WifiOff,
+  Download,
+  BellRing,
 } from "lucide-react";
 
 import {
@@ -150,9 +153,19 @@ function UIShowcase() {
   const [activeTab, setActiveTab] = useState(0);
   const [segment, setSegment] = useState(0);
   const [scrollTab, setScrollTab] = useState("For You");
+  const [toasts, setToasts] = useState<ToastItem[]>([]);
 
   const toggleInterest = (i: string) =>
     setInterests((s) => (s.includes(i) ? s.filter((x) => x !== i) : [...s, i]));
+
+  const dismissToast = (id: number) => setToasts((s) => s.filter((t) => t.id !== id));
+  const pushToast = (tone: FeedbackTone, icon: React.ReactNode, message: string) => {
+    const id = Date.now() + Math.random();
+    setToasts((s) => [...s, { id, tone, icon, message }].slice(-3));
+    haptic(tone === "success" ? "softSuccess" : tone === "danger" ? "warning" : "selection");
+    window.setTimeout(() => dismissToast(id), 3200);
+  };
+
 
   return (
     <main
@@ -634,26 +647,92 @@ function UIShowcase() {
         </Section>
 
         {/* Badges */}
-        <Section title="Badges" description="Verification, status and metadata tags.">
+        <Section
+          title="Badges"
+          description="Identity, status and metadata tokens — one glass recipe, color-independent cues, elegant enough to feel collectible."
+        >
+          <Label>Status</Label>
+          <Row>
+            <Badge tone="success" dot pulse>Online</Badge>
+            <Badge tone="warning" dot>Away</Badge>
+            <Badge tone="neutral" dot>Offline</Badge>
+            <Badge tone="info" dot pulse>Typing…</Badge>
+          </Row>
+          <div style={{ height: spacing[3] }} />
+          <Label>Identity</Label>
           <Row>
             <Badge tone="success"><ShieldCheck style={{ width: 12, height: 12 }} /> Verified</Badge>
             <Badge tone="primary"><Sparkles style={{ width: 12, height: 12 }} /> Premium</Badge>
             <Badge tone="info">New</Badge>
-            <Badge tone="warning">Popular</Badge>
-            <Badge tone="danger">Trending</Badge>
+            <Badge tone="warning"><Flame style={{ width: 12, height: 12 }} /> Trending</Badge>
             <Badge tone="neutral"><GraduationCap style={{ width: 12, height: 12 }} /> CS · Year 2</Badge>
+          </Row>
+          <div style={{ height: spacing[3] }} />
+          <Label>Match</Label>
+          <Row>
+            <Badge tone="success"><Heart style={{ width: 12, height: 12 }} fill="currentColor" /> 96% match</Badge>
+            <Badge tone="primary"><MapPin style={{ width: 12, height: 12 }} /> Same campus</Badge>
+            <Badge tone="info"><Sparkles style={{ width: 12, height: 12 }} /> 3 shared interests</Badge>
+            <Badge tone="neutral" dot>Active recently</Badge>
           </Row>
         </Section>
 
-        {/* Alerts */}
-        <Section title="Alerts & Toasts" description="Success, warning, error and info feedback surfaces.">
-          <div className="space-y-3">
-            <Alert tone="success" icon={<Check style={{ width: 18, height: 18 }} />} title="Profile saved" body="Your changes are live." />
-            <Alert tone="warning" icon={<AlertTriangle style={{ width: 18, height: 18 }} />} title="Add more photos" body="Profiles with 4+ photos get 3x more matches." />
-            <Alert tone="danger" icon={<X style={{ width: 18, height: 18 }} />} title="Something went wrong" body="We couldn't send your message." />
-            <Alert tone="info" icon={<Info style={{ width: 18, height: 18 }} />} title="New feature" body="You can now filter by department." />
+        {/* Feedback: alerts, toasts, banners */}
+        <Section
+          title="Alerts, Toasts & Banners"
+          description="A calm feedback language — glass surfaces, restrained accents, tone-tinted icons and one motion system. Every surface says what happened and what to do next at a glance."
+        >
+          <Label>Inline banners</Label>
+          <div className="space-y-2">
+            <Banner tone="danger" icon={<WifiOff style={{ width: 16, height: 16 }} />} title="You're offline" action={{ label: "Retry" }} />
+            <Banner tone="info" icon={<Download style={{ width: 16, height: 16 }} />} title="Update available" action={{ label: "Install" }} />
+            <Banner tone="warning" icon={<BellRing style={{ width: 16, height: 16 }} />} title="Enable notifications to never miss a match" action={{ label: "Allow" }} />
           </div>
+
+          <div style={{ height: spacing[4] }} />
+          <Label>Alert cards</Label>
+          <div className="space-y-3">
+            <Alert
+              tone="success"
+              icon={<Check style={{ width: 18, height: 18 }} />}
+              title="Profile saved"
+              body="Your changes are live and visible to matches."
+            />
+            <Alert
+              tone="warning"
+              icon={<AlertTriangle style={{ width: 18, height: 18 }} />}
+              title="Add more photos"
+              body="Profiles with 4+ photos get 3× more matches."
+              primaryAction={{ label: "Add photos" }}
+              secondaryAction={{ label: "Later" }}
+            />
+            <Alert
+              tone="danger"
+              icon={<X style={{ width: 18, height: 18 }} />}
+              title="Couldn't send message"
+              body="Check your connection and try again."
+              primaryAction={{ label: "Retry" }}
+              onDismiss={() => {}}
+            />
+            <Alert
+              tone="info"
+              icon={<Info style={{ width: 18, height: 18 }} />}
+              title="New feature"
+              body="You can now filter matches by department."
+              onDismiss={() => {}}
+            />
+          </div>
+
+          <div style={{ height: spacing[4] }} />
+          <Label>Floating toasts</Label>
+          <Row>
+            <Button size="sm" variant="secondary" onClick={() => pushToast("success", <Check style={{ width: 15, height: 15 }} />, "Profile saved")}>Success</Button>
+            <Button size="sm" variant="secondary" onClick={() => pushToast("info", <Info style={{ width: 15, height: 15 }} />, "Filter applied")}>Info</Button>
+            <Button size="sm" variant="secondary" onClick={() => pushToast("warning", <AlertTriangle style={{ width: 15, height: 15 }} />, "Photo upload slow")}>Warning</Button>
+            <Button size="sm" variant="secondary" onClick={() => pushToast("danger", <WifiOff style={{ width: 15, height: 15 }} />, "Network error")}>Error</Button>
+          </Row>
         </Section>
+
 
         {/* Chat */}
         <Section
@@ -815,7 +894,9 @@ function UIShowcase() {
           <code style={{ color: colors.info }}>@/components/ds/glass</code>.
         </footer>
       </div>
+      <ToastHost toasts={toasts} onDismiss={dismissToast} />
     </main>
+
   );
 }
 
@@ -1339,48 +1420,236 @@ function Stamp({ label, color, rotate }: { label: string; color: string; rotate:
   );
 }
 
+type FeedbackTone = "success" | "warning" | "danger" | "info";
+
+const feedbackColor: Record<FeedbackTone, string> = {
+  success: colors.success,
+  warning: colors.warning,
+  danger: colors.danger,
+  info: colors.info,
+};
+
+/** Tone-tinted icon chip — the color-independent leading cue shared by every
+ *  feedback surface (alert, toast, banner). */
+function FeedbackIcon({
+  tone,
+  icon,
+  size = 34,
+}: {
+  tone: FeedbackTone;
+  icon: React.ReactNode;
+  size?: number;
+}) {
+  const c = feedbackColor[tone];
+  return (
+    <span
+      aria-hidden
+      className="flex shrink-0 items-center justify-center"
+      style={{
+        width: size,
+        height: size,
+        borderRadius: size / 2.6,
+        color: c,
+        background: `linear-gradient(165deg, ${c}2e, ${c}12)`,
+        border: `1px solid ${c}40`,
+        boxShadow: `inset 0 1px 0 rgba(255,255,255,0.12), 0 0 16px ${c}22`,
+      }}
+    >
+      {icon}
+    </span>
+  );
+}
+
 function Alert({
   tone,
   icon,
   title,
   body,
+  primaryAction,
+  secondaryAction,
+  onDismiss,
 }: {
-  tone: "success" | "warning" | "danger" | "info";
+  tone: FeedbackTone;
   icon: React.ReactNode;
   title: string;
   body: string;
+  primaryAction?: { label: string; onClick?: () => void };
+  secondaryAction?: { label: string; onClick?: () => void };
+  onDismiss?: () => void;
 }) {
-  const map = {
-    success: colors.success,
-    warning: colors.warning,
-    danger: colors.danger,
-    info: colors.info,
-  };
-  const c = map[tone];
+  const c = feedbackColor[tone];
+  const hasActions = !!(primaryAction || secondaryAction);
   return (
     <div
-      className="flex items-start gap-3 backdrop-blur-md"
+      role="alert"
+      className="ds-feedback backdrop-blur-xl"
       style={{
-        borderRadius: radii.md,
-        padding: "14px 16px",
-        background: surfaces.glassSoft,
+        position: "relative",
+        borderRadius: radii.lg,
+        padding: hasActions ? "16px 16px 14px" : "14px 16px",
+        background: surfaces.glass,
         border: `1px solid ${surfaces.border}`,
-        borderLeft: `3px solid ${c}`,
+        boxShadow: shadows.glass,
+        overflow: "hidden",
       }}
     >
+      {/* left accent hairline — subtle tone signature */}
       <span
-        className="flex items-center justify-center rounded-full"
-        style={{ width: 34, height: 34, background: `${c}22`, color: c }}
-      >
-        {icon}
-      </span>
-      <div>
-        <div style={{ color: "#fff", fontWeight: 700, fontSize: 15 }}>{title}</div>
-        <div style={{ color: colors.textSecondary, fontSize: 13, marginTop: 2 }}>{body}</div>
+        aria-hidden
+        style={{
+          position: "absolute",
+          left: 0,
+          top: 12,
+          bottom: 12,
+          width: 3,
+          borderRadius: radii.pill,
+          background: `linear-gradient(180deg, ${c}, ${c}55)`,
+        }}
+      />
+      <div className="flex items-start gap-3">
+        <FeedbackIcon tone={tone} icon={icon} />
+        <div className="min-w-0 flex-1">
+          <div style={{ color: "#fff", fontWeight: 700, fontSize: 15, letterSpacing: "-0.01em" }}>
+            {title}
+          </div>
+          <div style={{ color: colors.textSecondary, fontSize: 13.5, lineHeight: 1.45, marginTop: 3 }}>
+            {body}
+          </div>
+          {hasActions && (
+            <div className="mt-3 flex gap-2">
+              {primaryAction && (
+                <Button size="sm" variant="secondary" onClick={primaryAction.onClick}>
+                  {primaryAction.label}
+                </Button>
+              )}
+              {secondaryAction && (
+                <Button size="sm" variant="ghost" onClick={secondaryAction.onClick}>
+                  {secondaryAction.label}
+                </Button>
+              )}
+            </div>
+          )}
+        </div>
+        {onDismiss && (
+          <button
+            aria-label="Dismiss"
+            onClick={() => {
+              haptic("light");
+              onDismiss();
+            }}
+            className="ds-press flex shrink-0 items-center justify-center rounded-full"
+            style={{
+              width: 30,
+              height: 30,
+              marginTop: -2,
+              color: colors.textMuted,
+              background: surfaces.glassSoft,
+              border: `1px solid ${surfaces.borderSoft}`,
+            }}
+          >
+            <X style={{ width: 15, height: 15 }} />
+          </button>
+        )}
       </div>
     </div>
   );
 }
+
+/** Floating toast — lightweight blurred surface, spring entry, swipe/tap to
+ *  dismiss. Stacked and auto-dismissed by ToastHost. */
+function Toast({
+  tone,
+  icon,
+  message,
+  onDismiss,
+}: {
+  tone: FeedbackTone;
+  icon: React.ReactNode;
+  message: string;
+  onDismiss: () => void;
+}) {
+  const c = feedbackColor[tone];
+  return (
+    <div
+      role="status"
+      onClick={onDismiss}
+      className="ds-toast-in ds-feedback flex items-center gap-2.5 backdrop-blur-xl"
+      style={{
+        borderRadius: radii.pill,
+        padding: "9px 16px 9px 10px",
+        background: "linear-gradient(165deg, rgba(28,37,69,0.86), rgba(14,20,48,0.86))",
+        border: `1px solid ${surfaces.border}`,
+        boxShadow: `${shadows.large}, 0 0 22px ${c}22`,
+        cursor: "pointer",
+      }}
+    >
+      <FeedbackIcon tone={tone} icon={icon} size={28} />
+      <span style={{ color: "#fff", fontSize: 14, fontWeight: 600, letterSpacing: "-0.01em" }}>
+        {message}
+      </span>
+    </div>
+  );
+}
+
+type ToastItem = { id: number; tone: FeedbackTone; icon: React.ReactNode; message: string };
+
+/** Stacking toast host — new toasts spring in at the bottom, others reflow up,
+ *  each auto-dismisses gracefully. */
+function ToastHost({ toasts, onDismiss }: { toasts: ToastItem[]; onDismiss: (id: number) => void }) {
+  return (
+    <div
+      className="pointer-events-none fixed inset-x-0 flex flex-col items-center gap-2"
+      style={{ bottom: `calc(20px + env(safe-area-inset-bottom))`, zIndex: 80, padding: "0 16px" }}
+      aria-live="polite"
+    >
+      {toasts.map((t) => (
+        <div key={t.id} className="pointer-events-auto w-full" style={{ maxWidth: 380 }}>
+          <Toast tone={t.tone} icon={t.icon} message={t.message} onDismiss={() => onDismiss(t.id)} />
+        </div>
+      ))}
+    </div>
+  );
+}
+
+/** Inline banner — full-width contextual status (offline, permission, update). */
+function Banner({
+  tone,
+  icon,
+  title,
+  action,
+}: {
+  tone: FeedbackTone;
+  icon: React.ReactNode;
+  title: string;
+  action?: { label: string; onClick?: () => void };
+}) {
+  const c = feedbackColor[tone];
+  return (
+    <div
+      className="ds-feedback flex items-center gap-3 backdrop-blur-xl"
+      style={{
+        borderRadius: radii.md,
+        padding: "10px 12px 10px 14px",
+        background: `linear-gradient(165deg, ${c}1c, rgba(14,20,48,0.6))`,
+        border: `1px solid ${c}33`,
+        boxShadow: shadows.medium,
+      }}
+    >
+      <span aria-hidden style={{ color: c, display: "flex" }}>
+        {icon}
+      </span>
+      <span className="min-w-0 flex-1" style={{ color: "#fff", fontSize: 13.5, fontWeight: 600 }}>
+        {title}
+      </span>
+      {action && (
+        <Button size="sm" variant="ghost" onClick={action.onClick}>
+          {action.label}
+        </Button>
+      )}
+    </div>
+  );
+}
+
 
 // ---------------------------------------------------------------------------
 // Chat design system
