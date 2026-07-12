@@ -4,7 +4,7 @@
 // Home) will take over. It confirms a live session and branches on whether the
 // member has finished onboarding.
 // ============================================================================
-import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { createFileRoute, useNavigate, redirect } from "@tanstack/react-router";
 import { useSuspenseQuery, useQueryClient } from "@tanstack/react-query";
 import { Heart, LogOut, Sparkles } from "lucide-react";
 
@@ -15,7 +15,14 @@ import { APP_BACKGROUND, FONT_FAMILY, colors, spacing, radii, gradients } from "
 import { formatPhoneIN } from "@/lib/auth";
 
 export const Route = createFileRoute("/_authenticated/app")({
-  loader: ({ context }) => context.queryClient.ensureQueryData(myProfileQuery()),
+  loader: async ({ context }) => {
+    const profile = await context.queryClient.ensureQueryData(myProfileQuery());
+    // Members who haven't finished onboarding belong in the Onboarding module.
+    if (!profile?.onboardingCompleted) {
+      throw redirect({ to: "/onboarding" });
+    }
+    return profile;
+  },
   component: AppHome,
 });
 

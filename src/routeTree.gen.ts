@@ -30,6 +30,7 @@ import { Route as OnboardingGraduationYearRouteImport } from './routes/onboardin
 import { Route as OnboardingGenderRouteImport } from './routes/onboarding/gender'
 import { Route as OnboardingDepartmentRouteImport } from './routes/onboarding/department'
 import { Route as OnboardingDateOfBirthRouteImport } from './routes/onboarding/date-of-birth'
+import { Route as OnboardingCompleteRouteImport } from './routes/onboarding/complete'
 import { Route as OnboardingCollegeRouteImport } from './routes/onboarding/college'
 import { Route as OnboardingBioRouteImport } from './routes/onboarding/bio'
 import { Route as AuthVerifyOtpRouteImport } from './routes/auth.verify-otp'
@@ -148,6 +149,11 @@ const OnboardingDateOfBirthRoute = OnboardingDateOfBirthRouteImport.update({
   path: '/date-of-birth',
   getParentRoute: () => OnboardingRouteRoute,
 } as any)
+const OnboardingCompleteRoute = OnboardingCompleteRouteImport.update({
+  id: '/complete',
+  path: '/complete',
+  getParentRoute: () => OnboardingRouteRoute,
+} as any)
 const OnboardingCollegeRoute = OnboardingCollegeRouteImport.update({
   id: '/college',
   path: '/college',
@@ -235,6 +241,7 @@ export interface FileRoutesByFullPath {
   '/auth/verify-otp': typeof AuthVerifyOtpRoute
   '/onboarding/bio': typeof OnboardingBioRoute
   '/onboarding/college': typeof OnboardingCollegeRoute
+  '/onboarding/complete': typeof OnboardingCompleteRoute
   '/onboarding/date-of-birth': typeof OnboardingDateOfBirthRoute
   '/onboarding/department': typeof OnboardingDepartmentRoute
   '/onboarding/gender': typeof OnboardingGenderRoute
@@ -267,6 +274,7 @@ export interface FileRoutesByTo {
   '/auth/verify-otp': typeof AuthVerifyOtpRoute
   '/onboarding/bio': typeof OnboardingBioRoute
   '/onboarding/college': typeof OnboardingCollegeRoute
+  '/onboarding/complete': typeof OnboardingCompleteRoute
   '/onboarding/date-of-birth': typeof OnboardingDateOfBirthRoute
   '/onboarding/department': typeof OnboardingDepartmentRoute
   '/onboarding/gender': typeof OnboardingGenderRoute
@@ -303,6 +311,7 @@ export interface FileRoutesById {
   '/auth/verify-otp': typeof AuthVerifyOtpRoute
   '/onboarding/bio': typeof OnboardingBioRoute
   '/onboarding/college': typeof OnboardingCollegeRoute
+  '/onboarding/complete': typeof OnboardingCompleteRoute
   '/onboarding/date-of-birth': typeof OnboardingDateOfBirthRoute
   '/onboarding/department': typeof OnboardingDepartmentRoute
   '/onboarding/gender': typeof OnboardingGenderRoute
@@ -340,6 +349,7 @@ export interface FileRouteTypes {
     | '/auth/verify-otp'
     | '/onboarding/bio'
     | '/onboarding/college'
+    | '/onboarding/complete'
     | '/onboarding/date-of-birth'
     | '/onboarding/department'
     | '/onboarding/gender'
@@ -372,6 +382,7 @@ export interface FileRouteTypes {
     | '/auth/verify-otp'
     | '/onboarding/bio'
     | '/onboarding/college'
+    | '/onboarding/complete'
     | '/onboarding/date-of-birth'
     | '/onboarding/department'
     | '/onboarding/gender'
@@ -407,6 +418,7 @@ export interface FileRouteTypes {
     | '/auth/verify-otp'
     | '/onboarding/bio'
     | '/onboarding/college'
+    | '/onboarding/complete'
     | '/onboarding/date-of-birth'
     | '/onboarding/department'
     | '/onboarding/gender'
@@ -584,6 +596,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof OnboardingDateOfBirthRouteImport
       parentRoute: typeof OnboardingRouteRoute
     }
+    '/onboarding/complete': {
+      id: '/onboarding/complete'
+      path: '/complete'
+      fullPath: '/onboarding/complete'
+      preLoaderRoute: typeof OnboardingCompleteRouteImport
+      parentRoute: typeof OnboardingRouteRoute
+    }
     '/onboarding/college': {
       id: '/onboarding/college'
       path: '/college'
@@ -714,6 +733,7 @@ const PublicRouteRouteWithChildren = PublicRouteRoute._addFileChildren(
 interface OnboardingRouteRouteChildren {
   OnboardingBioRoute: typeof OnboardingBioRoute
   OnboardingCollegeRoute: typeof OnboardingCollegeRoute
+  OnboardingCompleteRoute: typeof OnboardingCompleteRoute
   OnboardingDateOfBirthRoute: typeof OnboardingDateOfBirthRoute
   OnboardingDepartmentRoute: typeof OnboardingDepartmentRoute
   OnboardingGenderRoute: typeof OnboardingGenderRoute
@@ -729,6 +749,7 @@ interface OnboardingRouteRouteChildren {
 const OnboardingRouteRouteChildren: OnboardingRouteRouteChildren = {
   OnboardingBioRoute: OnboardingBioRoute,
   OnboardingCollegeRoute: OnboardingCollegeRoute,
+  OnboardingCompleteRoute: OnboardingCompleteRoute,
   OnboardingDateOfBirthRoute: OnboardingDateOfBirthRoute,
   OnboardingDepartmentRoute: OnboardingDepartmentRoute,
   OnboardingGenderRoute: OnboardingGenderRoute,
