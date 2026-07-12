@@ -13,6 +13,7 @@ export type MyProfile = {
   phone: string | null;
   displayName: string | null;
   avatarUrl: string | null;
+  collegeId: string | null;
   verificationStatus: string;
   onboardingCompleted: boolean;
   accountStatus: AccountStatus;
