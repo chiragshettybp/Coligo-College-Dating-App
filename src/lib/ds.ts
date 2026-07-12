@@ -42,19 +42,19 @@ export const type = {
   number: { fontSize: 34, lineHeight: 1, fontWeight: weights.heavy, letterSpacing: "-0.02em", fontVariantNumeric: "tabular-nums" as const },
 } as const;
 
-/** Semantic colors. */
+/** Semantic colors — calm, low-saturation iOS palette. Dark text on light. */
 export const colors = {
-  primary: "#3ea0f2",
-  primaryDeep: "#2a75dd",
-  secondary: "#8ea3d6",
-  accent: "#ea6fa6",
-  success: "#43d9a3",
-  warning: "#f5b544",
-  danger: "#f2576b",
-  info: "#57b0f6",
-  textPrimary: "#ffffff",
-  textSecondary: "rgba(205,214,238,0.72)",
-  textMuted: "rgba(205,214,238,0.6)",
+  primary: "#0a84ff",
+  primaryDeep: "#0060df",
+  secondary: "#6b7280",
+  accent: "#ff375f",
+  success: "#34c759",
+  warning: "#ff9f0a",
+  danger: "#ff3b30",
+  info: "#0a84ff",
+  textPrimary: "#1c1c1e",
+  textSecondary: "rgba(60,60,67,0.72)",
+  textMuted: "rgba(60,60,67,0.5)",
 } as const;
 
 /** Gradients. */
