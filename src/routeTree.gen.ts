@@ -63,6 +63,7 @@ import { Route as AuthenticatedMatchesMatchIdBlockRouteImport } from './routes/_
 import { Route as AuthenticatedHomeCollegeCollegeIdRouteImport } from './routes/_authenticated/home.college.$collegeId'
 import { Route as AuthenticatedDiscoverProfileUserIdRouteImport } from './routes/_authenticated/discover.profile.$userId'
 import { Route as AuthenticatedDiscoverMatchMatchIdRouteImport } from './routes/_authenticated/discover.match.$matchId'
+import { Route as AuthenticatedChatChatIdInfoRouteImport } from './routes/_authenticated/chat.$chatId.info'
 
 const UiRoute = UiRouteImport.update({
   id: '/ui',
@@ -347,6 +348,12 @@ const AuthenticatedDiscoverMatchMatchIdRoute =
     path: '/match/$matchId',
     getParentRoute: () => AuthenticatedDiscoverRoute,
   } as any)
+const AuthenticatedChatChatIdInfoRoute =
+  AuthenticatedChatChatIdInfoRouteImport.update({
+    id: '/info',
+    path: '/info',
+    getParentRoute: () => AuthenticatedChatChatIdRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof PublicIndexRoute
@@ -385,7 +392,7 @@ export interface FileRoutesByFullPath {
   '/system/splash': typeof SystemSplashRoute
   '/auth/': typeof AuthIndexRoute
   '/onboarding/': typeof OnboardingIndexRoute
-  '/chat/$chatId': typeof AuthenticatedChatChatIdRoute
+  '/chat/$chatId': typeof AuthenticatedChatChatIdRouteWithChildren
   '/discover/no-more-profiles': typeof AuthenticatedDiscoverNoMoreProfilesRoute
   '/home/college-rankings': typeof AuthenticatedHomeCollegeRankingsRoute
   '/matches/$matchId': typeof AuthenticatedMatchesMatchIdRouteWithChildren
@@ -393,6 +400,7 @@ export interface FileRoutesByFullPath {
   '/discover/': typeof AuthenticatedDiscoverIndexRoute
   '/home/': typeof AuthenticatedHomeIndexRoute
   '/matches/': typeof AuthenticatedMatchesIndexRoute
+  '/chat/$chatId/info': typeof AuthenticatedChatChatIdInfoRoute
   '/discover/match/$matchId': typeof AuthenticatedDiscoverMatchMatchIdRoute
   '/discover/profile/$userId': typeof AuthenticatedDiscoverProfileUserIdRoute
   '/home/college/$collegeId': typeof AuthenticatedHomeCollegeCollegeIdRoute
@@ -433,7 +441,7 @@ export interface FileRoutesByTo {
   '/system/splash': typeof SystemSplashRoute
   '/auth': typeof AuthIndexRoute
   '/onboarding': typeof OnboardingIndexRoute
-  '/chat/$chatId': typeof AuthenticatedChatChatIdRoute
+  '/chat/$chatId': typeof AuthenticatedChatChatIdRouteWithChildren
   '/discover/no-more-profiles': typeof AuthenticatedDiscoverNoMoreProfilesRoute
   '/home/college-rankings': typeof AuthenticatedHomeCollegeRankingsRoute
   '/matches/$matchId': typeof AuthenticatedMatchesMatchIdRouteWithChildren
@@ -441,6 +449,7 @@ export interface FileRoutesByTo {
   '/discover': typeof AuthenticatedDiscoverIndexRoute
   '/home': typeof AuthenticatedHomeIndexRoute
   '/matches': typeof AuthenticatedMatchesIndexRoute
+  '/chat/$chatId/info': typeof AuthenticatedChatChatIdInfoRoute
   '/discover/match/$matchId': typeof AuthenticatedDiscoverMatchMatchIdRoute
   '/discover/profile/$userId': typeof AuthenticatedDiscoverProfileUserIdRoute
   '/home/college/$collegeId': typeof AuthenticatedHomeCollegeCollegeIdRoute
@@ -490,7 +499,7 @@ export interface FileRoutesById {
   '/_public/': typeof PublicIndexRoute
   '/auth/': typeof AuthIndexRoute
   '/onboarding/': typeof OnboardingIndexRoute
-  '/_authenticated/chat/$chatId': typeof AuthenticatedChatChatIdRoute
+  '/_authenticated/chat/$chatId': typeof AuthenticatedChatChatIdRouteWithChildren
   '/_authenticated/discover/no-more-profiles': typeof AuthenticatedDiscoverNoMoreProfilesRoute
   '/_authenticated/home/college-rankings': typeof AuthenticatedHomeCollegeRankingsRoute
   '/_authenticated/matches/$matchId': typeof AuthenticatedMatchesMatchIdRouteWithChildren
@@ -498,6 +507,7 @@ export interface FileRoutesById {
   '/_authenticated/discover/': typeof AuthenticatedDiscoverIndexRoute
   '/_authenticated/home/': typeof AuthenticatedHomeIndexRoute
   '/_authenticated/matches/': typeof AuthenticatedMatchesIndexRoute
+  '/_authenticated/chat/$chatId/info': typeof AuthenticatedChatChatIdInfoRoute
   '/_authenticated/discover/match/$matchId': typeof AuthenticatedDiscoverMatchMatchIdRoute
   '/_authenticated/discover/profile/$userId': typeof AuthenticatedDiscoverProfileUserIdRoute
   '/_authenticated/home/college/$collegeId': typeof AuthenticatedHomeCollegeCollegeIdRoute
@@ -554,6 +564,7 @@ export interface FileRouteTypes {
     | '/discover/'
     | '/home/'
     | '/matches/'
+    | '/chat/$chatId/info'
     | '/discover/match/$matchId'
     | '/discover/profile/$userId'
     | '/home/college/$collegeId'
@@ -602,6 +613,7 @@ export interface FileRouteTypes {
     | '/discover'
     | '/home'
     | '/matches'
+    | '/chat/$chatId/info'
     | '/discover/match/$matchId'
     | '/discover/profile/$userId'
     | '/home/college/$collegeId'
@@ -658,6 +670,7 @@ export interface FileRouteTypes {
     | '/_authenticated/discover/'
     | '/_authenticated/home/'
     | '/_authenticated/matches/'
+    | '/_authenticated/chat/$chatId/info'
     | '/_authenticated/discover/match/$matchId'
     | '/_authenticated/discover/profile/$userId'
     | '/_authenticated/home/college/$collegeId'
@@ -1060,16 +1073,37 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedDiscoverMatchMatchIdRouteImport
       parentRoute: typeof AuthenticatedDiscoverRoute
     }
+    '/_authenticated/chat/$chatId/info': {
+      id: '/_authenticated/chat/$chatId/info'
+      path: '/info'
+      fullPath: '/chat/$chatId/info'
+      preLoaderRoute: typeof AuthenticatedChatChatIdInfoRouteImport
+      parentRoute: typeof AuthenticatedChatChatIdRoute
+    }
   }
 }
 
+interface AuthenticatedChatChatIdRouteChildren {
+  AuthenticatedChatChatIdInfoRoute: typeof AuthenticatedChatChatIdInfoRoute
+}
+
+const AuthenticatedChatChatIdRouteChildren: AuthenticatedChatChatIdRouteChildren =
+  {
+    AuthenticatedChatChatIdInfoRoute: AuthenticatedChatChatIdInfoRoute,
+  }
+
+const AuthenticatedChatChatIdRouteWithChildren =
+  AuthenticatedChatChatIdRoute._addFileChildren(
+    AuthenticatedChatChatIdRouteChildren,
+  )
+
 interface AuthenticatedChatRouteChildren {
-  AuthenticatedChatChatIdRoute: typeof AuthenticatedChatChatIdRoute
+  AuthenticatedChatChatIdRoute: typeof AuthenticatedChatChatIdRouteWithChildren
   AuthenticatedChatIndexRoute: typeof AuthenticatedChatIndexRoute
 }
 
 const AuthenticatedChatRouteChildren: AuthenticatedChatRouteChildren = {
-  AuthenticatedChatChatIdRoute: AuthenticatedChatChatIdRoute,
+  AuthenticatedChatChatIdRoute: AuthenticatedChatChatIdRouteWithChildren,
   AuthenticatedChatIndexRoute: AuthenticatedChatIndexRoute,
 }
 
