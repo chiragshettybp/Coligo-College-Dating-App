@@ -112,7 +112,7 @@ type StatsJson = {
 /** Batch-sign private avatar storage paths using the admin client. Only the
  *  curated public-facing paths passed here are ever signed. Full https URLs are
  *  passed through untouched. */
-type SignerClient = { storage: { from: (b: string) => { createSignedUrls: (paths: string[], ttl: number) => Promise<{ data: { path: string | null; signedUrl: string }[] | null }> } } };
+type SignerClient = { storage: { from: (b: string) => { createSignedUrls: (paths: string[], ttl: number) => Promise<{ data: { path: string | null; signedUrl: string | null }[] | null }> } } };
 
 async function signAvatars(
   client: SignerClient,
