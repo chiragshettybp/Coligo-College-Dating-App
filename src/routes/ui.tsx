@@ -87,14 +87,14 @@ function Section({
   children: React.ReactNode;
 }) {
   return (
-    <section style={{ marginBottom: spacing[9] }}>
+    <section style={{ marginBottom: spacing[8] }}>
       <h2
         className="text-white"
-        style={{ fontSize: 26, fontWeight: 800, letterSpacing: "-0.02em" }}
+        style={{ fontSize: 26, fontWeight: 800, letterSpacing: "-0.02em", lineHeight: 1.2 }}
       >
         {title}
       </h2>
-      <p style={{ color: colors.textSecondary, fontSize: 15, marginTop: 4 }}>
+      <p style={{ color: colors.textSecondary, fontSize: 15, lineHeight: 1.5, marginTop: spacing[1] }}>
         {description}
       </p>
       <div style={{ marginTop: spacing[4] }}>{children}</div>
@@ -149,8 +149,8 @@ function UIShowcase() {
         }}
       >
         {/* Hero */}
-        <header style={{ marginBottom: spacing[9] }}>
-          <div className="flex items-center gap-2" style={{ marginBottom: 12 }}>
+        <header style={{ marginBottom: spacing[8] }}>
+          <div className="flex items-center" style={{ gap: spacing[1], marginBottom: spacing[2] }}>
             <Badge tone="info">
               <Sparkles style={{ width: 12, height: 12 }} /> DESIGN FOUNDATION
             </Badge>
@@ -174,8 +174,9 @@ function UIShowcase() {
             style={{
               color: colors.textSecondary,
               fontSize: 18,
+              lineHeight: 1.55,
               maxWidth: 620,
-              marginTop: 12,
+              marginTop: spacing[2],
             }}
           >
             The single source of truth for every screen. Auth, onboarding, swipe,
@@ -597,19 +598,19 @@ function UIShowcase() {
         {/* Navigation */}
         <Section title="Navigation" description="Bottom tab bar and top bar patterns.">
           <div className="space-y-4">
-            <GlassPanel style={{ padding: "14px 20px" }}>
+            <GlassPanel style={{ padding: `${spacing[2]}px ${spacing[4]}px` }}>
               <div className="flex items-center justify-between">
-                <div className="flex items-center gap-3">
+                <div className="flex items-center" style={{ gap: spacing[2] }}>
                   <Avatar src={ana} size="sm" />
                   <span style={{ color: "#fff", fontWeight: 700 }}>Discover</span>
                 </div>
-                <div className="flex items-center gap-2">
-                  <IconButton size={40}><Search style={{ width: 18, height: 18 }} /></IconButton>
-                  <IconButton size={40}><Bell style={{ width: 18, height: 18 }} /></IconButton>
+                <div className="flex items-center" style={{ gap: spacing[1] }}>
+                  <IconButton size={44}><Search style={{ width: 18, height: 18 }} /></IconButton>
+                  <IconButton size={44}><Bell style={{ width: 18, height: 18 }} /></IconButton>
                 </div>
               </div>
             </GlassPanel>
-            <GlassPanel style={{ padding: "10px 8px" }}>
+            <GlassPanel style={{ padding: `${spacing[1]}px ${spacing[1]}px` }}>
               <div className="flex items-center justify-around">
                 <TabIcon icon={<Home style={{ width: 22, height: 22 }} />} active />
                 <TabIcon icon={<Search style={{ width: 22, height: 22 }} />} />
@@ -669,8 +670,8 @@ function SwipeCard() {
             background: "linear-gradient(180deg, transparent 40%, rgba(4,8,20,0.9) 100%)",
           }}
         />
-        <div style={{ position: "absolute", left: 16, bottom: 14, right: 16 }}>
-          <div className="flex items-center gap-2">
+        <div style={{ position: "absolute", left: spacing[3], bottom: spacing[3], right: spacing[3] }}>
+          <div className="flex items-center" style={{ gap: spacing[1] }}>
             <span style={{ color: "#fff", fontSize: 22, fontWeight: 800 }}>Jordan, 20</span>
             <Badge tone="success"><ShieldCheck style={{ width: 12, height: 12 }} /></Badge>
           </div>
@@ -679,7 +680,7 @@ function SwipeCard() {
           </div>
         </div>
       </div>
-      <div className="flex items-center justify-center gap-4" style={{ padding: "14px" }}>
+      <div className="flex items-center justify-center" style={{ gap: spacing[4], padding: spacing[3] }}>
         <IconButton size={48} style={{ color: colors.danger }}>
           <X style={{ width: 22, height: 22 }} strokeWidth={2.6} />
         </IconButton>
