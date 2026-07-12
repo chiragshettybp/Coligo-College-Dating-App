@@ -316,6 +316,25 @@ export const matchQuery = (matchId: string) =>
     staleTime: 60_000,
   });
 
+// ------------------------------------------------------------- Undo swipe ----
+// Removes a swipe the user just made (Undo). Safe: RLS scopes deletes to own
+// swipes. A match that was already created is left intact by design.
+export const undoSwipe = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((input: { targetId: string }) =>
+    z.object({ targetId: z.string().uuid() }).parse(input),
+  )
+  .handler(async ({ context, data }): Promise<{ ok: true }> => {
+    const { supabase, userId } = context;
+    const { error } = await supabase
+      .from("swipes")
+      .delete()
+      .eq("actor_id", userId)
+      .eq("target_id", data.targetId);
+    if (error) throw new Error(error.message);
+    return { ok: true };
+  });
+
 // --------------------------------------------------------- Send first note ---
 export const sendMatchNote = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
