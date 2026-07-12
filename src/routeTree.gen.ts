@@ -12,12 +12,14 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as UiRouteImport } from './routes/ui'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as PublicRouteRouteImport } from './routes/_public/route'
+import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as PublicIndexRouteImport } from './routes/_public/index'
 import { Route as PublicTermsRouteImport } from './routes/_public/terms'
 import { Route as PublicPrivacyRouteImport } from './routes/_public/privacy'
 import { Route as PublicContactRouteImport } from './routes/_public/contact'
 import { Route as PublicCommunityGuidelinesRouteImport } from './routes/_public/community-guidelines'
 import { Route as PublicAboutRouteImport } from './routes/_public/about'
+import { Route as AuthenticatedAppRouteImport } from './routes/_authenticated/app'
 
 const UiRoute = UiRouteImport.update({
   id: '/ui',
@@ -31,6 +33,10 @@ const AuthRoute = AuthRouteImport.update({
 } as any)
 const PublicRouteRoute = PublicRouteRouteImport.update({
   id: '/_public',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthenticatedRouteRoute = AuthenticatedRouteRouteImport.update({
+  id: '/_authenticated',
   getParentRoute: () => rootRouteImport,
 } as any)
 const PublicIndexRoute = PublicIndexRouteImport.update({
@@ -64,11 +70,17 @@ const PublicAboutRoute = PublicAboutRouteImport.update({
   path: '/about',
   getParentRoute: () => PublicRouteRoute,
 } as any)
+const AuthenticatedAppRoute = AuthenticatedAppRouteImport.update({
+  id: '/app',
+  path: '/app',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof PublicIndexRoute
   '/auth': typeof AuthRoute
   '/ui': typeof UiRoute
+  '/app': typeof AuthenticatedAppRoute
   '/about': typeof PublicAboutRoute
   '/community-guidelines': typeof PublicCommunityGuidelinesRoute
   '/contact': typeof PublicContactRoute
@@ -76,20 +88,23 @@ export interface FileRoutesByFullPath {
   '/terms': typeof PublicTermsRoute
 }
 export interface FileRoutesByTo {
+  '/': typeof PublicIndexRoute
   '/auth': typeof AuthRoute
   '/ui': typeof UiRoute
+  '/app': typeof AuthenticatedAppRoute
   '/about': typeof PublicAboutRoute
   '/community-guidelines': typeof PublicCommunityGuidelinesRoute
   '/contact': typeof PublicContactRoute
   '/privacy': typeof PublicPrivacyRoute
   '/terms': typeof PublicTermsRoute
-  '/': typeof PublicIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
+  '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
   '/_public': typeof PublicRouteRouteWithChildren
   '/auth': typeof AuthRoute
   '/ui': typeof UiRoute
+  '/_authenticated/app': typeof AuthenticatedAppRoute
   '/_public/about': typeof PublicAboutRoute
   '/_public/community-guidelines': typeof PublicCommunityGuidelinesRoute
   '/_public/contact': typeof PublicContactRoute
@@ -103,6 +118,7 @@ export interface FileRouteTypes {
     | '/'
     | '/auth'
     | '/ui'
+    | '/app'
     | '/about'
     | '/community-guidelines'
     | '/contact'
@@ -110,19 +126,22 @@ export interface FileRouteTypes {
     | '/terms'
   fileRoutesByTo: FileRoutesByTo
   to:
+    | '/'
     | '/auth'
     | '/ui'
+    | '/app'
     | '/about'
     | '/community-guidelines'
     | '/contact'
     | '/privacy'
     | '/terms'
-    | '/'
   id:
     | '__root__'
+    | '/_authenticated'
     | '/_public'
     | '/auth'
     | '/ui'
+    | '/_authenticated/app'
     | '/_public/about'
     | '/_public/community-guidelines'
     | '/_public/contact'
@@ -132,6 +151,7 @@ export interface FileRouteTypes {
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
+  AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
   PublicRouteRoute: typeof PublicRouteRouteWithChildren
   AuthRoute: typeof AuthRoute
   UiRoute: typeof UiRoute
@@ -158,6 +178,13 @@ declare module '@tanstack/react-router' {
       path: ''
       fullPath: '/'
       preLoaderRoute: typeof PublicRouteRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/_authenticated': {
+      id: '/_authenticated'
+      path: ''
+      fullPath: '/'
+      preLoaderRoute: typeof AuthenticatedRouteRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/_public/': {
@@ -202,8 +229,26 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PublicAboutRouteImport
       parentRoute: typeof PublicRouteRoute
     }
+    '/_authenticated/app': {
+      id: '/_authenticated/app'
+      path: '/app'
+      fullPath: '/app'
+      preLoaderRoute: typeof AuthenticatedAppRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
   }
 }
+
+interface AuthenticatedRouteRouteChildren {
+  AuthenticatedAppRoute: typeof AuthenticatedAppRoute
+}
+
+const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
+  AuthenticatedAppRoute: AuthenticatedAppRoute,
+}
+
+const AuthenticatedRouteRouteWithChildren =
+  AuthenticatedRouteRoute._addFileChildren(AuthenticatedRouteRouteChildren)
 
 interface PublicRouteRouteChildren {
   PublicAboutRoute: typeof PublicAboutRoute
@@ -228,6 +273,7 @@ const PublicRouteRouteWithChildren = PublicRouteRoute._addFileChildren(
 )
 
 const rootRouteChildren: RootRouteChildren = {
+  AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
   PublicRouteRoute: PublicRouteRouteWithChildren,
   AuthRoute: AuthRoute,
   UiRoute: UiRoute,
