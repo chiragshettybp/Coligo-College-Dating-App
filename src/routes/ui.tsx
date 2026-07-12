@@ -970,13 +970,134 @@ function UIShowcase() {
 
 
         {/* Toggles & settings */}
-        <Section title="Settings Controls" description="Toggles and switches for preferences.">
-          <GlassPanel style={{ padding: spacing[5] }}>
-            <SettingRow label="Push notifications" checked={notif} onChange={setNotif} />
-            <div style={{ height: 1, background: surfaces.borderSoft, margin: "14px 0" }} />
-            <SettingRow label="Dark mode" checked={dark} onChange={setDark} />
-          </GlassPanel>
+        <Section
+          title="Settings Controls"
+          description="Not a boring list — grouped cards, hairline separators, large touch areas, leading icon tiles and a full family of tactile controls. Switches, segmented, radio, checkbox, dropdown, slider, collapsible groups and a calm danger zone. One reusable system."
+        >
+          <div className="space-y-6">
+            <SettingsGroup label="Notifications" footnote="Choose what reaches you and how.">
+              <SettingsItem
+                icon={<BellRing style={{ width: 17, height: 17 }} />}
+                iconTint={colors.accent}
+                title="Push notifications"
+                subtitle="Matches, likes and messages"
+                trailing={<Switch checked={notif} onChange={setNotif} />}
+              />
+              <SettingsItem
+                icon={<Heart style={{ width: 17, height: 17 }} />}
+                iconTint={colors.accent}
+                title="Only new likes"
+                trailing={<Switch checked={likesOnly} onChange={setLikesOnly} />}
+              />
+              <SettingsItem
+                icon={<CheckCheck style={{ width: 17, height: 17 }} />}
+                title="Read receipts"
+                trailing={<Switch checked={readReceipts} onChange={setReadReceipts} tone="success" />}
+              />
+            </SettingsGroup>
+
+            <SettingsGroup label="Privacy">
+              <SettingsItem
+                icon={<ShieldCheck style={{ width: 17, height: 17 }} />}
+                iconTint={colors.success}
+                title="Private profile"
+                subtitle="Only matches can see your photos"
+                trailing={<Switch checked={setPrivate} onChange={setSetPrivate} />}
+              />
+              <SettingsItem
+                icon={<Zap style={{ width: 17, height: 17 }} />}
+                iconTint={colors.warning}
+                title="Show when online"
+                trailing={<Switch checked={showOnline} onChange={setShowOnline} />}
+              />
+              <SettingsItem
+                icon={<User style={{ width: 17, height: 17 }} />}
+                title="Blocked users"
+                value="3"
+                onClick={() => haptic("light")}
+              />
+            </SettingsGroup>
+
+            <SettingsGroup label="Appearance" footnote="Theme applies across the whole app.">
+              <RadioGroup
+                value={theme}
+                onChange={setTheme}
+                options={[
+                  { value: "light", label: "Light", subtitle: "Always bright" },
+                  { value: "dark", label: "Dark", subtitle: "Always dim" },
+                  { value: "system", label: "System", subtitle: "Match your device" },
+                ]}
+              />
+            </SettingsGroup>
+
+            <SettingsGroup label="Discovery">
+              <SettingsItem
+                icon={<MapPin style={{ width: 17, height: 17 }} />}
+                title="Maximum distance"
+                value={`${distance} km`}
+              />
+              <div style={{ padding: `${spacing[1]}px ${spacing[3]}px ${spacing[3]}px 56px` }}>
+                <Slider value={distance} onChange={setDistance} min={1} max={100} />
+              </div>
+              <SettingsItem
+                icon={<Sparkles style={{ width: 17, height: 17 }} />}
+                iconTint={colors.violet ?? colors.primary}
+                title="Age range"
+                trailing={
+                  <Dropdown
+                    value={ageRange}
+                    onChange={setAgeRange}
+                    options={[
+                      { value: "18-24", label: "18 – 24" },
+                      { value: "25-30", label: "25 – 30" },
+                      { value: "31-40", label: "31 – 40" },
+                    ]}
+                  />
+                }
+              />
+            </SettingsGroup>
+
+            <SettingsGroup label="Interests">
+              <div style={{ padding: `${spacing[2]}px ${spacing[3]}px` }}>
+                <div className="space-y-3">
+                  {["Music", "Coffee", "Travel", "Fitness"].map((label) => (
+                    <label key={label} className="flex items-center" style={{ gap: spacing[2] }}>
+                      <Checkbox
+                        checked={interests.includes(label)}
+                        onChange={() => toggleInterest(label)}
+                      />
+                      <span style={{ ...type.label, fontWeight: weights.medium, color: colors.textPrimary }}>
+                        {label}
+                      </span>
+                    </label>
+                  ))}
+                </div>
+              </div>
+            </SettingsGroup>
+
+            <CollapsibleGroup label="Advanced">
+              <SettingsItem title="Clear search history" onClick={() => haptic("light")} />
+              <div style={{ height: 1, background: surfaces.borderSoft, marginLeft: spacing[3] }} />
+              <SettingsItem title="Download my data" onClick={() => haptic("light")} />
+            </CollapsibleGroup>
+
+            <DangerZone>
+              <SettingsItem
+                danger
+                title="Deactivate account"
+                subtitle="Hide your profile temporarily"
+                onClick={() => haptic("warning")}
+              />
+              <SettingsItem
+                danger
+                title="Delete account"
+                subtitle="Permanently remove everything"
+                onClick={() => haptic("warning")}
+              />
+            </DangerZone>
+          </div>
         </Section>
+
 
         {/* Loaders */}
         <Section title="Loaders & Skeletons" description="Shimmer placeholders for loading states.">
