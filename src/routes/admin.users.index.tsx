@@ -33,6 +33,7 @@ import {
   type AdminUserSort,
 } from "@/lib/admin-users.functions";
 import { adminGuardQuery, logAdminAction } from "@/lib/admin.functions";
+import { seedDemoStudents } from "@/lib/admin-seed.functions";
 import { useAdminRealtime } from "@/lib/use-admin-realtime";
 import { Text, Badge, Skeleton, Avatar, Button, Chip } from "@/components/ds/glass";
 import { Card, EmptyStateCard } from "@/components/ds/card";
