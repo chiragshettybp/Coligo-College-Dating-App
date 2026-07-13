@@ -67,6 +67,14 @@ function ChatInbox() {
 
   const totalUnread = useMemo(() => chats.reduce((n, c) => n + c.unreadCount, 0), [chats]);
 
+  const newMatches = useMemo(
+    () =>
+      [...chats]
+        .filter((c) => !c.lastMessage)
+        .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()),
+    [chats],
+  );
+
   const visible = useMemo(() => {
     const q = search.trim().toLowerCase();
     const list = chats.filter((c) => {
@@ -114,6 +122,45 @@ function ChatInbox() {
               icon={<Search style={{ width: 18, height: 18 }} />}
             />
           </div>
+
+          {newMatches.length > 0 && !search.trim() && (
+            <div style={{ marginTop: spacing[4] }}>
+              <Text variant="headingSm" color={colors.textPrimary} style={{ marginBottom: spacing[2] }}>
+                New matches
+              </Text>
+              <div
+                className="flex"
+                style={{ gap: spacing[3], overflowX: "auto", paddingBottom: spacing[1] }}
+              >
+                {newMatches.map((c) => {
+                  const name = c.other.fullName ?? "Someone";
+                  return (
+                    <button
+                      key={c.chatId}
+                      onClick={() => navigate({ to: "/chat/$chatId", params: { chatId: c.chatId } })}
+                      className="ds-press flex flex-col items-center shrink-0"
+                      aria-label={`Start chat with ${name}`}
+                      style={{ gap: spacing[1], width: 72 }}
+                    >
+                      <Avatar
+                        src={c.other.photo ?? undefined}
+                        initials={name.slice(0, 1).toUpperCase()}
+                        size="lg"
+                        status={onlineIds.has(c.other.id) ? "online" : undefined}
+                        verified
+                      />
+                      <Text variant="caption" color={colors.textPrimary} truncate style={{ maxWidth: 72, textAlign: "center" }}>
+                        {name.split(" ")[0]}
+                      </Text>
+                      <Text variant="caption" tone="primary" truncate style={{ maxWidth: 72, textAlign: "center", fontWeight: weights.semibold }}>
+                        Start chat
+                      </Text>
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+          )}
 
           {visible.length === 0 ? (
             <div style={{ flex: 1, display: "flex", alignItems: "center", paddingTop: spacing[5] }}>
