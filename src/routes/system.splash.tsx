@@ -48,9 +48,9 @@ export const Route = createFileRoute("/system/splash")({
 });
 
 const TASK_TIMEOUT = 8000;
-const FADE_MS = 300; // cross-fade duration
+const FADE_MS = 700; // cinematic cross-fade duration
 const MAX_VIDEO_RETRIES = 2;
-const MAX_SPLASH_MS = 1000; // hard cap: never keep the user on the splash longer than this
+const MAX_SPLASH_MS = 15000; // safety cap only: never strand the user if the video stalls
 
 function SplashPage() {
   const navigate = useNavigate();
@@ -166,8 +166,9 @@ function SplashPage() {
     void initialize();
   }, [initialize, attempt]);
 
-  // Hard cap: after MAX_SPLASH_MS stop waiting for the intro video and hand off
-  // as soon as the destination is resolved, so startup feels instant (~1s).
+  // Safety cap only: if the intro video stalls for MAX_SPLASH_MS, stop waiting
+  // and hand off so the user is never stranded. Normal playback finishes first
+  // via onVideoEnded, so the full splash video plays.
   useEffect(() => {
     const t = window.setTimeout(() => {
       videoDoneRef.current = true;
