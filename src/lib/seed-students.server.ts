@@ -318,19 +318,9 @@ function pickInterests(prefs: string[], interests: NamedRow[], count: number, se
 
 // ------------------------------------------------------------------- Photos
 
-async function downloadPhotos(): Promise<Uint8Array[]> {
-  const buffers: Uint8Array[] = [];
-  for (const url of PHOTO_URLS) {
-    const res = await fetch(url);
-    if (!res.ok) throw new Error(`Failed to download ${url}: ${res.status}`);
-    buffers.push(new Uint8Array(await res.arrayBuffer()));
-  }
-  return buffers;
-}
-
 async function rebuildPhotos(
   userId: string,
-  photoBuffers: Uint8Array[],
+  fullName: string,
   count: number,
   seq: number,
 ): Promise<string> {
@@ -343,16 +333,14 @@ async function rebuildPhotos(
   if (oldPaths.length) await supabaseAdmin.storage.from(BUCKET).remove(oldPaths);
   await supabaseAdmin.from("photos").delete().eq("user_id", userId);
 
-  // Randomize which of the 3 images (with reuse) become this user's gallery.
-  const order = shuffle([0, 1, 2], seq);
   const rows: { user_id: string; storage_path: string; position: number; is_primary: boolean }[] = [];
   let primaryPath = "";
   for (let position = 0; position < count; position++) {
-    const imgIdx = order[position % order.length];
-    const path = `${userId}/${crypto.randomUUID()}.jpg`;
+    const svg = makeAvatarSvg(fullName, seq + position);
+    const path = `${userId}/${crypto.randomUUID()}.svg`;
     const { error: upErr } = await supabaseAdmin.storage
       .from(BUCKET)
-      .upload(path, photoBuffers[imgIdx], { contentType: "image/jpeg", upsert: true });
+      .upload(path, svg, { contentType: "image/svg+xml", upsert: true });
     if (upErr) throw new Error(`photo upload: ${upErr.message}`);
     rows.push({ user_id: userId, storage_path: path, position, is_primary: position === 0 });
     if (position === 0) primaryPath = path;
@@ -361,6 +349,7 @@ async function rebuildPhotos(
   if (insErr) throw new Error(`photo rows: ${insErr.message}`);
   return primaryPath;
 }
+
 
 
 
