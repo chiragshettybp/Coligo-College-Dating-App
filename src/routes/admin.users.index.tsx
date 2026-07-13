@@ -20,6 +20,7 @@ import {
   Trash2,
   Download,
   PauseCircle,
+  UserPlus,
   X,
 } from "lucide-react";
 
