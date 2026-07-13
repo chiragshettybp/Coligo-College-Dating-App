@@ -451,8 +451,8 @@ function HomeDashboardPage() {
             active={0}
             onChange={(i) => {
               if (i === 1) navigate({ to: "/discover" });
-              else if (i === 2) navigate({ to: "/matches" });
-              else if (i === 3) setComingSoon("Profile");
+              else if (i === 2) navigate({ to: "/chat" });
+              else if (i === 3) navigate({ to: "/profile" });
             }}
           />
         </div>
