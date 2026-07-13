@@ -287,21 +287,24 @@ function AdminColleges() {
 
       {selected.size > 0 && !bulk && (
         <Card padding={spacing[3]} style={{ marginTop: spacing[3], position: "sticky", top: spacing[2], zIndex: 5 }}>
-          <div className="flex flex-wrap items-center" style={{ gap: spacing[2] }}>
+          <div className="flex items-center" style={{ gap: spacing[2] }}>
             <Text variant="body" color={colors.textPrimary} style={{ fontWeight: 600 }}>{selected.size} selected</Text>
             <div style={{ flex: 1 }} />
-            <Button size="sm" variant="secondary" leftIcon={<CheckCircle2 style={ICSM} />} onClick={() => setBulk({ kind: "status", action: "active" })}>Enable</Button>
-            <Button size="sm" variant="secondary" leftIcon={<PauseCircle style={ICSM} />} onClick={() => setBulk({ kind: "status", action: "disabled" })}>Disable</Button>
-            <Button size="sm" variant="secondary" leftIcon={<Archive style={ICSM} />} onClick={() => setBulk({ kind: "status", action: "archived" })}>Archive</Button>
-            <Button size="sm" variant="secondary" leftIcon={<Compass style={ICSM} />} onClick={() => setBulk({ kind: "discovery", action: "on" })}>Discovery on</Button>
-            <Button size="sm" variant="secondary" leftIcon={<RotateCcw style={ICSM} />} onClick={() => setBulk({ kind: "discovery", action: "off" })}>Discovery off</Button>
-            <Button size="sm" variant="secondary" leftIcon={<Download style={ICSM} />} onClick={() => setBulk({ kind: "export" })}>Export</Button>
             <button onClick={() => setSelected(new Set())} aria-label="Clear selection" style={{ display: "flex", padding: 6, color: colors.textMuted, background: "transparent", border: "none", cursor: "pointer" }}>
               <X style={{ width: 18, height: 18 }} />
             </button>
           </div>
+          <div className="flex items-center" style={{ gap: spacing[2], marginTop: spacing[2], overflowX: "auto", flexWrap: "nowrap", paddingBottom: 4, WebkitOverflowScrolling: "touch" }}>
+            <span style={{ flexShrink: 0, display: "flex" }}><Button size="sm" variant="secondary" leftIcon={<CheckCircle2 style={ICSM} />} onClick={() => setBulk({ kind: "status", action: "active" })}>Enable</Button></span>
+            <span style={{ flexShrink: 0, display: "flex" }}><Button size="sm" variant="secondary" leftIcon={<PauseCircle style={ICSM} />} onClick={() => setBulk({ kind: "status", action: "disabled" })}>Disable</Button></span>
+            <span style={{ flexShrink: 0, display: "flex" }}><Button size="sm" variant="secondary" leftIcon={<Archive style={ICSM} />} onClick={() => setBulk({ kind: "status", action: "archived" })}>Archive</Button></span>
+            <span style={{ flexShrink: 0, display: "flex" }}><Button size="sm" variant="secondary" leftIcon={<Compass style={ICSM} />} onClick={() => setBulk({ kind: "discovery", action: "on" })}>Discovery on</Button></span>
+            <span style={{ flexShrink: 0, display: "flex" }}><Button size="sm" variant="secondary" leftIcon={<RotateCcw style={ICSM} />} onClick={() => setBulk({ kind: "discovery", action: "off" })}>Discovery off</Button></span>
+            <span style={{ flexShrink: 0, display: "flex" }}><Button size="sm" variant="secondary" leftIcon={<Download style={ICSM} />} onClick={() => setBulk({ kind: "export" })}>Export</Button></span>
+          </div>
         </Card>
       )}
+
 
       <div className="flex items-center justify-between" style={{ marginTop: spacing[4], marginBottom: spacing[2] }}>
         <Text variant="caption" tone="muted">
