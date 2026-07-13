@@ -138,11 +138,14 @@ function HomeDashboardPage() {
   useNotificationsRealtime(data.profile.id);
   const unread = useUnreadNotifications();
 
-  // Realtime: refresh dashboard when announcements change.
+  // Realtime: refresh dashboard when announcements or college data change.
   useEffect(() => {
     const channel = supabase
-      .channel("home:announcements")
+      .channel("home:dashboard")
       .on("postgres_changes", { event: "*", schema: "public", table: "announcements" }, () => {
+        queryClient.invalidateQueries({ queryKey: ["home", "dashboard"] });
+      })
+      .on("postgres_changes", { event: "*", schema: "public", table: "colleges" }, () => {
         queryClient.invalidateQueries({ queryKey: ["home", "dashboard"] });
       })
       .subscribe();
