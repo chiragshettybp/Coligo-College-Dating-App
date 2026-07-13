@@ -168,8 +168,21 @@ const PERSONAS: Persona[] = [
 
 // ------------------------------------------------------------------ Utilities
 
-function seedEmail(seq: number): string {
-  return `seed.student.${String(seq).padStart(2, "0")}@coligo.dev`;
+function seedEmail(seq: number, batch: string): string {
+  // Unique per run → every click creates a fresh, non-colliding batch of 10.
+  return `seed.student.${batch}.${String(seq).padStart(2, "0")}@coligo.dev`;
+}
+
+// Name pools to vary identities across batches so accounts feel distinct.
+const FIRST_NAMES_WOMEN = ["Ananya", "Meghana", "Sneha", "Divya", "Priya", "Aishwarya", "Nisha", "Kavya", "Shreya", "Pooja", "Rakshita", "Bhavana", "Nandini", "Anushka", "Deepika"];
+const FIRST_NAMES_MEN = ["Rohan", "Arjun", "Karthik", "Aditya", "Vikram", "Nikhil", "Manoj", "Sachin", "Praveen", "Harish", "Suraj", "Kiran", "Tejas", "Varun", "Akshay"];
+const LAST_NAMES = ["Kulkarni", "Shetty", "Rao", "Nair", "Patil", "Gowda", "Hegde", "Deshpande", "Menon", "Reddy", "Bhat", "Kamath", "Naik", "Pai", "Acharya"];
+
+function randomName(gender: Gender, seq: number): string {
+  const pool = gender === "man" ? FIRST_NAMES_MEN : FIRST_NAMES_WOMEN;
+  const first = pool[Math.floor(Math.random() * pool.length)];
+  const last = LAST_NAMES[Math.floor(Math.random() * LAST_NAMES.length)];
+  return `${first} ${last}`;
 }
 
 function dobForAge(age: number, seq: number): string {
@@ -322,19 +335,8 @@ async function rebuildPhotos(
   return primaryPath;
 }
 
-// ---------------------------------------------------------------- Auth lookup
 
-async function findUserIdByEmail(email: string): Promise<string | null> {
-  // listUsers is paginated; 10 fixed dev emails live comfortably in the first pages.
-  for (let page = 1; page <= 20; page++) {
-    const { data, error } = await supabaseAdmin.auth.admin.listUsers({ page, perPage: 1000 });
-    if (error) throw new Error(`listUsers: ${error.message}`);
-    const hit = data.users.find((u) => u.email?.toLowerCase() === email.toLowerCase());
-    if (hit) return hit.id;
-    if (data.users.length < 1000) break;
-  }
-  return null;
-}
+
 
 // -------------------------------------------------------------------- Runner
 
@@ -348,57 +350,55 @@ export async function seedStudents(): Promise<SeedSummary> {
   let created = 0;
   let updated = 0;
 
-  for (const persona of PERSONAS) {
-    const email = seedEmail(persona.seq);
-    let action: "created" | "updated" = "updated";
+  // Fresh, non-colliding batch each run → every click adds 10 new unique users.
+  const batch = crypto.randomUUID().slice(0, 8);
 
-    // 1. Auth account (create once, reuse thereafter) — identical to real signup.
-    let userId = await findUserIdByEmail(email);
-    if (!userId) {
-      const { data, error } = await supabaseAdmin.auth.admin.createUser({
-        email,
-        password: SEED_PASSWORD,
-        email_confirm: true,
-        user_metadata: { display_name: persona.fullName, seed: SEED_TAG },
-      });
-      if (error) throw new Error(`createUser ${email}: ${error.message}`);
-      userId = data.user.id;
-      action = "created";
-      created++;
-    } else {
-      updated++;
-      await supabaseAdmin.auth.admin.updateUserById(userId, {
-        user_metadata: { display_name: persona.fullName, seed: SEED_TAG },
-      });
-    }
+  for (const persona of PERSONAS) {
+    // Randomize identity + seeds so each batch feels distinct.
+    const rnd = Math.floor(Math.random() * 1_000_000) + persona.seq;
+    const fullName = randomName(persona.gender, persona.seq);
+    const email = seedEmail(persona.seq, batch);
+    const action: "created" | "updated" = "created";
+
+    // 1. Auth account — always new, identical to a real signup.
+    const { data, error } = await supabaseAdmin.auth.admin.createUser({
+      email,
+      password: SEED_PASSWORD,
+      email_confirm: true,
+      user_metadata: { display_name: fullName, seed: SEED_TAG },
+    });
+    if (error) throw new Error(`createUser ${email}: ${error.message}`);
+    const userId = data.user.id;
+    created++;
 
     // The handle_new_user trigger already inserted profiles/settings/user_roles.
     // 2. Reference selections.
-    const college = shuffle(ref.colleges, persona.seq)[0];
-    const department = pickDepartment(persona.preferredDepartments, ref.departments, persona.seq);
+    const college = shuffle(ref.colleges, rnd)[0];
+    const department = pickDepartment(persona.preferredDepartments, ref.departments, rnd);
     const interestIds = pickInterests(
       persona.preferredInterests,
       ref.interests,
       persona.preferredInterests.length,
-      persona.seq,
+      rnd,
     );
 
-    // 3. Photos (rebuilt each run for idempotency) → primary drives avatar_url.
-    const primaryPath = await rebuildPhotos(userId, photoBuffers, persona.photoCount, persona.seq);
+
+    // 3. Photos → primary drives avatar_url.
+    const primaryPath = await rebuildPhotos(userId, photoBuffers, persona.photoCount, rnd);
 
     // 4. Full profile — the exact fields the onboarding flow writes.
     const { error: pErr } = await supabaseAdmin
       .from("profiles")
       .update({
-        full_name: persona.fullName,
-        display_name: persona.fullName,
+        full_name: fullName,
+        display_name: fullName,
         gender: persona.gender,
         looking_for: persona.lookingFor,
-        date_of_birth: dobForAge(persona.age, persona.seq),
+        date_of_birth: dobForAge(persona.age, rnd),
         college_id: college.id,
         department_id: department?.id ?? null,
         graduation_year: graduationYearForAge(persona.age),
-        semester: semesterForAge(persona.age, persona.seq),
+        semester: semesterForAge(persona.age, rnd),
         bio: persona.bio,
         avatar_url: primaryPath,
         verification_status: "verified",
@@ -409,6 +409,7 @@ export async function seedStudents(): Promise<SeedSummary> {
       })
       .eq("id", userId);
     if (pErr) throw new Error(`profile ${email}: ${pErr.message}`);
+
 
     // 5. Interests (rebuilt each run for idempotency).
     await supabaseAdmin.from("user_interests").delete().eq("user_id", userId);
@@ -428,7 +429,7 @@ export async function seedStudents(): Promise<SeedSummary> {
       seq: persona.seq,
       email,
       userId,
-      fullName: persona.fullName,
+      fullName,
       college: college.name,
       department: department?.name ?? null,
       photos: persona.photoCount,
