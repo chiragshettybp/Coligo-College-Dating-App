@@ -213,3 +213,51 @@ export const systemHealthQuery = () =>
   queryOptions({ queryKey: ["admin", "health"], queryFn: () => getSystemHealth(), refetchInterval: 30_000 });
 export const adminGuardQuery = () =>
   queryOptions({ queryKey: ["admin", "guard"], queryFn: () => isAdmin(), retry: 2, staleTime: 60_000 });
+
+// --------------------------------------------------------------- admin profile
+export type AdminProfile = {
+  id: string;
+  name: string;
+  phone: string | null;
+  avatarUrl: string | null;
+  role: string;
+  appVersion: string | null;
+};
+
+export const getAdminProfile = createServerFn({ method: "GET" })
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ context }): Promise<AdminProfile> => {
+    const { supabase, userId } = context;
+    const { data: profile } = await supabase
+      .from("profiles")
+      .select("display_name, full_name, phone, avatar_url")
+      .eq("id", userId)
+      .maybeSingle();
+    const { data: roles } = await supabase
+      .from("user_roles")
+      .select("role")
+      .eq("user_id", userId);
+    const roleList = (roles ?? []).map((r) => r.role as string);
+    const role = roleList.includes("admin")
+      ? "admin"
+      : roleList.includes("moderator")
+        ? "moderator"
+        : roleList[0] ?? "user";
+    const { data: ver } = await supabase
+      .from("app_versions")
+      .select("version")
+      .order("released_at", { ascending: false })
+      .limit(1)
+      .maybeSingle();
+    return {
+      id: userId,
+      name: profile?.full_name || profile?.display_name || "Administrator",
+      phone: profile?.phone ?? null,
+      avatarUrl: profile?.avatar_url ?? null,
+      role,
+      appVersion: ver?.version ?? null,
+    };
+  });
+
+export const adminProfileQuery = () =>
+  queryOptions({ queryKey: ["admin", "profile"], queryFn: () => getAdminProfile(), staleTime: 60_000 });
