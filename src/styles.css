@@ -137,11 +137,27 @@
     border-color: var(--color-border);
   }
 
+  html {
+    /* Prevent iOS auto-zoom on text and keep sizing stable in landscape. */
+    -webkit-text-size-adjust: 100%;
+    text-size-adjust: 100%;
+  }
+
   body {
     background-color: var(--color-background);
     color: var(--color-foreground);
+    /* Global guard against horizontal overflow across every screen. */
+    overflow-x: hidden;
+    /* Kill the grey tap flash on iOS/Android for a native feel. */
+    -webkit-tap-highlight-color: transparent;
   }
 }
+
+/* Shared safe-area helpers — opt-in via className, no layout side effects. */
+@utility pt-safe { padding-top: env(safe-area-inset-top); }
+@utility pb-safe { padding-bottom: env(safe-area-inset-bottom); }
+@utility pl-safe { padding-left: env(safe-area-inset-left); }
+@utility pr-safe { padding-right: env(safe-area-inset-right); }
 
 /* Design-system motion utilities (shared across all screens). */
 @keyframes ds-shimmer {
