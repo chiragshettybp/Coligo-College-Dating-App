@@ -215,6 +215,7 @@ function RootComponent() {
 
   return (
     <QueryClientProvider client={queryClient}>
+      <SkipToContent />
       {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
       <AnimatedOutlet />
       <RouteAnnouncer />
