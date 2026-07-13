@@ -30,6 +30,7 @@ import {
   BellRing,
   ShieldAlert,
   ChevronRight,
+  Settings as SettingsIcon,
 } from "lucide-react";
 
 import { supabase } from "@/integrations/supabase/client";
