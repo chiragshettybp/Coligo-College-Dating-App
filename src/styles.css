@@ -450,7 +450,7 @@
    Keyed on pathname in __root so it replays per navigation. GPU-friendly. */
 @keyframes ds-page-in {
   from { opacity: 0; transform: translateY(6px); }
-  to { opacity: 1; transform: translateY(0); }
+  to { opacity: 1; transform: none; }
 }
 .ds-page-in { animation: ds-page-in 0.32s cubic-bezier(0, 0, 0.2, 1) both; }
 @media (prefers-reduced-motion: reduce) {
