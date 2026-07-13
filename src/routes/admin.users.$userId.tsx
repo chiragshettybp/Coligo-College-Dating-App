@@ -368,7 +368,12 @@ function Actions({ u, onDone }: { u: AdminUserDetail; onDone: () => void }) {
         case "verify": await setVerification({ data: { userId: u.id, status: "verified" } }); break;
         case "unverify": await setVerification({ data: { userId: u.id, status: "unverified" } }); break;
         case "pending": await setVerification({ data: { userId: u.id, status: "pending" } }); break;
-        case "reset_discovery": await resetDiscovery({ data: { userId: u.id } }); break;
+        case "reset_discovery": {
+          const r = await resetDiscovery({ data: { userId: u.id } });
+          setMsg({ ok: true, text: `Discovery re-enabled — ${r.swipesCleared} swipe${r.swipesCleared === 1 ? "" : "s"} cleared, deck refreshed.` });
+          onDone();
+          return;
+        }
         case "force_logout": await forceLogout({ data: { userId: u.id } }); break;
         case "clear_reports": await clearReports({ data: { userId: u.id } }); break;
         case "purge":
@@ -397,7 +402,7 @@ function Actions({ u, onDone }: { u: AdminUserDetail; onDone: () => void }) {
     verify: { label: "Verify user", desc: "Mark this account as verified.", icon: <ShieldCheck style={I} /> },
     unverify: { label: "Remove verification", desc: "Mark this account as unverified.", icon: <ShieldCheck style={I} /> },
     pending: { label: "Set verification pending", desc: "Mark verification as pending review.", icon: <Clock style={I} /> },
-    reset_discovery: { label: "Reset discovery", desc: "Re-enable discovery and profile visibility.", icon: <Radio style={I} /> },
+    reset_discovery: { label: "Reset discovery", desc: "Re-enable discovery, restore profile visibility and clear swipe history so the deck refills.", icon: <Radio style={I} /> },
     force_logout: { label: "Force logout", desc: "Revoke every active session; the user must sign in again.", icon: <LogOut style={I} /> },
     clear_reports: { label: "Clear reports", desc: "Mark all open reports against this user as resolved.", icon: <Flag style={I} /> },
     purge: { label: "Permanently delete user", desc: "Irreversibly erase this account and everything linked to it — profile, photos, matches, chats, swipes and reports. An audit note is kept.", danger: true, icon: <Trash2 style={I} /> },
