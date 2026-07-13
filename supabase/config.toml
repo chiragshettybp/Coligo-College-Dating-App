@@ -1,9 +1,1 @@
 project_id = "wlclayiqmsxxssmgpfej"
-
-# Phone numbers are represented as email aliases (e.g. 91XXXXXXXXXX@campusmatch.app)
-# which have no real inbox. Confirmation emails must stay OFF, otherwise every
-# signup attempts to send a confirmation email and quickly triggers
-# "over_email_send_rate_limit" (HTTP 429 "Too many attempts").
-[auth.email]
-enable_confirmations = false
-enable_signup = true
