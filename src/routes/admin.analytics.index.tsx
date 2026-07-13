@@ -63,7 +63,7 @@ import { Text, Button, Chip, Skeleton } from "@/components/ds/glass";
 import { Card, StatCard, EmptyStateCard } from "@/components/ds/card";
 import { TopBar } from "@/components/ds/navigation";
 import { AreaTrend, BarSeries, Donut, Heatmap, LeaderboardList } from "@/components/admin/charts";
-import { colors, spacing } from "@/lib/ds";
+import { colors, spacing, surfaces } from "@/lib/ds";
 import { haptic } from "@/lib/haptics";
 
 const I = { width: 16, height: 16 } as const;
@@ -471,11 +471,11 @@ function Analytics() {
 // ---------------------------------------------------------------- helpers
 const dateInputStyle: React.CSSProperties = {
   borderRadius: 10,
-  border: `1px solid ${colors.border}`,
+  border: `1px solid ${surfaces.border}`,
   padding: "8px 10px",
   fontSize: 13,
   color: colors.textPrimary,
-  background: colors.surface,
+  background: surfaces.glassSoft,
 };
 
 function Select({
@@ -497,11 +497,11 @@ function Select({
         onChange={(e) => onChange(e.target.value)}
         style={{
           borderRadius: 10,
-          border: `1px solid ${colors.border}`,
+          border: `1px solid ${surfaces.border}`,
           padding: "8px 10px",
           fontSize: 13,
           color: colors.textPrimary,
-          background: colors.surface,
+          background: surfaces.glassSoft,
         }}
       >
         {options.map((o) => (
