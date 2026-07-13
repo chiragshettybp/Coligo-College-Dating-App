@@ -10,11 +10,12 @@ import { queryOptions } from "@tanstack/react-query";
 import { z } from "zod";
 
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
+import type { Json } from "@/integrations/supabase/types";
 
 // ------------------------------------------------------------------- types
-export type SettingsBundle = Record<string, unknown> & {
-  maintenance: Record<string, unknown> | null;
-  feature_flags: { key: string; enabled: boolean; payload: Record<string, unknown> }[];
+export type SettingsBundle = { [key: string]: Json | undefined } & {
+  maintenance: Json | null;
+  feature_flags: { key: string; enabled: boolean; payload: Json }[];
 };
 
 export type SettingsOverview = {
