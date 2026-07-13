@@ -166,6 +166,16 @@ function SplashPage() {
     void initialize();
   }, [initialize, attempt]);
 
+  // Hard cap: after MAX_SPLASH_MS stop waiting for the intro video and hand off
+  // as soon as the destination is resolved, so startup feels instant (~1s).
+  useEffect(() => {
+    const t = window.setTimeout(() => {
+      videoDoneRef.current = true;
+      maybeHandOff();
+    }, MAX_SPLASH_MS);
+    return () => window.clearTimeout(t);
+  }, [maybeHandOff, attempt]);
+
   // Auto-retry every 6s while offline.
   useEffect(() => {
     if (!offline) return;
