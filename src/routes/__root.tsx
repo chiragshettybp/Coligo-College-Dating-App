@@ -29,6 +29,37 @@ function AnimatedOutlet() {
   );
 }
 
+/** Announces route changes to screen readers via a polite live region. */
+function RouteAnnouncer() {
+  const pathname = useRouterState({ select: (s) => s.location.pathname });
+  const [message, setMessage] = useState("");
+  useEffect(() => {
+    const id = window.setTimeout(() => {
+      setMessage(document.title || `Navigated to ${pathname}`);
+    }, 120);
+    return () => window.clearTimeout(id);
+  }, [pathname]);
+  return (
+    <div
+      aria-live="polite"
+      aria-atomic="true"
+      style={{
+        position: "absolute",
+        width: 1,
+        height: 1,
+        padding: 0,
+        margin: -1,
+        overflow: "hidden",
+        clip: "rect(0 0 0 0)",
+        whiteSpace: "nowrap",
+        border: 0,
+      }}
+    >
+      {message}
+    </div>
+  );
+}
+
 function ErrorComponent({ error, reset }: { error: Error; reset: () => void }) {
   return <ServerErrorView error={error} reset={reset} />;
 }
