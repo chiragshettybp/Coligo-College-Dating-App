@@ -21,12 +21,39 @@ const BUCKET = "profile-photos";
 const SEED_TAG = "coligo-dev-seed-student";
 const SEED_PASSWORD = "Coligo#Seed2026";
 
-// Shared profile photos — downloaded once, reused/randomized across accounts.
-const PHOTO_URLS = [
-  "https://i.postimg.cc/HL8TJ0GL/a3fcdc42d51181b6cad2769d4f62b834.jpg",
-  "https://i.postimg.cc/XvBnZKMr/e473f6d24c389583c2e015b4e83e4bfd.jpg",
-  "https://i.postimg.cc/bvSqG0XD/e7b0928f87c81191f431cddab45bcd31.jpg",
+// Avatars are generated in-code (SVG) — no external network fetch, so seeding
+// is reliable in the server runtime where outbound egress may be restricted.
+const AVATAR_GRADIENTS: [string, string][] = [
+  ["#FF7A9A", "#FF3B7F"],
+  ["#7AC8FF", "#3B82F6"],
+  ["#FFD37A", "#FF9F3B"],
+  ["#9AE6B4", "#22C55E"],
+  ["#C4B5FD", "#8B5CF6"],
+  ["#FDA4AF", "#F43F5E"],
+  ["#67E8F9", "#06B6D4"],
 ];
+
+function initials(fullName: string): string {
+  const parts = fullName.trim().split(/\s+/);
+  const first = parts[0]?.[0] ?? "?";
+  const last = parts.length > 1 ? parts[parts.length - 1][0] : "";
+  return (first + last).toUpperCase();
+}
+
+function makeAvatarSvg(fullName: string, variant: number): Uint8Array {
+  const [from, to] = AVATAR_GRADIENTS[variant % AVATAR_GRADIENTS.length];
+  const label = initials(fullName);
+  const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="600" height="800" viewBox="0 0 600 800">
+  <defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1">
+    <stop offset="0" stop-color="${from}"/><stop offset="1" stop-color="${to}"/>
+  </linearGradient></defs>
+  <rect width="600" height="800" fill="url(#g)"/>
+  <circle cx="300" cy="300" r="150" fill="rgba(255,255,255,0.25)"/>
+  <text x="300" y="300" font-family="system-ui, -apple-system, sans-serif" font-size="150" font-weight="700" fill="#ffffff" text-anchor="middle" dominant-baseline="central">${label}</text>
+</svg>`;
+  return new TextEncoder().encode(svg);
+}
+
 
 type Gender = Database["public"]["Enums"]["gender_option"];
 type LookingFor = Database["public"]["Enums"]["looking_for_option"];
