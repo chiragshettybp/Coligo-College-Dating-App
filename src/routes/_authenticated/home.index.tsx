@@ -161,10 +161,10 @@ function HomeDashboardPage() {
     () => [
       { icon: (p) => <Heart {...p} fill="currentColor" />, label: "Home" },
       { icon: (p) => <Flame {...p} />, label: "Discover" },
-      { icon: (p) => <Sparkles {...p} />, label: "Matches", badge: data.matches.mine || undefined },
+      { icon: (p) => <MessageCircle {...p} />, label: "Chat" },
       { icon: (p) => <UserRound {...p} />, label: "Profile" },
     ],
-    [data.matches.mine],
+    [],
   );
 
   const gs = data.college ? genderSummary(data.college.gender) : null;
