@@ -151,6 +151,27 @@ function AdminUsers() {
   const [bulk, setBulk] = useState<BulkMode>(null);
   const [running, setRunning] = useState(false);
   const [result, setResult] = useState<{ ok: number; fail: number } | null>(null);
+  const [seeding, setSeeding] = useState(false);
+  const [seedMsg, setSeedMsg] = useState<{ ok: boolean; text: string } | null>(null);
+
+  const onSeedDemo = async () => {
+    if (seeding) return;
+    haptic("medium");
+    setSeeding(true);
+    setSeedMsg(null);
+    try {
+      const summary = await seedDemoStudents();
+      setSeedMsg({
+        ok: true,
+        text: `Added ${summary.total} demo students (${summary.created} created, ${summary.updated} updated).`,
+      });
+      qc.invalidateQueries({ queryKey: ["admin"] });
+    } catch (e) {
+      setSeedMsg({ ok: false, text: e instanceof Error ? e.message : "Failed to add demo users." });
+    } finally {
+      setSeeding(false);
+    }
+  };
 
   useEffect(() => {
     const id = setTimeout(() => setDebounced(term), 300);
