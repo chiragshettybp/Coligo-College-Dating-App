@@ -440,7 +440,7 @@ export async function seedStudents(): Promise<SeedSummary> {
       seq: persona.seq,
       email,
       userId,
-      fullName: persona.fullName,
+      fullName,
       college: college.name,
       department: department?.name ?? null,
       photos: persona.photoCount,
