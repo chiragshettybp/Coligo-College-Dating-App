@@ -69,7 +69,26 @@ export const Route = createFileRoute("/admin/dashboard")({
 // -------------------------------------------------------------------- guard
 function AdminDashboardGuard() {
   const navigate = useNavigate();
-  const { data: allowed, isLoading, isError, refetch } = useQuery(adminGuardQuery());
+  const [hasSession, setHasSession] = useState<boolean | null>(null);
+  const { data: allowed, isLoading, isError, refetch } = useQuery({
+    ...adminGuardQuery(),
+    enabled: hasSession === true,
+  });
+
+  // No Supabase session → not signed in. Redirect to login instead of calling
+  // the admin server fn (which would reject with "No authorization header").
+  useEffect(() => {
+    let active = true;
+    supabase.auth.getSession().then(({ data }) => {
+      if (!active) return;
+      const signedIn = !!data.session;
+      setHasSession(signedIn);
+      if (!signedIn) navigate({ to: "/admin/login", replace: true });
+    });
+    return () => {
+      active = false;
+    };
+  }, [navigate]);
 
   useEffect(() => {
     // Only bounce to login on an explicit "not an admin" result. Transient
@@ -78,7 +97,7 @@ function AdminDashboardGuard() {
     if (!isLoading && allowed === false) navigate({ to: "/admin/login", replace: true });
   }, [isLoading, allowed, navigate]);
 
-  if (isLoading) return <DashboardSkeleton />;
+  if (hasSession === null || hasSession === false || isLoading) return <DashboardSkeleton />;
   if (isError) {
     return (
       <div className="mx-auto text-center" style={{ maxWidth: 420, padding: spacing[6] }}>
@@ -103,6 +122,7 @@ function AdminDashboardGuard() {
       </div>
     );
   }
+
   if (!allowed) return null;
   return <AdminDashboard />;
 }
