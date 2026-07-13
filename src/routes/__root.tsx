@@ -7,7 +7,7 @@ import {
   HeadContent,
   Scripts,
 } from "@tanstack/react-router";
-import { useEffect, type ReactNode } from "react";
+import { useEffect, useState, type ReactNode } from "react";
 
 import appCss from "../styles.css?url";
 import { supabase } from "@/integrations/supabase/client";
@@ -25,6 +25,37 @@ function AnimatedOutlet() {
   return (
     <div key={pathname} className="ds-page-in">
       <Outlet />
+    </div>
+  );
+}
+
+/** Announces route changes to screen readers via a polite live region. */
+function RouteAnnouncer() {
+  const pathname = useRouterState({ select: (s) => s.location.pathname });
+  const [message, setMessage] = useState("");
+  useEffect(() => {
+    const id = window.setTimeout(() => {
+      setMessage(document.title || `Navigated to ${pathname}`);
+    }, 120);
+    return () => window.clearTimeout(id);
+  }, [pathname]);
+  return (
+    <div
+      aria-live="polite"
+      aria-atomic="true"
+      style={{
+        position: "absolute",
+        width: 1,
+        height: 1,
+        padding: 0,
+        margin: -1,
+        overflow: "hidden",
+        clip: "rect(0 0 0 0)",
+        whiteSpace: "nowrap",
+        border: 0,
+      }}
+    >
+      {message}
     </div>
   );
 }
@@ -146,6 +177,7 @@ function RootComponent() {
     <QueryClientProvider client={queryClient}>
       {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
       <AnimatedOutlet />
+      <RouteAnnouncer />
       <Toaster />
     </QueryClientProvider>
   );
