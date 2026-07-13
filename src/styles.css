@@ -150,6 +150,9 @@
     overflow-x: hidden;
     /* Kill the grey tap flash on iOS/Android for a native feel. */
     -webkit-tap-highlight-color: transparent;
+    /* Contain overscroll so browser pull-to-refresh and scroll-chaining
+       don't fire mid-gesture — makes scrolling feel like a native app. */
+    overscroll-behavior-y: contain;
   }
 }
 
