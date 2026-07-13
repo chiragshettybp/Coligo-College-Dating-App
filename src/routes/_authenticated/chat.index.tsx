@@ -67,6 +67,14 @@ function ChatInbox() {
 
   const totalUnread = useMemo(() => chats.reduce((n, c) => n + c.unreadCount, 0), [chats]);
 
+  const newMatches = useMemo(
+    () =>
+      [...chats]
+        .filter((c) => !c.lastMessage)
+        .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()),
+    [chats],
+  );
+
   const visible = useMemo(() => {
     const q = search.trim().toLowerCase();
     const list = chats.filter((c) => {
