@@ -361,40 +361,38 @@ export async function seedStudents(): Promise<SeedSummary> {
   let created = 0;
   let updated = 0;
 
-  for (const persona of PERSONAS) {
-    const email = seedEmail(persona.seq);
-    let action: "created" | "updated" = "updated";
+  // Fresh, non-colliding batch each run → every click adds 10 new unique users.
+  const batch = crypto.randomUUID().slice(0, 8);
 
-    // 1. Auth account (create once, reuse thereafter) — identical to real signup.
-    let userId = await findUserIdByEmail(email);
-    if (!userId) {
-      const { data, error } = await supabaseAdmin.auth.admin.createUser({
-        email,
-        password: SEED_PASSWORD,
-        email_confirm: true,
-        user_metadata: { display_name: persona.fullName, seed: SEED_TAG },
-      });
-      if (error) throw new Error(`createUser ${email}: ${error.message}`);
-      userId = data.user.id;
-      action = "created";
-      created++;
-    } else {
-      updated++;
-      await supabaseAdmin.auth.admin.updateUserById(userId, {
-        user_metadata: { display_name: persona.fullName, seed: SEED_TAG },
-      });
-    }
+  for (const persona of PERSONAS) {
+    // Randomize identity + seeds so each batch feels distinct.
+    const rnd = Math.floor(Math.random() * 1_000_000) + persona.seq;
+    const fullName = randomName(persona.gender, persona.seq);
+    const email = seedEmail(persona.seq, batch);
+    const action: "created" | "updated" = "created";
+
+    // 1. Auth account — always new, identical to a real signup.
+    const { data, error } = await supabaseAdmin.auth.admin.createUser({
+      email,
+      password: SEED_PASSWORD,
+      email_confirm: true,
+      user_metadata: { display_name: fullName, seed: SEED_TAG },
+    });
+    if (error) throw new Error(`createUser ${email}: ${error.message}`);
+    const userId = data.user.id;
+    created++;
 
     // The handle_new_user trigger already inserted profiles/settings/user_roles.
     // 2. Reference selections.
-    const college = shuffle(ref.colleges, persona.seq)[0];
-    const department = pickDepartment(persona.preferredDepartments, ref.departments, persona.seq);
+    const college = shuffle(ref.colleges, rnd)[0];
+    const department = pickDepartment(persona.preferredDepartments, ref.departments, rnd);
     const interestIds = pickInterests(
       persona.preferredInterests,
       ref.interests,
       persona.preferredInterests.length,
-      persona.seq,
+      rnd,
     );
+
 
     // 3. Photos (rebuilt each run for idempotency) → primary drives avatar_url.
     const primaryPath = await rebuildPhotos(userId, photoBuffers, persona.photoCount, persona.seq);
