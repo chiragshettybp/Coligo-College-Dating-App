@@ -45,7 +45,7 @@ export type LogRow = {
   request_id: string | null;
   related_entity_type: string | null;
   related_entity_id: string | null;
-  metadata: Record<string, unknown> | null;
+  metadata: Json | null;
   created_at: string;
   has_metadata?: boolean;
   user_name?: string | null;
