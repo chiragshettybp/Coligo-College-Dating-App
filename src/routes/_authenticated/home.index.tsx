@@ -552,11 +552,15 @@ function HomeSkeleton() {
   );
 }
 
-function HomeError() {
+function HomeError({ reset }: { error: Error; reset: () => void }) {
   const router = useRouter();
+  const onRetry = () => {
+    router.invalidate();
+    reset();
+  };
   return (
     <Shell>
-      <EmptyStateFromPreset preset="offline" onPrimary={() => router.invalidate()} />
+      <EmptyStateFromPreset preset="offline" onPrimary={onRetry} />
     </Shell>
   );
 }
