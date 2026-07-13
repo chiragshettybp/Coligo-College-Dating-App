@@ -21,6 +21,7 @@ import {
   Sparkles,
   Building2,
   UserRound,
+  MessageCircle,
 } from "lucide-react";
 
 import { supabase } from "@/integrations/supabase/client";
