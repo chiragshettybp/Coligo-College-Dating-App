@@ -40,8 +40,8 @@ export type SettingsHistoryEntry = {
   id: string;
   category: string;
   setting_key: string | null;
-  previous_value: Record<string, unknown> | null;
-  new_value: Record<string, unknown> | null;
+  previous_value: Json | null;
+  new_value: Json | null;
   reason: string | null;
   created_at: string;
   admin_name: string;
@@ -118,32 +118,32 @@ export const getSettingsHistory = createServerFn({ method: "GET" })
 export const updateSettings = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((d: unknown) => updateSchema.parse(d))
-  .handler(async ({ data, context }): Promise<Record<string, unknown>> => {
+  .handler(async ({ data, context }): Promise<Json> => {
     const { data: res, error } = await context.supabase.rpc("admin_settings_update", {
       _category: data.category,
       _values: data.values as never,
       _reason: data.reason ?? undefined,
     });
     if (error) throw new Error(error.message);
-    return res as unknown as Record<string, unknown>;
+    return res as unknown as Json;
   });
 
 export const resetSettings = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((d: unknown) => resetSchema.parse(d))
-  .handler(async ({ data, context }): Promise<Record<string, unknown>> => {
+  .handler(async ({ data, context }): Promise<Json> => {
     const { data: res, error } = await context.supabase.rpc("admin_settings_reset", {
       _category: data.category,
       _reason: data.reason ?? undefined,
     });
     if (error) throw new Error(error.message);
-    return res as unknown as Record<string, unknown>;
+    return res as unknown as Json;
   });
 
 export const setFeatureFlag = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((d: unknown) => flagSchema.parse(d))
-  .handler(async ({ data, context }): Promise<Record<string, unknown>> => {
+  .handler(async ({ data, context }): Promise<Json> => {
     const { data: res, error } = await context.supabase.rpc("admin_feature_flag_set", {
       _key: data.key,
       _enabled: data.enabled,
@@ -151,39 +151,39 @@ export const setFeatureFlag = createServerFn({ method: "POST" })
       _reason: data.reason ?? undefined,
     });
     if (error) throw new Error(error.message);
-    return res as unknown as Record<string, unknown>;
+    return res as unknown as Json;
   });
 
 export const updateMaintenance = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((d: unknown) => maintenanceSchema.parse(d))
-  .handler(async ({ data, context }): Promise<Record<string, unknown>> => {
+  .handler(async ({ data, context }): Promise<Json> => {
     const { data: res, error } = await context.supabase.rpc("admin_maintenance_update", {
       _values: data.values as never,
       _reason: data.reason ?? undefined,
     });
     if (error) throw new Error(error.message);
-    return res as unknown as Record<string, unknown>;
+    return res as unknown as Json;
   });
 
 export const exportSettings = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
-  .handler(async ({ context }): Promise<Record<string, unknown>> => {
+  .handler(async ({ context }): Promise<Json> => {
     const { data, error } = await context.supabase.rpc("admin_settings_export");
     if (error) throw new Error(error.message);
-    return data as unknown as Record<string, unknown>;
+    return data as unknown as Json;
   });
 
 export const importSettings = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((d: unknown) => importSchema.parse(d))
-  .handler(async ({ data, context }): Promise<Record<string, unknown>> => {
+  .handler(async ({ data, context }): Promise<Json> => {
     const { data: res, error } = await context.supabase.rpc("admin_settings_import", {
       _payload: data.payload as never,
       _reason: data.reason ?? undefined,
     });
     if (error) throw new Error(error.message);
-    return res as unknown as Record<string, unknown>;
+    return res as unknown as Json;
   });
 
 // ------------------------------------------------------------- query options
