@@ -398,8 +398,8 @@ export async function seedStudents(): Promise<SeedSummary> {
     );
 
 
-    // 3. Photos → primary drives avatar_url.
-    const primaryPath = await rebuildPhotos(userId, photoBuffers, persona.photoCount, rnd);
+    // 3. Photos (generated in-code) → primary drives avatar_url.
+    const primaryPath = await rebuildPhotos(userId, fullName, persona.photoCount, rnd);
 
     // 4. Full profile — the exact fields the onboarding flow writes.
     const { error: pErr } = await supabaseAdmin
