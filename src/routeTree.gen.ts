@@ -97,6 +97,7 @@ import { Route as AuthenticatedEmptyNoMatchesRouteImport } from './routes/_authe
 import { Route as AuthenticatedEmptyNoChatsRouteImport } from './routes/_authenticated/empty.no-chats'
 import { Route as AuthenticatedDiscoverNoMoreProfilesRouteImport } from './routes/_authenticated/discover.no-more-profiles'
 import { Route as AuthenticatedChatChatIdRouteImport } from './routes/_authenticated/chat.$chatId'
+import { Route as ApiPublicSeedStudentsRouteImport } from './routes/api/public/seed/students'
 import { Route as AdminCollegesCollegeIdEditRouteImport } from './routes/admin.colleges.$collegeId.edit'
 import { Route as AuthenticatedNotificationsNotificationIdDeleteRouteImport } from './routes/_authenticated/notifications.$notificationId.delete'
 import { Route as AuthenticatedMatchesMatchIdUnmatchRouteImport } from './routes/_authenticated/matches.$matchId.unmatch'
@@ -579,6 +580,11 @@ const AuthenticatedChatChatIdRoute = AuthenticatedChatChatIdRouteImport.update({
   path: '/$chatId',
   getParentRoute: () => AuthenticatedChatRoute,
 } as any)
+const ApiPublicSeedStudentsRoute = ApiPublicSeedStudentsRouteImport.update({
+  id: '/api/public/seed/students',
+  path: '/api/public/seed/students',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AdminCollegesCollegeIdEditRoute =
   AdminCollegesCollegeIdEditRouteImport.update({
     id: '/edit',
@@ -764,6 +770,7 @@ export interface FileRoutesByFullPath {
   '/matches/$matchId/unmatch': typeof AuthenticatedMatchesMatchIdUnmatchRoute
   '/notifications/$notificationId/delete': typeof AuthenticatedNotificationsNotificationIdDeleteRoute
   '/admin/colleges/$collegeId/edit': typeof AdminCollegesCollegeIdEditRoute
+  '/api/public/seed/students': typeof ApiPublicSeedStudentsRoute
   '/settings/blocked-users/$userId/unblock': typeof AuthenticatedSettingsBlockedUsersUserIdUnblockRoute
 }
 export interface FileRoutesByTo {
@@ -859,6 +866,7 @@ export interface FileRoutesByTo {
   '/matches/$matchId/unmatch': typeof AuthenticatedMatchesMatchIdUnmatchRoute
   '/notifications/$notificationId/delete': typeof AuthenticatedNotificationsNotificationIdDeleteRoute
   '/admin/colleges/$collegeId/edit': typeof AdminCollegesCollegeIdEditRoute
+  '/api/public/seed/students': typeof ApiPublicSeedStudentsRoute
   '/settings/blocked-users/$userId/unblock': typeof AuthenticatedSettingsBlockedUsersUserIdUnblockRoute
 }
 export interface FileRoutesById {
@@ -964,6 +972,7 @@ export interface FileRoutesById {
   '/_authenticated/matches/$matchId/unmatch': typeof AuthenticatedMatchesMatchIdUnmatchRoute
   '/_authenticated/notifications/$notificationId/delete': typeof AuthenticatedNotificationsNotificationIdDeleteRoute
   '/admin/colleges/$collegeId/edit': typeof AdminCollegesCollegeIdEditRoute
+  '/api/public/seed/students': typeof ApiPublicSeedStudentsRoute
   '/_authenticated/settings/blocked-users/$userId/unblock': typeof AuthenticatedSettingsBlockedUsersUserIdUnblockRoute
 }
 export interface FileRouteTypes {
@@ -1068,6 +1077,7 @@ export interface FileRouteTypes {
     | '/matches/$matchId/unmatch'
     | '/notifications/$notificationId/delete'
     | '/admin/colleges/$collegeId/edit'
+    | '/api/public/seed/students'
     | '/settings/blocked-users/$userId/unblock'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -1163,6 +1173,7 @@ export interface FileRouteTypes {
     | '/matches/$matchId/unmatch'
     | '/notifications/$notificationId/delete'
     | '/admin/colleges/$collegeId/edit'
+    | '/api/public/seed/students'
     | '/settings/blocked-users/$userId/unblock'
   id:
     | '__root__'
@@ -1267,6 +1278,7 @@ export interface FileRouteTypes {
     | '/_authenticated/matches/$matchId/unmatch'
     | '/_authenticated/notifications/$notificationId/delete'
     | '/admin/colleges/$collegeId/edit'
+    | '/api/public/seed/students'
     | '/_authenticated/settings/blocked-users/$userId/unblock'
   fileRoutesById: FileRoutesById
 }
@@ -1282,6 +1294,7 @@ export interface RootRouteChildren {
   SystemMaintenanceRoute: typeof SystemMaintenanceRoute
   SystemSplashRoute: typeof SystemSplashRoute
   ApiPublicPushRoute: typeof ApiPublicPushRoute
+  ApiPublicSeedStudentsRoute: typeof ApiPublicSeedStudentsRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -1902,6 +1915,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedChatChatIdRouteImport
       parentRoute: typeof AuthenticatedChatRoute
     }
+    '/api/public/seed/students': {
+      id: '/api/public/seed/students'
+      path: '/api/public/seed/students'
+      fullPath: '/api/public/seed/students'
+      preLoaderRoute: typeof ApiPublicSeedStudentsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/admin/colleges/$collegeId/edit': {
       id: '/admin/colleges/$collegeId/edit'
       path: '/edit'
@@ -2355,6 +2375,7 @@ const rootRouteChildren: RootRouteChildren = {
   SystemMaintenanceRoute: SystemMaintenanceRoute,
   SystemSplashRoute: SystemSplashRoute,
   ApiPublicPushRoute: ApiPublicPushRoute,
+  ApiPublicSeedStudentsRoute: ApiPublicSeedStudentsRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
