@@ -335,19 +335,8 @@ async function rebuildPhotos(
   return primaryPath;
 }
 
-// ---------------------------------------------------------------- Auth lookup
 
-async function findUserIdByEmail(email: string): Promise<string | null> {
-  // listUsers is paginated; 10 fixed dev emails live comfortably in the first pages.
-  for (let page = 1; page <= 20; page++) {
-    const { data, error } = await supabaseAdmin.auth.admin.listUsers({ page, perPage: 1000 });
-    if (error) throw new Error(`listUsers: ${error.message}`);
-    const hit = data.users.find((u) => u.email?.toLowerCase() === email.toLowerCase());
-    if (hit) return hit.id;
-    if (data.users.length < 1000) break;
-  }
-  return null;
-}
+
 
 // -------------------------------------------------------------------- Runner
 
