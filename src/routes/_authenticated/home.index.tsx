@@ -18,7 +18,7 @@ import {
   Trophy,
   Zap,
   Megaphone,
-  Sparkles,
+  
   Building2,
   UserRound,
   MessageCircle,
