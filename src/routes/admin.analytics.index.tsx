@@ -320,8 +320,8 @@ function Analytics() {
           <Button variant="secondary" onClick={() => handleExport("xlsx")}>
             <Download style={{ width: 14, height: 14, marginRight: 6 }} /> Export XLSX
           </Button>
-          <Chip disabled>PDF · coming soon</Chip>
-          <Chip disabled>Scheduled reports · coming soon</Chip>
+          <span style={comingSoonPill}>PDF · coming soon</span>
+          <span style={comingSoonPill}>Scheduled reports · coming soon</span>
         </div>
       </Card>
 
