@@ -19,6 +19,16 @@ function NotFoundComponent() {
   return <NotFoundView />;
 }
 
+/** Replays a subtle enter animation on each route change (unified page motion). */
+function AnimatedOutlet() {
+  const pathname = useRouterState({ select: (s) => s.location.pathname });
+  return (
+    <div key={pathname} className="ds-page-in">
+      <Outlet />
+    </div>
+  );
+}
+
 function ErrorComponent({ error, reset }: { error: Error; reset: () => void }) {
   return <ServerErrorView error={error} reset={reset} />;
 }
