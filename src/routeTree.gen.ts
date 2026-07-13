@@ -55,6 +55,7 @@ import { Route as AdminUsersIndexRouteImport } from './routes/admin.users.index'
 import { Route as AdminReportsIndexRouteImport } from './routes/admin.reports.index'
 import { Route as AdminMatchesIndexRouteImport } from './routes/admin.matches.index'
 import { Route as AdminCollegesIndexRouteImport } from './routes/admin.colleges.index'
+import { Route as AdminChatsIndexRouteImport } from './routes/admin.chats.index'
 import { Route as AuthenticatedSettingsIndexRouteImport } from './routes/_authenticated/settings.index'
 import { Route as AuthenticatedProfileIndexRouteImport } from './routes/_authenticated/profile.index'
 import { Route as AuthenticatedNotificationsIndexRouteImport } from './routes/_authenticated/notifications.index'
@@ -68,6 +69,7 @@ import { Route as AdminReportsReportIdRouteImport } from './routes/admin.reports
 import { Route as AdminMatchesMatchIdRouteImport } from './routes/admin.matches.$matchId'
 import { Route as AdminCollegesNewRouteImport } from './routes/admin.colleges.new'
 import { Route as AdminCollegesCollegeIdRouteImport } from './routes/admin.colleges.$collegeId'
+import { Route as AdminChatsChatIdRouteImport } from './routes/admin.chats.$chatId'
 import { Route as AuthenticatedSettingsSecurityRouteImport } from './routes/_authenticated/settings.security'
 import { Route as AuthenticatedSettingsPrivacyRouteImport } from './routes/_authenticated/settings.privacy'
 import { Route as AuthenticatedSettingsNotificationsRouteImport } from './routes/_authenticated/settings.notifications'
@@ -337,6 +339,11 @@ const AdminCollegesIndexRoute = AdminCollegesIndexRouteImport.update({
   path: '/colleges/',
   getParentRoute: () => AdminRoute,
 } as any)
+const AdminChatsIndexRoute = AdminChatsIndexRouteImport.update({
+  id: '/chats/',
+  path: '/chats/',
+  getParentRoute: () => AdminRoute,
+} as any)
 const AuthenticatedSettingsIndexRoute =
   AuthenticatedSettingsIndexRouteImport.update({
     id: '/settings/',
@@ -405,6 +412,11 @@ const AdminCollegesNewRoute = AdminCollegesNewRouteImport.update({
 const AdminCollegesCollegeIdRoute = AdminCollegesCollegeIdRouteImport.update({
   id: '/colleges/$collegeId',
   path: '/colleges/$collegeId',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminChatsChatIdRoute = AdminChatsChatIdRouteImport.update({
+  id: '/chats/$chatId',
+  path: '/chats/$chatId',
   getParentRoute: () => AdminRoute,
 } as any)
 const AuthenticatedSettingsSecurityRoute =
@@ -699,6 +711,7 @@ export interface FileRoutesByFullPath {
   '/settings/notifications': typeof AuthenticatedSettingsNotificationsRoute
   '/settings/privacy': typeof AuthenticatedSettingsPrivacyRoute
   '/settings/security': typeof AuthenticatedSettingsSecurityRoute
+  '/admin/chats/$chatId': typeof AdminChatsChatIdRoute
   '/admin/colleges/$collegeId': typeof AdminCollegesCollegeIdRouteWithChildren
   '/admin/colleges/new': typeof AdminCollegesNewRoute
   '/admin/matches/$matchId': typeof AdminMatchesMatchIdRoute
@@ -712,6 +725,7 @@ export interface FileRoutesByFullPath {
   '/notifications/': typeof AuthenticatedNotificationsIndexRoute
   '/profile/': typeof AuthenticatedProfileIndexRoute
   '/settings/': typeof AuthenticatedSettingsIndexRoute
+  '/admin/chats/': typeof AdminChatsIndexRoute
   '/admin/colleges/': typeof AdminCollegesIndexRoute
   '/admin/matches/': typeof AdminMatchesIndexRoute
   '/admin/reports/': typeof AdminReportsIndexRoute
@@ -789,6 +803,7 @@ export interface FileRoutesByTo {
   '/settings/notifications': typeof AuthenticatedSettingsNotificationsRoute
   '/settings/privacy': typeof AuthenticatedSettingsPrivacyRoute
   '/settings/security': typeof AuthenticatedSettingsSecurityRoute
+  '/admin/chats/$chatId': typeof AdminChatsChatIdRoute
   '/admin/colleges/$collegeId': typeof AdminCollegesCollegeIdRouteWithChildren
   '/admin/colleges/new': typeof AdminCollegesNewRoute
   '/admin/matches/$matchId': typeof AdminMatchesMatchIdRoute
@@ -802,6 +817,7 @@ export interface FileRoutesByTo {
   '/notifications': typeof AuthenticatedNotificationsIndexRoute
   '/profile': typeof AuthenticatedProfileIndexRoute
   '/settings': typeof AuthenticatedSettingsIndexRoute
+  '/admin/chats': typeof AdminChatsIndexRoute
   '/admin/colleges': typeof AdminCollegesIndexRoute
   '/admin/matches': typeof AdminMatchesIndexRoute
   '/admin/reports': typeof AdminReportsIndexRoute
@@ -889,6 +905,7 @@ export interface FileRoutesById {
   '/_authenticated/settings/notifications': typeof AuthenticatedSettingsNotificationsRoute
   '/_authenticated/settings/privacy': typeof AuthenticatedSettingsPrivacyRoute
   '/_authenticated/settings/security': typeof AuthenticatedSettingsSecurityRoute
+  '/admin/chats/$chatId': typeof AdminChatsChatIdRoute
   '/admin/colleges/$collegeId': typeof AdminCollegesCollegeIdRouteWithChildren
   '/admin/colleges/new': typeof AdminCollegesNewRoute
   '/admin/matches/$matchId': typeof AdminMatchesMatchIdRoute
@@ -902,6 +919,7 @@ export interface FileRoutesById {
   '/_authenticated/notifications/': typeof AuthenticatedNotificationsIndexRoute
   '/_authenticated/profile/': typeof AuthenticatedProfileIndexRoute
   '/_authenticated/settings/': typeof AuthenticatedSettingsIndexRoute
+  '/admin/chats/': typeof AdminChatsIndexRoute
   '/admin/colleges/': typeof AdminCollegesIndexRoute
   '/admin/matches/': typeof AdminMatchesIndexRoute
   '/admin/reports/': typeof AdminReportsIndexRoute
@@ -988,6 +1006,7 @@ export interface FileRouteTypes {
     | '/settings/notifications'
     | '/settings/privacy'
     | '/settings/security'
+    | '/admin/chats/$chatId'
     | '/admin/colleges/$collegeId'
     | '/admin/colleges/new'
     | '/admin/matches/$matchId'
@@ -1001,6 +1020,7 @@ export interface FileRouteTypes {
     | '/notifications/'
     | '/profile/'
     | '/settings/'
+    | '/admin/chats/'
     | '/admin/colleges/'
     | '/admin/matches/'
     | '/admin/reports/'
@@ -1078,6 +1098,7 @@ export interface FileRouteTypes {
     | '/settings/notifications'
     | '/settings/privacy'
     | '/settings/security'
+    | '/admin/chats/$chatId'
     | '/admin/colleges/$collegeId'
     | '/admin/colleges/new'
     | '/admin/matches/$matchId'
@@ -1091,6 +1112,7 @@ export interface FileRouteTypes {
     | '/notifications'
     | '/profile'
     | '/settings'
+    | '/admin/chats'
     | '/admin/colleges'
     | '/admin/matches'
     | '/admin/reports'
@@ -1177,6 +1199,7 @@ export interface FileRouteTypes {
     | '/_authenticated/settings/notifications'
     | '/_authenticated/settings/privacy'
     | '/_authenticated/settings/security'
+    | '/admin/chats/$chatId'
     | '/admin/colleges/$collegeId'
     | '/admin/colleges/new'
     | '/admin/matches/$matchId'
@@ -1190,6 +1213,7 @@ export interface FileRouteTypes {
     | '/_authenticated/notifications/'
     | '/_authenticated/profile/'
     | '/_authenticated/settings/'
+    | '/admin/chats/'
     | '/admin/colleges/'
     | '/admin/matches/'
     | '/admin/reports/'
@@ -1548,6 +1572,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminCollegesIndexRouteImport
       parentRoute: typeof AdminRoute
     }
+    '/admin/chats/': {
+      id: '/admin/chats/'
+      path: '/chats'
+      fullPath: '/admin/chats/'
+      preLoaderRoute: typeof AdminChatsIndexRouteImport
+      parentRoute: typeof AdminRoute
+    }
     '/_authenticated/settings/': {
       id: '/_authenticated/settings/'
       path: '/settings'
@@ -1637,6 +1668,13 @@ declare module '@tanstack/react-router' {
       path: '/colleges/$collegeId'
       fullPath: '/admin/colleges/$collegeId'
       preLoaderRoute: typeof AdminCollegesCollegeIdRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/chats/$chatId': {
+      id: '/admin/chats/$chatId'
+      path: '/chats/$chatId'
+      fullPath: '/admin/chats/$chatId'
+      preLoaderRoute: typeof AdminChatsChatIdRouteImport
       parentRoute: typeof AdminRoute
     }
     '/_authenticated/settings/security': {
@@ -2190,11 +2228,13 @@ interface AdminRouteChildren {
   AdminDashboardRoute: typeof AdminDashboardRoute
   AdminLoginRoute: typeof AdminLoginRoute
   AdminIndexRoute: typeof AdminIndexRoute
+  AdminChatsChatIdRoute: typeof AdminChatsChatIdRoute
   AdminCollegesCollegeIdRoute: typeof AdminCollegesCollegeIdRouteWithChildren
   AdminCollegesNewRoute: typeof AdminCollegesNewRoute
   AdminMatchesMatchIdRoute: typeof AdminMatchesMatchIdRoute
   AdminReportsReportIdRoute: typeof AdminReportsReportIdRoute
   AdminUsersUserIdRoute: typeof AdminUsersUserIdRoute
+  AdminChatsIndexRoute: typeof AdminChatsIndexRoute
   AdminCollegesIndexRoute: typeof AdminCollegesIndexRoute
   AdminMatchesIndexRoute: typeof AdminMatchesIndexRoute
   AdminReportsIndexRoute: typeof AdminReportsIndexRoute
@@ -2205,11 +2245,13 @@ const AdminRouteChildren: AdminRouteChildren = {
   AdminDashboardRoute: AdminDashboardRoute,
   AdminLoginRoute: AdminLoginRoute,
   AdminIndexRoute: AdminIndexRoute,
+  AdminChatsChatIdRoute: AdminChatsChatIdRoute,
   AdminCollegesCollegeIdRoute: AdminCollegesCollegeIdRouteWithChildren,
   AdminCollegesNewRoute: AdminCollegesNewRoute,
   AdminMatchesMatchIdRoute: AdminMatchesMatchIdRoute,
   AdminReportsReportIdRoute: AdminReportsReportIdRoute,
   AdminUsersUserIdRoute: AdminUsersUserIdRoute,
+  AdminChatsIndexRoute: AdminChatsIndexRoute,
   AdminCollegesIndexRoute: AdminCollegesIndexRoute,
   AdminMatchesIndexRoute: AdminMatchesIndexRoute,
   AdminReportsIndexRoute: AdminReportsIndexRoute,
@@ -2254,13 +2296,3 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}

@@ -197,6 +197,85 @@ export type Database = {
         }
         Relationships: []
       }
+      chat_admin_actions: {
+        Row: {
+          action: string
+          admin_id: string
+          chat_id: string | null
+          created_at: string
+          id: string
+          metadata: Json
+          new_state: Json
+          previous_state: Json
+          reason: string | null
+        }
+        Insert: {
+          action: string
+          admin_id: string
+          chat_id?: string | null
+          created_at?: string
+          id?: string
+          metadata?: Json
+          new_state?: Json
+          previous_state?: Json
+          reason?: string | null
+        }
+        Update: {
+          action?: string
+          admin_id?: string
+          chat_id?: string | null
+          created_at?: string
+          id?: string
+          metadata?: Json
+          new_state?: Json
+          previous_state?: Json
+          reason?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "chat_admin_actions_chat_id_fkey"
+            columns: ["chat_id"]
+            isOneToOne: false
+            referencedRelation: "matches"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      chat_moderator_notes: {
+        Row: {
+          author_id: string
+          body: string
+          chat_id: string
+          created_at: string
+          id: string
+          updated_at: string
+        }
+        Insert: {
+          author_id: string
+          body: string
+          chat_id: string
+          created_at?: string
+          id?: string
+          updated_at?: string
+        }
+        Update: {
+          author_id?: string
+          body?: string
+          chat_id?: string
+          created_at?: string
+          id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "chat_moderator_notes_chat_id_fkey"
+            columns: ["chat_id"]
+            isOneToOne: false
+            referencedRelation: "matches"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       colleges: {
         Row: {
           archived_at: string | null
@@ -754,6 +833,8 @@ export type Database = {
           id: string
           investigation_status: string
           last_message_at: string | null
+          locked_at: string | null
+          locked_by: string | null
           match_source: string
           status: string
           suspicious: boolean
@@ -774,6 +855,8 @@ export type Database = {
           id?: string
           investigation_status?: string
           last_message_at?: string | null
+          locked_at?: string | null
+          locked_by?: string | null
           match_source?: string
           status?: string
           suspicious?: boolean
@@ -794,6 +877,8 @@ export type Database = {
           id?: string
           investigation_status?: string
           last_message_at?: string | null
+          locked_at?: string | null
+          locked_by?: string | null
           match_source?: string
           status?: string
           suspicious?: boolean
@@ -811,6 +896,9 @@ export type Database = {
           body: string
           created_at: string
           delivered_at: string | null
+          flagged: boolean
+          hidden_at: string | null
+          hidden_by: string | null
           id: string
           image_path: string | null
           kind: string
@@ -826,6 +914,9 @@ export type Database = {
           body?: string
           created_at?: string
           delivered_at?: string | null
+          flagged?: boolean
+          hidden_at?: string | null
+          hidden_by?: string | null
           id?: string
           image_path?: string | null
           kind?: string
@@ -841,6 +932,9 @@ export type Database = {
           body?: string
           created_at?: string
           delivered_at?: string | null
+          flagged?: boolean
+          hidden_at?: string | null
+          hidden_by?: string | null
           id?: string
           image_path?: string | null
           kind?: string
@@ -1385,6 +1479,10 @@ export type Database = {
         Args: { _body: string; _report_id: string }
         Returns: Json
       }
+      admin_archive_chat: {
+        Args: { _chat_id: string; _reason?: string; _restore?: boolean }
+        Returns: Json
+      }
       admin_archive_match: {
         Args: { _match_id: string; _reason?: string }
         Returns: Json
@@ -1393,6 +1491,15 @@ export type Database = {
         Args: { _moderator_id: string; _report_id: string }
         Returns: Json
       }
+      admin_chat_actions: { Args: { _chat_id: string }; Returns: Json }
+      admin_chat_analytics: { Args: never; Returns: Json }
+      admin_chat_detail: { Args: { _chat_id: string }; Returns: Json }
+      admin_chat_messages: {
+        Args: { _before?: string; _chat_id: string; _limit?: number }
+        Returns: Json
+      }
+      admin_chat_notes: { Args: { _chat_id: string }; Returns: Json }
+      admin_chat_stats: { Args: never; Returns: Json }
       admin_clear_reports: { Args: { _user_id: string }; Returns: Json }
       admin_college_detail: { Args: { _id: string }; Returns: Json }
       admin_college_stats: { Args: { _id: string }; Returns: Json }
@@ -1424,20 +1531,73 @@ export type Database = {
         Returns: Json
       }
       admin_dashboard_stats: { Args: never; Returns: Json }
+      admin_delete_chat: {
+        Args: { _chat_id: string; _reason?: string }
+        Returns: Json
+      }
       admin_delete_college: { Args: { _id: string }; Returns: Json }
       admin_delete_match: {
         Args: { _match_id: string; _reason?: string }
         Returns: Json
       }
       admin_distribution: { Args: never; Returns: Json }
+      admin_escalate_chat: {
+        Args: { _chat_id: string; _reason?: string; _status: string }
+        Returns: Json
+      }
+      admin_flag_chat: {
+        Args: { _chat_id: string; _flag: boolean; _reason?: string }
+        Returns: Json
+      }
       admin_flag_match: {
         Args: { _flagged: boolean; _match_id: string; _reason?: string }
+        Returns: Json
+      }
+      admin_flag_message: {
+        Args: { _flag: boolean; _message_id: string; _reason?: string }
         Returns: Json
       }
       admin_force_logout: { Args: { _user_id: string }; Returns: Json }
       admin_force_unmatch: {
         Args: { _match_id: string; _reason?: string }
         Returns: Json
+      }
+      admin_list_chats: {
+        Args: {
+          _filters?: Json
+          _limit?: number
+          _offset?: number
+          _search?: string
+          _sort?: string
+        }
+        Returns: {
+          college_a: string
+          college_b: string
+          conversation_disabled: boolean
+          created_at: string
+          dept_a: string
+          dept_b: string
+          flagged: boolean
+          id: string
+          images: number
+          investigation_status: string
+          last_activity: string
+          reactions: number
+          read_count: number
+          replies: number
+          reports_count: number
+          same_college: boolean
+          status: string
+          total_count: number
+          total_messages: number
+          user_a: string
+          user_a_avatar: string
+          user_a_name: string
+          user_b: string
+          user_b_avatar: string
+          user_b_name: string
+          voice: number
+        }[]
       }
       admin_list_colleges: {
         Args: {
@@ -1584,6 +1744,10 @@ export type Database = {
           verification_status: string
         }[]
       }
+      admin_lock_chat: {
+        Args: { _chat_id: string; _lock: boolean; _reason?: string }
+        Returns: Json
+      }
       admin_log_action: {
         Args: {
           _action: string
@@ -1593,6 +1757,16 @@ export type Database = {
           _target_table?: string
         }
         Returns: string
+      }
+      admin_log_chat_action: {
+        Args: {
+          _action: string
+          _chat_id: string
+          _new: Json
+          _previous: Json
+          _reason: string
+        }
+        Returns: undefined
       }
       admin_log_match_action: {
         Args: {
@@ -1684,6 +1858,7 @@ export type Database = {
         Args: { _limit?: number; _user_id: string }
         Returns: Json
       }
+      chat_reaction_count: { Args: { _reactions: Json }; Returns: number }
       college_rank: { Args: { _college_id: string }; Returns: number }
       college_rankings: {
         Args: { _limit?: number; _offset?: number; _search?: string }
