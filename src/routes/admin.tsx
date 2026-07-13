@@ -2,9 +2,10 @@
 // /admin layout — shared shell for the Coligo admin surface. Public parent so
 // /admin/login is reachable; each child enforces its own admin guard.
 // ============================================================================
-import { createFileRoute, Outlet, useRouter } from "@tanstack/react-router";
+import { createFileRoute, Outlet, useRouter, useRouterState } from "@tanstack/react-router";
 
 import { Text, Button } from "@/components/ds/glass";
+import { AdminShell } from "@/components/admin/admin-shell";
 import { APP_BACKGROUND, FONT_FAMILY, colors, spacing } from "@/lib/ds";
 
 export const Route = createFileRoute("/admin")({
@@ -13,6 +14,10 @@ export const Route = createFileRoute("/admin")({
 });
 
 function AdminLayout() {
+  const pathname = useRouterState({ select: (s) => s.location.pathname });
+  // The login and first-run bootstrap screens must not show the admin sidebar.
+  const bare = pathname === "/admin/login" || pathname === "/admin";
+
   return (
     <div
       style={{
@@ -22,10 +27,11 @@ function AdminLayout() {
         fontFamily: FONT_FAMILY,
       }}
     >
-      <Outlet />
+      {bare ? <Outlet /> : <AdminShell><Outlet /></AdminShell>}
     </div>
   );
 }
+
 
 function AdminError({ error }: { error: Error }) {
   const router = useRouter();
