@@ -154,12 +154,11 @@ function HomeDashboardPage() {
     };
   }, [queryClient]);
 
-  // Refresh stats when the tab regains focus.
-  useEffect(() => {
-    const onFocus = () => queryClient.invalidateQueries({ queryKey: ["home", "dashboard"] });
-    window.addEventListener("focus", onFocus);
-    return () => window.removeEventListener("focus", onFocus);
-  }, [queryClient]);
+  // Note: refetch-on-focus is handled globally by the QueryClient
+  // (refetchOnWindowFocus: true), so no manual focus listener is needed here —
+  // adding one would double-fetch the dashboard on every tab refocus.
+
+
 
   const navItems: BottomNavItem[] = useMemo(
     () => [
