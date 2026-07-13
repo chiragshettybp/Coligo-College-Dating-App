@@ -309,21 +309,24 @@ function AdminUsers() {
       {/* Bulk action bar */}
       {selected.size > 0 && !bulk && (
         <Card padding={spacing[3]} style={{ marginTop: spacing[3], position: "sticky", top: spacing[2], zIndex: 5 }}>
-          <div className="flex flex-wrap items-center" style={{ gap: spacing[2] }}>
+          <div className="flex items-center" style={{ gap: spacing[2] }}>
             <Text variant="body" color={colors.textPrimary} style={{ fontWeight: 600 }}>{selected.size} selected</Text>
             <div style={{ flex: 1 }} />
-            <Button size="sm" variant="secondary" leftIcon={<PauseCircle style={{ width: 15, height: 15 }} />} onClick={() => setBulk({ kind: "status", action: "suspended" })}>Suspend</Button>
-            <Button size="sm" variant="secondary" leftIcon={<Ban style={{ width: 15, height: 15 }} />} onClick={() => setBulk({ kind: "status", action: "banned" })}>Ban</Button>
-            <Button size="sm" variant="secondary" leftIcon={<ShieldCheck style={{ width: 15, height: 15 }} />} onClick={() => setBulk({ kind: "verify", action: "verified" })}>Verify</Button>
-            <Button size="sm" variant="secondary" leftIcon={<RotateCcw style={{ width: 15, height: 15 }} />} onClick={() => setBulk({ kind: "status", action: "active" })}>Restore</Button>
-            <Button size="sm" variant="secondary" leftIcon={<Download style={{ width: 15, height: 15 }} />} onClick={() => setBulk({ kind: "export", action: "export" })}>Export</Button>
-            <Button size="sm" variant="danger" leftIcon={<Trash2 style={{ width: 15, height: 15 }} />} onClick={() => setBulk({ kind: "status", action: "deleted" })}>Delete</Button>
             <button onClick={() => setSelected(new Set())} aria-label="Clear selection" style={{ display: "flex", padding: 6, color: colors.textMuted, background: "transparent", border: "none", cursor: "pointer" }}>
               <X style={{ width: 18, height: 18 }} />
             </button>
           </div>
+          <div className="flex items-center" style={{ gap: spacing[2], marginTop: spacing[2], overflowX: "auto", flexWrap: "nowrap", paddingBottom: 4, WebkitOverflowScrolling: "touch" }}>
+            <span style={{ flexShrink: 0, display: "flex" }}><Button size="sm" variant="secondary" leftIcon={<PauseCircle style={{ width: 15, height: 15 }} />} onClick={() => setBulk({ kind: "status", action: "suspended" })}>Suspend</Button></span>
+            <span style={{ flexShrink: 0, display: "flex" }}><Button size="sm" variant="secondary" leftIcon={<Ban style={{ width: 15, height: 15 }} />} onClick={() => setBulk({ kind: "status", action: "banned" })}>Ban</Button></span>
+            <span style={{ flexShrink: 0, display: "flex" }}><Button size="sm" variant="secondary" leftIcon={<ShieldCheck style={{ width: 15, height: 15 }} />} onClick={() => setBulk({ kind: "verify", action: "verified" })}>Verify</Button></span>
+            <span style={{ flexShrink: 0, display: "flex" }}><Button size="sm" variant="secondary" leftIcon={<RotateCcw style={{ width: 15, height: 15 }} />} onClick={() => setBulk({ kind: "status", action: "active" })}>Restore</Button></span>
+            <span style={{ flexShrink: 0, display: "flex" }}><Button size="sm" variant="secondary" leftIcon={<Download style={{ width: 15, height: 15 }} />} onClick={() => setBulk({ kind: "export", action: "export" })}>Export</Button></span>
+            <span style={{ flexShrink: 0, display: "flex" }}><Button size="sm" variant="danger" leftIcon={<Trash2 style={{ width: 15, height: 15 }} />} onClick={() => setBulk({ kind: "status", action: "deleted" })}>Delete</Button></span>
+          </div>
         </Card>
       )}
+
 
       {/* Count line */}
       <div className="flex items-center justify-between" style={{ marginTop: spacing[4], marginBottom: spacing[2] }}>
