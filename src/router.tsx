@@ -11,6 +11,9 @@ export const getRouter = () => {
     routeTree,
     context: { queryClient },
     scrollRestoration: true,
+    // Preload route chunks + loader data on hover/touch-start so navigation
+    // feels instant. defaultPreloadStaleTime: 0 lets TanStack Query own freshness.
+    defaultPreload: "intent",
     defaultPreloadStaleTime: 0,
     defaultErrorComponent: ({ error, reset }) => (
       <ServerErrorView error={error} reset={reset} />
