@@ -478,6 +478,15 @@ const dateInputStyle: React.CSSProperties = {
   background: surfaces.glassSoft,
 };
 
+const comingSoonPill: React.CSSProperties = {
+  borderRadius: 999,
+  border: `1px solid ${surfaces.border}`,
+  padding: "6px 12px",
+  fontSize: 12,
+  color: colors.textMuted,
+  background: surfaces.glassSoft,
+};
+
 function Select({
   label,
   value,
