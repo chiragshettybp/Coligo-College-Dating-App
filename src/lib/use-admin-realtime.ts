@@ -26,7 +26,9 @@ export function useAdminRealtime(enabled: boolean) {
       }, 1500);
     };
 
-    let channel = supabase.channel("admin:realtime");
+    // Unique topic per mount so we never re-attach `.on()` to a channel that
+    // already called `.subscribe()` (which Supabase rejects).
+    let channel = supabase.channel(`admin:realtime:${crypto.randomUUID()}`);
     for (const table of TABLES) {
       channel = channel.on("postgres_changes", { event: "*", schema: "public", table }, refresh);
     }
