@@ -2,7 +2,7 @@
 // Admin dashboard charts — thin themed wrappers around recharts using Coligo
 // design tokens. All charts are responsive and honor prefers-reduced-motion.
 // ============================================================================
-import { useMemo } from "react";
+import { Fragment, useMemo } from "react";
 import {
   ResponsiveContainer,
   AreaChart,
@@ -177,5 +177,116 @@ export function Donut({
         ))}
       </div>
     </ChartCard>
+  );
+}
+
+/* --------------------------------------------------------------- Heatmap -- */
+// 7 (day-of-week) x 24 (hour) activity grid. `data` is a sparse list of cells.
+export function Heatmap({
+  title,
+  subtitle,
+  data,
+}: {
+  title: string;
+  subtitle?: string;
+  data: { dow: number; hour: number; value: number }[];
+}) {
+  const days = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+  const max = useMemo(() => data.reduce((m, d) => Math.max(m, d.value), 0), [data]);
+  const lookup = useMemo(() => {
+    const map = new Map<string, number>();
+    for (const d of data) map.set(`${d.dow}-${d.hour}`, d.value);
+    return map;
+  }, [data]);
+
+  return (
+    <Card>
+      <Text variant="overline" tone="muted">{title}</Text>
+      {subtitle ? <Text variant="caption" tone="muted" style={{ marginTop: 2 }}>{subtitle}</Text> : null}
+      <div style={{ marginTop: 12, overflowX: "auto" }}>
+        <div style={{ display: "grid", gridTemplateColumns: `28px repeat(24, 1fr)`, gap: 3, minWidth: 520 }}>
+          <span />
+          {Array.from({ length: 24 }).map((_, h) => (
+            <span key={h} style={{ fontSize: 8, color: colors.textMuted, textAlign: "center" }}>
+              {h % 6 === 0 ? h : ""}
+            </span>
+          ))}
+          {days.map((label, dow) => (
+            <Fragment key={dow}>
+              <span style={{ fontSize: 10, color: colors.textMuted, alignSelf: "center" }}>{label}</span>
+              {Array.from({ length: 24 }).map((_, h) => {
+                const v = lookup.get(`${dow}-${h}`) ?? 0;
+                const intensity = max > 0 ? v / max : 0;
+                return (
+                  <div
+                    key={h}
+                    title={`${label} ${h}:00 — ${v}`}
+                    style={{
+                      aspectRatio: "1 / 1",
+                      borderRadius: 3,
+                      background:
+                        intensity === 0
+                          ? "rgba(60,60,67,0.06)"
+                          : `rgba(10,132,255,${0.15 + intensity * 0.85})`,
+                    }}
+                  />
+                );
+              })}
+            </Fragment>
+          ))}
+        </div>
+      </div>
+    </Card>
+  );
+}
+
+/* ---------------------------------------------------------- LeaderboardList */
+export function LeaderboardList({
+  title,
+  subtitle,
+  data,
+  unit,
+}: {
+  title: string;
+  subtitle?: string;
+  data: { name: string; value: number }[];
+  unit?: string;
+}) {
+  const max = useMemo(() => data.reduce((m, d) => Math.max(m, d.value), 0), [data]);
+  return (
+    <Card>
+      <Text variant="overline" tone="muted">{title}</Text>
+      {subtitle ? <Text variant="caption" tone="muted" style={{ marginTop: 2 }}>{subtitle}</Text> : null}
+      <div style={{ marginTop: 12, display: "flex", flexDirection: "column", gap: 10 }}>
+        {data.length === 0 ? (
+          <Text variant="caption" tone="muted">No data yet.</Text>
+        ) : (
+          data.map((d, i) => (
+            <div key={`${d.name}-${i}`} style={{ display: "flex", flexDirection: "column", gap: 4 }}>
+              <div className="flex items-center justify-between" style={{ gap: 8 }}>
+                <span style={{ fontSize: 12, color: colors.textSecondary, minWidth: 0, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                  <span style={{ color: colors.textMuted, marginRight: 6 }}>{i + 1}.</span>
+                  {d.name}
+                </span>
+                <span style={{ fontSize: 12, fontWeight: 600, color: colors.textPrimary, flexShrink: 0 }}>
+                  {d.value.toLocaleString()}{unit ? ` ${unit}` : ""}
+                </span>
+              </div>
+              <div style={{ height: 6, borderRadius: 999, background: "rgba(60,60,67,0.08)" }}>
+                <div
+                  style={{
+                    height: "100%",
+                    borderRadius: 999,
+                    width: `${max > 0 ? (d.value / max) * 100 : 0}%`,
+                    background: PALETTE[i % PALETTE.length],
+                    transition: "width 300ms ease",
+                  }}
+                />
+              </div>
+            </div>
+          ))
+        )}
+      </div>
+    </Card>
   );
 }
