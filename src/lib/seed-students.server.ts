@@ -21,12 +21,39 @@ const BUCKET = "profile-photos";
 const SEED_TAG = "coligo-dev-seed-student";
 const SEED_PASSWORD = "Coligo#Seed2026";
 
-// Shared profile photos — downloaded once, reused/randomized across accounts.
-const PHOTO_URLS = [
-  "https://i.postimg.cc/HL8TJ0GL/a3fcdc42d51181b6cad2769d4f62b834.jpg",
-  "https://i.postimg.cc/XvBnZKMr/e473f6d24c389583c2e015b4e83e4bfd.jpg",
-  "https://i.postimg.cc/bvSqG0XD/e7b0928f87c81191f431cddab45bcd31.jpg",
+// Avatars are generated in-code (SVG) — no external network fetch, so seeding
+// is reliable in the server runtime where outbound egress may be restricted.
+const AVATAR_GRADIENTS: [string, string][] = [
+  ["#FF7A9A", "#FF3B7F"],
+  ["#7AC8FF", "#3B82F6"],
+  ["#FFD37A", "#FF9F3B"],
+  ["#9AE6B4", "#22C55E"],
+  ["#C4B5FD", "#8B5CF6"],
+  ["#FDA4AF", "#F43F5E"],
+  ["#67E8F9", "#06B6D4"],
 ];
+
+function initials(fullName: string): string {
+  const parts = fullName.trim().split(/\s+/);
+  const first = parts[0]?.[0] ?? "?";
+  const last = parts.length > 1 ? parts[parts.length - 1][0] : "";
+  return (first + last).toUpperCase();
+}
+
+function makeAvatarSvg(fullName: string, variant: number): Uint8Array {
+  const [from, to] = AVATAR_GRADIENTS[variant % AVATAR_GRADIENTS.length];
+  const label = initials(fullName);
+  const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="600" height="800" viewBox="0 0 600 800">
+  <defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1">
+    <stop offset="0" stop-color="${from}"/><stop offset="1" stop-color="${to}"/>
+  </linearGradient></defs>
+  <rect width="600" height="800" fill="url(#g)"/>
+  <circle cx="300" cy="300" r="150" fill="rgba(255,255,255,0.25)"/>
+  <text x="300" y="300" font-family="system-ui, -apple-system, sans-serif" font-size="150" font-weight="700" fill="#ffffff" text-anchor="middle" dominant-baseline="central">${label}</text>
+</svg>`;
+  return new TextEncoder().encode(svg);
+}
+
 
 type Gender = Database["public"]["Enums"]["gender_option"];
 type LookingFor = Database["public"]["Enums"]["looking_for_option"];
@@ -291,19 +318,9 @@ function pickInterests(prefs: string[], interests: NamedRow[], count: number, se
 
 // ------------------------------------------------------------------- Photos
 
-async function downloadPhotos(): Promise<Uint8Array[]> {
-  const buffers: Uint8Array[] = [];
-  for (const url of PHOTO_URLS) {
-    const res = await fetch(url);
-    if (!res.ok) throw new Error(`Failed to download ${url}: ${res.status}`);
-    buffers.push(new Uint8Array(await res.arrayBuffer()));
-  }
-  return buffers;
-}
-
 async function rebuildPhotos(
   userId: string,
-  photoBuffers: Uint8Array[],
+  fullName: string,
   count: number,
   seq: number,
 ): Promise<string> {
@@ -316,16 +333,14 @@ async function rebuildPhotos(
   if (oldPaths.length) await supabaseAdmin.storage.from(BUCKET).remove(oldPaths);
   await supabaseAdmin.from("photos").delete().eq("user_id", userId);
 
-  // Randomize which of the 3 images (with reuse) become this user's gallery.
-  const order = shuffle([0, 1, 2], seq);
   const rows: { user_id: string; storage_path: string; position: number; is_primary: boolean }[] = [];
   let primaryPath = "";
   for (let position = 0; position < count; position++) {
-    const imgIdx = order[position % order.length];
-    const path = `${userId}/${crypto.randomUUID()}.jpg`;
+    const svg = makeAvatarSvg(fullName, seq + position);
+    const path = `${userId}/${crypto.randomUUID()}.svg`;
     const { error: upErr } = await supabaseAdmin.storage
       .from(BUCKET)
-      .upload(path, photoBuffers[imgIdx], { contentType: "image/jpeg", upsert: true });
+      .upload(path, svg, { contentType: "image/svg+xml", upsert: true });
     if (upErr) throw new Error(`photo upload: ${upErr.message}`);
     rows.push({ user_id: userId, storage_path: path, position, is_primary: position === 0 });
     if (position === 0) primaryPath = path;
@@ -338,6 +353,7 @@ async function rebuildPhotos(
 
 
 
+
 // -------------------------------------------------------------------- Runner
 
 export async function seedStudents(): Promise<SeedSummary> {
@@ -345,7 +361,6 @@ export async function seedStudents(): Promise<SeedSummary> {
   if (ref.colleges.length === 0) throw new Error("No active colleges found to assign.");
   if (ref.interests.length < 3) throw new Error("Need at least 3 active interests to seed.");
 
-  const photoBuffers = await downloadPhotos();
   const accounts: SeedAccountResult[] = [];
   let created = 0;
   let updated = 0;
@@ -383,8 +398,8 @@ export async function seedStudents(): Promise<SeedSummary> {
     );
 
 
-    // 3. Photos → primary drives avatar_url.
-    const primaryPath = await rebuildPhotos(userId, photoBuffers, persona.photoCount, rnd);
+    // 3. Photos (generated in-code) → primary drives avatar_url.
+    const primaryPath = await rebuildPhotos(userId, fullName, persona.photoCount, rnd);
 
     // 4. Full profile — the exact fields the onboarding flow writes.
     const { error: pErr } = await supabaseAdmin
