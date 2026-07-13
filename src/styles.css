@@ -457,3 +457,17 @@
   @keyframes ds-page-in { from { opacity: 0; } to { opacity: 1; } }
   .ds-page-in { animation: ds-page-in 0.12s ease both; }
 }
+
+/* Global keyboard focus ring — desktop keyboard users get a clear, consistent
+   focus indicator. Scoped to :focus-visible so mouse/touch interactions stay
+   ring-free. Uses the design-system ring token. */
+:where(a, button, input, select, textarea, summary, [role="button"], [role="tab"], [tabindex]):focus-visible {
+  outline: 2px solid var(--ring);
+  outline-offset: 2px;
+  border-radius: var(--radius-sm);
+}
+@media (prefers-reduced-motion: no-preference) {
+  :where(a, button, [role="button"], [role="tab"]):focus-visible {
+    transition: outline-offset 0.12s ease;
+  }
+}
