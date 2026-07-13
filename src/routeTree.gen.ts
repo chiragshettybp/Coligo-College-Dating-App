@@ -55,6 +55,7 @@ import { Route as AdminUsersIndexRouteImport } from './routes/admin.users.index'
 import { Route as AdminSettingsIndexRouteImport } from './routes/admin.settings.index'
 import { Route as AdminReportsIndexRouteImport } from './routes/admin.reports.index'
 import { Route as AdminMatchesIndexRouteImport } from './routes/admin.matches.index'
+import { Route as AdminLogsIndexRouteImport } from './routes/admin.logs.index'
 import { Route as AdminCollegesIndexRouteImport } from './routes/admin.colleges.index'
 import { Route as AdminChatsIndexRouteImport } from './routes/admin.chats.index'
 import { Route as AdminAnalyticsIndexRouteImport } from './routes/admin.analytics.index'
@@ -339,6 +340,11 @@ const AdminReportsIndexRoute = AdminReportsIndexRouteImport.update({
 const AdminMatchesIndexRoute = AdminMatchesIndexRouteImport.update({
   id: '/matches/',
   path: '/matches/',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminLogsIndexRoute = AdminLogsIndexRouteImport.update({
+  id: '/logs/',
+  path: '/logs/',
   getParentRoute: () => AdminRoute,
 } as any)
 const AdminCollegesIndexRoute = AdminCollegesIndexRouteImport.update({
@@ -740,6 +746,7 @@ export interface FileRoutesByFullPath {
   '/admin/analytics/': typeof AdminAnalyticsIndexRoute
   '/admin/chats/': typeof AdminChatsIndexRoute
   '/admin/colleges/': typeof AdminCollegesIndexRoute
+  '/admin/logs/': typeof AdminLogsIndexRoute
   '/admin/matches/': typeof AdminMatchesIndexRoute
   '/admin/reports/': typeof AdminReportsIndexRoute
   '/admin/settings/': typeof AdminSettingsIndexRoute
@@ -834,6 +841,7 @@ export interface FileRoutesByTo {
   '/admin/analytics': typeof AdminAnalyticsIndexRoute
   '/admin/chats': typeof AdminChatsIndexRoute
   '/admin/colleges': typeof AdminCollegesIndexRoute
+  '/admin/logs': typeof AdminLogsIndexRoute
   '/admin/matches': typeof AdminMatchesIndexRoute
   '/admin/reports': typeof AdminReportsIndexRoute
   '/admin/settings': typeof AdminSettingsIndexRoute
@@ -938,6 +946,7 @@ export interface FileRoutesById {
   '/admin/analytics/': typeof AdminAnalyticsIndexRoute
   '/admin/chats/': typeof AdminChatsIndexRoute
   '/admin/colleges/': typeof AdminCollegesIndexRoute
+  '/admin/logs/': typeof AdminLogsIndexRoute
   '/admin/matches/': typeof AdminMatchesIndexRoute
   '/admin/reports/': typeof AdminReportsIndexRoute
   '/admin/settings/': typeof AdminSettingsIndexRoute
@@ -1041,6 +1050,7 @@ export interface FileRouteTypes {
     | '/admin/analytics/'
     | '/admin/chats/'
     | '/admin/colleges/'
+    | '/admin/logs/'
     | '/admin/matches/'
     | '/admin/reports/'
     | '/admin/settings/'
@@ -1135,6 +1145,7 @@ export interface FileRouteTypes {
     | '/admin/analytics'
     | '/admin/chats'
     | '/admin/colleges'
+    | '/admin/logs'
     | '/admin/matches'
     | '/admin/reports'
     | '/admin/settings'
@@ -1238,6 +1249,7 @@ export interface FileRouteTypes {
     | '/admin/analytics/'
     | '/admin/chats/'
     | '/admin/colleges/'
+    | '/admin/logs/'
     | '/admin/matches/'
     | '/admin/reports/'
     | '/admin/settings/'
@@ -1594,6 +1606,13 @@ declare module '@tanstack/react-router' {
       path: '/matches'
       fullPath: '/admin/matches/'
       preLoaderRoute: typeof AdminMatchesIndexRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/logs/': {
+      id: '/admin/logs/'
+      path: '/logs'
+      fullPath: '/admin/logs/'
+      preLoaderRoute: typeof AdminLogsIndexRouteImport
       parentRoute: typeof AdminRoute
     }
     '/admin/colleges/': {
@@ -2275,6 +2294,7 @@ interface AdminRouteChildren {
   AdminAnalyticsIndexRoute: typeof AdminAnalyticsIndexRoute
   AdminChatsIndexRoute: typeof AdminChatsIndexRoute
   AdminCollegesIndexRoute: typeof AdminCollegesIndexRoute
+  AdminLogsIndexRoute: typeof AdminLogsIndexRoute
   AdminMatchesIndexRoute: typeof AdminMatchesIndexRoute
   AdminReportsIndexRoute: typeof AdminReportsIndexRoute
   AdminSettingsIndexRoute: typeof AdminSettingsIndexRoute
@@ -2294,6 +2314,7 @@ const AdminRouteChildren: AdminRouteChildren = {
   AdminAnalyticsIndexRoute: AdminAnalyticsIndexRoute,
   AdminChatsIndexRoute: AdminChatsIndexRoute,
   AdminCollegesIndexRoute: AdminCollegesIndexRoute,
+  AdminLogsIndexRoute: AdminLogsIndexRoute,
   AdminMatchesIndexRoute: AdminMatchesIndexRoute,
   AdminReportsIndexRoute: AdminReportsIndexRoute,
   AdminSettingsIndexRoute: AdminSettingsIndexRoute,
