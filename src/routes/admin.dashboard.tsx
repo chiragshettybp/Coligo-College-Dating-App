@@ -30,6 +30,7 @@ import {
   BellRing,
   ShieldAlert,
   ChevronRight,
+  Settings as SettingsIcon,
 } from "lucide-react";
 
 import { supabase } from "@/integrations/supabase/client";
@@ -443,6 +444,7 @@ const ACTIONS: { label: string; icon: React.ReactNode; badge?: boolean; to?: str
   { label: "Manage Matches", icon: <Heart style={I} />, to: "/admin/matches" },
   { label: "Manage Chats", icon: <MessagesSquare style={I} />, to: "/admin/chats" },
   { label: "Analytics", icon: <Activity style={I} />, to: "/admin/analytics" },
+  { label: "Settings", icon: <SettingsIcon style={I} />, to: "/admin/settings" },
   { label: "Audit Logs", icon: <ShieldAlert style={I} /> },
 ];
 
@@ -464,6 +466,7 @@ function QuickActions({ pending }: { pending: number }) {
             else if (a.to === "/admin/matches") navigate({ to: "/admin/matches" });
             else if (a.to === "/admin/chats") navigate({ to: "/admin/chats" });
             else if (a.to === "/admin/analytics") navigate({ to: "/admin/analytics" });
+            else if (a.to === "/admin/settings") navigate({ to: "/admin/settings" });
             /* other modules — future dashboard entry points */
           }}
         />

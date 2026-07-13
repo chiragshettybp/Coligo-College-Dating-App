@@ -1,49 +1,72 @@
-## Admin Analytics Module — `/admin/analytics`
+# Admin Settings Module (`/admin/settings`)
 
-Business-intelligence center for Coligo. Reuses the existing admin stack — no redesign, no new design system. Built on the same admin-gated `createServerFn` + `SECURITY DEFINER` RPC + Supabase Realtime pattern already used by `/admin/dashboard`, `/admin/matches`, `/admin/chats`, `/admin/reports`.
+Central configuration center for Coligo. Reuses the exact patterns already shipped in the other admin modules (admin-gated `SECURITY DEFINER` RPCs → thin `createServerFn` wrappers → realtime hook → DS-only UI). No mock data, everything persists to Supabase and propagates live.
 
-### Scope guardrails
-- Ship what has real backing data today (users, profiles, colleges, departments, swipes, matches, messages, reports, notifications, moderation actions). Metrics with no source table (session length, screen views, notification CTR, device/app-version, revenue) are shown as **future-ready empty states**, not fabricated numbers.
-- Reuse `src/components/ds/*`, `src/components/admin/charts.tsx` (`AreaTrend`, `BarSeries`, `Donut`), `StatCard`, `TopBar`, filters, skeletons, empty states. No new visual primitives unless a chart type is genuinely missing (heatmap grid, leaderboard row) — those go in `charts.tsx`.
+## What already exists (reused, not rebuilt)
+- `application_settings` (maintenance, support email, min app version) — extend, don't replace.
+- `feature_flags` (key/enabled/payload) — becomes the backing store for the Feature Flags section.
+- `announcements`, `app_versions`, `admin_logs` (audit trail), `settings` (per-user defaults).
+- App-side readers already consume these: `__root.tsx`, `system.maintenance.tsx`, `settings.functions.ts`, `matches.functions.ts`, `profile-full.functions.ts`. New settings must feed the same readers so changes take effect live.
 
----
+## Phase 1 — Database (single migration)
+Normalized per-domain config tables (one row = one live config, not JSON blobs), each with the standard 4-step (CREATE → GRANT → RLS → POLICY) and `updated_at` trigger:
+- `platform_settings` (general: app name, description, support phone, copyright, current/min version, force-update).
+- `authentication_settings` (mobile/OTP/password login toggles, OTP expiry, max OTP attempts, session duration, auto-logout, password rules, account-lock threshold).
+- `onboarding_settings` (min age, min/max photos, max bio, min/max interests, college/department/semester rules, mandatory fields jsonb).
+- `discovery_settings` (enabled, match creation, auto-match, ranking algo, same/cross-college, cache refresh).
+- `chat_settings` (enabled, image/voice/replies/reactions/read-receipts/typing toggles, max image size, max voice duration, max message length).
+- `notification_settings` (in-app, match, message, announcement, system, broadcast toggles).
+- `moderation_settings` (auto-block/report/warning thresholds, auto-suspension).
+- `storage_settings` (limits/config only; live usage is computed at read time).
+- `security_settings` (session timeout, JWT lifetime, rate limits, API limits, admin session duration, device limits, require-reauth flag).
+- `settings_audit_log` (immutable: admin_id, category, setting_key, previous_value, new_value, reason, ip, created_at) — insert-only, no update/delete policy.
 
-### Phase 1 — Database (single migration)
-All aggregation runs server-side in `SECURITY DEFINER` RPCs gated by `has_role(auth.uid(),'admin')`; students can never call them. No new user-data tables; analytics reads existing tables.
+Maintenance mode + feature flags reuse `application_settings` and `feature_flags`.
 
-RPCs (return JSON, accept `p_start timestamptz, p_end timestamptz`, and optional filter args — college_id, department_id, gender, verification_status):
-- `admin_analytics_kpis(...)` → all global KPI counts in one round-trip (users, verified, new-today/week/month, colleges, departments, swipes/likes/passes, matches, match rate, messages, images, voice notes, reports, banned/suspended, active conversations, DAU/WAU/MAU derived from `messages`/`swipes`/`updated_at` activity).
-- `admin_analytics_timeseries(p_metric text, p_bucket text, ...)` → daily/hourly series for registrations, swipes, matches, messages (one RPC, metric-switched).
-- `admin_analytics_distribution(p_dimension text, ...)` → gender/age/college/department/semester/graduation/completion/verification distributions.
-- `admin_analytics_leaderboard(p_kind text, p_limit int)` → top colleges/departments by users, matches, messages, engagement, growth.
-- `admin_analytics_heatmap(p_metric text, ...)` → 7×24 day-of-week × hour buckets for activity/messaging/matching.
-- `admin_analytics_moderation(...)` → reports by category/status, resolution time, repeat offenders (reads `reports`, `match_admin_actions`, `chat_admin_actions`, `moderation_actions`).
-- `admin_analytics_system_health()` → reuse/extend existing `getSystemHealth` source (counts, storage indicators available).
+RLS: every table `SELECT/UPDATE` gated to `has_role(auth.uid(),'admin')`; audit log `SELECT` admin-only, `INSERT` via RPC only. Public app reads continue through the existing narrow readers / server fns.
 
-Supporting indexes on `created_at`, `college_id`, `department_id` where missing to keep aggregations fast. No materialized views in v1 (data volume is small); RPCs are written so they can be swapped for MVs later without changing the server-function contract.
+Seed one default row per config table so the UI never shows empty state.
 
-### Phase 2 — Server functions — `src/lib/admin-analytics.functions.ts`
-Thin `createServerFn({ method: "GET" })` wrappers over the RPCs, each `.inputValidator` (zod) for date range + filters, plus matching `queryOptions` factories (following `admin.functions.ts` exactly). Date-range validation (start ≤ end, max span clamp) lives here. Every fn relies on the admin RPC guard; unauthorized calls return an error the UI renders as an access state.
+Realtime: `ALTER PUBLICATION supabase_realtime ADD TABLE` for the config tables + `settings_audit_log`.
 
-### Phase 3 — Realtime — `src/lib/use-admin-analytics-realtime.ts`
-One hook subscribing to `profiles`, `matches`, `messages`, `swipes`, `reports`, `notifications` inside `useEffect` with `supabase.removeChannel` cleanup (per project realtime rule). On change it `invalidateQueries(["admin","analytics"])` (debounced) so cards/charts/feeds refresh without manual reload. Live Activity Feed reuses the existing `getAdminActivity` source.
+RPCs (`SECURITY DEFINER`, each re-checks `has_role`, raises `Forbidden`):
+- `admin_settings_overview()` → dashboard cards (platform status, maintenance, active/online users, versions, DB/storage/realtime/auth health, pending-changes count, last update ts).
+- `admin_settings_get(_category)` / `admin_settings_update(_category, _values jsonb, _reason)` — validates ranges server-side, writes the row, and writes an audit entry atomically (returns new row).
+- `admin_feature_flag_set(_key,_enabled,_payload,_reason)`.
+- `admin_settings_history(_category,_limit,_offset)` → audit log page.
+- `admin_settings_export()` / `admin_settings_import(_payload jsonb,_reason)` — transactional, rollback on validation failure.
+- `admin_storage_stats()` → images/voice/backups/available (from storage metadata).
 
-### Phase 4 — Page — `src/routes/admin.analytics.index.tsx`
-Mobile-first, progressively enhanced to multi-column. Sections, all fed by the RPCs above:
-1. Date-range control (Today → Custom) + global filter bar (college, department, gender, verification, age group) with persisted state via URL search params (`validateSearch` + `fallback`).
-2. KPI card grid (real counts; unbacked KPIs → labeled "Coming soon" tiles).
-3. User / Discovery / Match / Chat / Engagement / College / Department / Moderation / Notification analytics blocks — each a set of `AreaTrend`/`BarSeries`/`Donut`/table cards driven by timeseries/distribution/leaderboard RPCs.
-4. Heatmaps (7×24 grid), Leaderboards, Live Activity Feed, System Analytics.
-5. Export: client-side CSV + XLSX (via `xlsx`/SheetJS) of the currently filtered dataset; PDF and scheduled/email reports scaffolded as disabled future-ready affordances.
+## Phase 2 — Server functions (`src/lib/admin-settings.functions.ts`)
+Thin `createServerFn` wrappers with Zod validators over the RPCs, mirroring `admin.functions.ts`. Export `queryOptions` for each read. `admin-settings` guard reuses the existing `adminGuardQuery` pattern.
 
-Route is placed to inherit the existing admin auth gate (same as sibling `admin.*` routes); redirects non-admins to `/admin/login`. Loader primes queries via `ensureQueryData`; component reads with `useSuspenseQuery`. `errorComponent` + `notFoundComponent` set; every widget handles empty/loading/error independently so one failed aggregation never blanks the dashboard.
+## Phase 3 — Realtime (`src/lib/use-admin-settings-realtime.ts`)
+One channel subscribing to all config tables + audit log; debounced `queryClient.invalidateQueries` on the settings query keys. Same shape as `use-admin-analytics-realtime.ts`.
 
-### Phase 5 — Integration & verification
-- Add "Analytics" entry to `/admin/dashboard`.
-- `tsgo` typecheck; verify admin gating (signed-out → `/admin/login`) with Playwright.
-- Confirm realtime invalidation and CSV/XLSX export against real data.
+## Phase 4 — UI (`src/routes/admin.settings.index.tsx` + `src/components/admin/settings-bits.tsx`)
+Mobile-first, DS-only (`ds/glass`, `ds/card`, `ds/navigation`, existing toggles/inputs/tabs). Structure:
+- Admin guard + redirect to `/admin/login` (identical to other admin routes).
+- Realtime overview cards at top.
+- Tabbed / accordioned categories (General, Authentication, Onboarding, Discovery, Chat, Notifications, Moderation, Colleges, Profile, Storage, Security, Maintenance, Feature Flags, Announcements, System Info).
+- Per-category form: local dirty state, client-side validation matching server rules, Save/Reset with success/error feedback, preserves input on failure.
+- Instant settings search filtering across all sections.
+- Config history panel (previous → new value, admin, timestamp, reason).
+- Bulk actions (reset category/platform, export/import) → dedicated in-page confirmation views, never popups.
+- Storage section shows live usage + maintenance action buttons.
+- "Coming Soon" badges for future-flagged items (AI/image/voice moderation, allowed IPs, force-update) — labeled, not faked.
 
-### Technical notes
-- New dep: `xlsx` (SheetJS) for XLSX export — added via `bun add` before import.
-- Charts run client-side; heatmap/leaderboard row components added to `charts.tsx` if missing.
-- All secrets/env untouched; everything goes through existing Supabase clients.
+## Phase 5 — Integration
+- Add "Settings" entry to `/admin/dashboard` module nav (`admin.dashboard.tsx`).
+- Wire new config into existing app readers so changes take effect: maintenance already read in `__root.tsx`/`system.maintenance.tsx`; feature flags gate Discovery/Chat/etc.; onboarding/chat/discovery/security readers pull from the new tables via existing server fns.
+- Announcements section reuses the existing `announcements` table.
+
+## Phase 6 — Verification
+- `tsgo` typecheck + build.
+- Playwright: unauthenticated `/admin/settings` redirects to `/admin/login`; after admin sign-in, save a setting → confirm persistence + audit row + realtime refresh.
+- Confirm no secrets/env values ever rendered.
+
+## Technical notes
+- Reserved-schema safe: only `public` tables + `supabase_realtime` publication.
+- Concurrent-edit safety: `admin_settings_update` compares/stamps `updated_at`; stale writes rejected with a recoverable error.
+- Validation triggers (not CHECK constraints) for range rules.
+- Zod on both client and server; ranges/limits identical on both sides.

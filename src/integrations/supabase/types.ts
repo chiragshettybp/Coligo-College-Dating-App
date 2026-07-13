@@ -176,6 +176,30 @@ export type Database = {
         }
         Relationships: []
       }
+      authentication_settings: {
+        Row: {
+          created_at: string
+          data: Json
+          id: string
+          updated_at: string
+          updated_by: string | null
+        }
+        Insert: {
+          created_at?: string
+          data?: Json
+          id?: string
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Update: {
+          created_at?: string
+          data?: Json
+          id?: string
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Relationships: []
+      }
       blocks: {
         Row: {
           blocked_id: string
@@ -276,6 +300,30 @@ export type Database = {
           },
         ]
       }
+      chat_settings: {
+        Row: {
+          created_at: string
+          data: Json
+          id: string
+          updated_at: string
+          updated_by: string | null
+        }
+        Insert: {
+          created_at?: string
+          data?: Json
+          id?: string
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Update: {
+          created_at?: string
+          data?: Json
+          id?: string
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Relationships: []
+      }
       colleges: {
         Row: {
           archived_at: string | null
@@ -336,6 +384,30 @@ export type Database = {
           status?: string
           updated_at?: string
           website?: string | null
+        }
+        Relationships: []
+      }
+      colleges_settings: {
+        Row: {
+          created_at: string
+          data: Json
+          id: string
+          updated_at: string
+          updated_by: string | null
+        }
+        Insert: {
+          created_at?: string
+          data?: Json
+          id?: string
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Update: {
+          created_at?: string
+          data?: Json
+          id?: string
+          updated_at?: string
+          updated_by?: string | null
         }
         Relationships: []
       }
@@ -509,6 +581,30 @@ export type Database = {
           token?: string
           updated_at?: string
           user_id?: string
+        }
+        Relationships: []
+      }
+      discovery_settings: {
+        Row: {
+          created_at: string
+          data: Json
+          id: string
+          updated_at: string
+          updated_by: string | null
+        }
+        Insert: {
+          created_at?: string
+          data?: Json
+          id?: string
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Update: {
+          created_at?: string
+          data?: Json
+          id?: string
+          updated_at?: string
+          updated_by?: string | null
         }
         Relationships: []
       }
@@ -1043,6 +1139,30 @@ export type Database = {
           },
         ]
       }
+      moderation_settings: {
+        Row: {
+          created_at: string
+          data: Json
+          id: string
+          updated_at: string
+          updated_by: string | null
+        }
+        Insert: {
+          created_at?: string
+          data?: Json
+          id?: string
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Update: {
+          created_at?: string
+          data?: Json
+          id?: string
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Relationships: []
+      }
       notification_preferences: {
         Row: {
           category: string
@@ -1073,6 +1193,30 @@ export type Database = {
           push?: boolean
           updated_at?: string
           user_id?: string
+        }
+        Relationships: []
+      }
+      notification_settings: {
+        Row: {
+          created_at: string
+          data: Json
+          id: string
+          updated_at: string
+          updated_by: string | null
+        }
+        Insert: {
+          created_at?: string
+          data?: Json
+          id?: string
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Update: {
+          created_at?: string
+          data?: Json
+          id?: string
+          updated_at?: string
+          updated_by?: string | null
         }
         Relationships: []
       }
@@ -1115,6 +1259,30 @@ export type Database = {
         }
         Relationships: []
       }
+      onboarding_settings: {
+        Row: {
+          created_at: string
+          data: Json
+          id: string
+          updated_at: string
+          updated_by: string | null
+        }
+        Insert: {
+          created_at?: string
+          data?: Json
+          id?: string
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Update: {
+          created_at?: string
+          data?: Json
+          id?: string
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Relationships: []
+      }
       photos: {
         Row: {
           created_at: string
@@ -1142,6 +1310,54 @@ export type Database = {
           storage_path?: string
           updated_at?: string
           user_id?: string
+        }
+        Relationships: []
+      }
+      platform_settings: {
+        Row: {
+          created_at: string
+          data: Json
+          id: string
+          updated_at: string
+          updated_by: string | null
+        }
+        Insert: {
+          created_at?: string
+          data?: Json
+          id?: string
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Update: {
+          created_at?: string
+          data?: Json
+          id?: string
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Relationships: []
+      }
+      profile_settings: {
+        Row: {
+          created_at: string
+          data: Json
+          id: string
+          updated_at: string
+          updated_by: string | null
+        }
+        Insert: {
+          created_at?: string
+          data?: Json
+          id?: string
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Update: {
+          created_at?: string
+          data?: Json
+          id?: string
+          updated_at?: string
+          updated_by?: string | null
         }
         Relationships: []
       }
@@ -1324,6 +1540,30 @@ export type Database = {
         }
         Relationships: []
       }
+      security_settings: {
+        Row: {
+          created_at: string
+          data: Json
+          id: string
+          updated_at: string
+          updated_by: string | null
+        }
+        Insert: {
+          created_at?: string
+          data?: Json
+          id?: string
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Update: {
+          created_at?: string
+          data?: Json
+          id?: string
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Relationships: []
+      }
       settings: {
         Row: {
           allow_profile_preview: boolean
@@ -1363,6 +1603,66 @@ export type Database = {
           show_online_status?: boolean
           updated_at?: string
           user_id?: string
+        }
+        Relationships: []
+      }
+      settings_audit_log: {
+        Row: {
+          admin_id: string | null
+          category: string
+          created_at: string
+          id: string
+          ip: string | null
+          new_value: Json | null
+          previous_value: Json | null
+          reason: string | null
+          setting_key: string | null
+        }
+        Insert: {
+          admin_id?: string | null
+          category: string
+          created_at?: string
+          id?: string
+          ip?: string | null
+          new_value?: Json | null
+          previous_value?: Json | null
+          reason?: string | null
+          setting_key?: string | null
+        }
+        Update: {
+          admin_id?: string | null
+          category?: string
+          created_at?: string
+          id?: string
+          ip?: string | null
+          new_value?: Json | null
+          previous_value?: Json | null
+          reason?: string | null
+          setting_key?: string | null
+        }
+        Relationships: []
+      }
+      storage_settings: {
+        Row: {
+          created_at: string
+          data: Json
+          id: string
+          updated_at: string
+          updated_by: string | null
+        }
+        Insert: {
+          created_at?: string
+          data?: Json
+          id?: string
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Update: {
+          created_at?: string
+          data?: Json
+          id?: string
+          updated_at?: string
+          updated_by?: string | null
         }
         Relationships: []
       }
@@ -1475,6 +1775,8 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      _admin_settings_default: { Args: { _category: string }; Returns: Json }
+      _admin_settings_table: { Args: { _category: string }; Returns: string }
       admin_add_moderation_note: {
         Args: { _body: string; _report_id: string }
         Returns: Json
@@ -1580,6 +1882,15 @@ export type Database = {
       admin_distribution: { Args: never; Returns: Json }
       admin_escalate_chat: {
         Args: { _chat_id: string; _reason?: string; _status: string }
+        Returns: Json
+      }
+      admin_feature_flag_set: {
+        Args: {
+          _enabled: boolean
+          _key: string
+          _payload?: Json
+          _reason?: string
+        }
         Returns: Json
       }
       admin_flag_chat: {
@@ -1815,6 +2126,10 @@ export type Database = {
         }
         Returns: undefined
       }
+      admin_maintenance_update: {
+        Args: { _reason?: string; _values: Json }
+        Returns: Json
+      }
       admin_mark_suspicious: {
         Args: { _match_id: string; _reason?: string; _suspicious: boolean }
         Returns: Json
@@ -1877,6 +2192,26 @@ export type Database = {
         Args: { _status: string; _user_id: string }
         Returns: Json
       }
+      admin_settings_export: { Args: never; Returns: Json }
+      admin_settings_get_all: { Args: never; Returns: Json }
+      admin_settings_history: {
+        Args: { _category?: string; _limit?: number; _offset?: number }
+        Returns: Json
+      }
+      admin_settings_import: {
+        Args: { _payload: Json; _reason?: string }
+        Returns: Json
+      }
+      admin_settings_overview: { Args: never; Returns: Json }
+      admin_settings_reset: {
+        Args: { _category: string; _reason?: string }
+        Returns: Json
+      }
+      admin_settings_update: {
+        Args: { _category: string; _reason?: string; _values: Json }
+        Returns: Json
+      }
+      admin_storage_stats: { Args: never; Returns: Json }
       admin_timeseries: { Args: { _days?: number }; Returns: Json }
       admin_upsert_college: {
         Args: { _id: string; _payload: Json }
