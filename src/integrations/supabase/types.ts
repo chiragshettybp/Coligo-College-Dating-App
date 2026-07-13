@@ -1772,7 +1772,29 @@ export type Database = {
       }
     }
     Views: {
-      [_ in never]: never
+      unified_logs: {
+        Row: {
+          admin_id: string | null
+          category: string | null
+          created_at: string | null
+          description: string | null
+          device: string | null
+          event: string | null
+          ip: string | null
+          log_id: string | null
+          metadata: Json | null
+          module: string | null
+          related_entity_id: string | null
+          related_entity_type: string | null
+          request_id: string | null
+          row_id: string | null
+          severity: string | null
+          source: string | null
+          status: string | null
+          user_id: string | null
+        }
+        Relationships: []
+      }
     }
     Functions: {
       _admin_settings_default: { Args: { _category: string }; Returns: Json }
@@ -2125,6 +2147,40 @@ export type Database = {
           _reason: string
         }
         Returns: undefined
+      }
+      admin_logs_detail: {
+        Args: { p_id: string; p_source: string }
+        Returns: Json
+      }
+      admin_logs_distribution: {
+        Args: { p_dimension?: string; p_end?: string; p_start?: string }
+        Returns: Json
+      }
+      admin_logs_investigation: {
+        Args: { p_key_type: string; p_key_value: string }
+        Returns: Json
+      }
+      admin_logs_kpis: {
+        Args: { p_end?: string; p_start?: string }
+        Returns: Json
+      }
+      admin_logs_list: {
+        Args: {
+          p_filters?: Json
+          p_page?: number
+          p_page_size?: number
+          p_sort?: string
+        }
+        Returns: Json
+      }
+      admin_logs_timeseries: {
+        Args: {
+          p_bucket?: string
+          p_end?: string
+          p_metric?: string
+          p_start?: string
+        }
+        Returns: Json
       }
       admin_maintenance_update: {
         Args: { _reason?: string; _values: Json }
