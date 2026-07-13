@@ -310,6 +310,68 @@ export const clearReports = createServerFn({ method: "POST" })
     return res as unknown as { ok: boolean; resolved: number };
   });
 
+// ------------------------------------------------------- permanent deletion
+// Irreversibly removes a user everywhere: writes an immutable audit note, purges
+// their storage objects, revokes sessions/tokens, then deletes the auth user —
+// which cascades to profiles, photos, matches, messages, swipes, reports, etc.
+// via ON DELETE CASCADE. Server-side admin gate + self-delete guard.
+const purgeInput = z.object({ userId: z.string().uuid(), reason: z.string().max(500).optional() });
+
+export const adminDeleteUser = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((d: unknown) => purgeInput.parse(d))
+  .handler(async ({ data, context }): Promise<{ ok: boolean }> => {
+    const { supabase, userId: adminId } = context;
+
+    // 1. Re-verify admin server-side; block self-deletion.
+    const { data: isAdminRole, error: roleErr } = await supabase.rpc("has_role", {
+      _user_id: adminId,
+      _role: "admin",
+    });
+    if (roleErr || isAdminRole !== true) throw new Error("Forbidden");
+    if (data.userId === adminId) throw new Error("You cannot permanently delete your own admin account.");
+
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+
+    // 2. Capture identity, then write the immutable audit note BEFORE purging.
+    const { data: target } = await supabaseAdmin
+      .from("profiles")
+      .select("full_name, display_name, phone")
+      .eq("id", data.userId)
+      .maybeSingle();
+    await supabase.rpc("admin_log_action", {
+      _action: "user_permanently_deleted",
+      _target_table: "profiles",
+      _target_id: data.userId,
+      _metadata: {
+        reason: data.reason ?? null,
+        full_name: target?.full_name ?? target?.display_name ?? null,
+        phone: target?.phone ?? null,
+      } as never,
+    });
+
+    // 3. Purge storage objects owned by the user.
+    const { data: photos } = await supabaseAdmin
+      .from("photos")
+      .select("storage_path")
+      .eq("user_id", data.userId);
+    const paths = (photos ?? [])
+      .map((p) => p.storage_path)
+      .filter((p): p is string => !!p && !/^https?:\/\//.test(p));
+    if (paths.length > 0) await supabaseAdmin.storage.from("profile-photos").remove(paths);
+
+    // 4. Revoke device sessions / push tokens.
+    await Promise.all([
+      supabaseAdmin.from("device_sessions").delete().eq("user_id", data.userId),
+      supabaseAdmin.from("device_tokens").delete().eq("user_id", data.userId),
+    ]);
+
+    // 5. Permanently remove the auth user — cascades to all owned rows.
+    const { error } = await supabaseAdmin.auth.admin.deleteUser(data.userId);
+    if (error) throw new Error(error.message);
+    return { ok: true };
+  });
+
 // ------------------------------------------------------------- query options
 export const adminUsersQuery = (params: z.input<typeof listInput>) =>
   queryOptions({

@@ -37,6 +37,7 @@ import {
   resetDiscovery,
   forceLogout,
   clearReports,
+  adminDeleteUser,
   type AdminUserDetail,
 } from "@/lib/admin-users.functions";
 import { adminGuardQuery } from "@/lib/admin.functions";
@@ -344,11 +345,14 @@ function Devices({ userId }: { userId: string }) {
 }
 
 // ---------------------------------------------------------------------- Actions
-type ActionKey = "suspend" | "ban" | "restore" | "delete" | "verify" | "unverify" | "pending" | "reset_discovery" | "force_logout" | "clear_reports";
+type ActionKey = "suspend" | "ban" | "restore" | "delete" | "verify" | "unverify" | "pending" | "reset_discovery" | "force_logout" | "clear_reports" | "purge";
 
 function Actions({ u, onDone }: { u: AdminUserDetail; onDone: () => void }) {
+  const navigate = useNavigate();
   const [pending, setPending] = useState<ActionKey | null>(null);
   const [running, setRunning] = useState(false);
+  const [reason, setReason] = useState("");
+  const [confirmText, setConfirmText] = useState("");
   const [msg, setMsg] = useState<{ ok: boolean; text: string } | null>(null);
 
   const run = async () => {
@@ -367,6 +371,11 @@ function Actions({ u, onDone }: { u: AdminUserDetail; onDone: () => void }) {
         case "reset_discovery": await resetDiscovery({ data: { userId: u.id } }); break;
         case "force_logout": await forceLogout({ data: { userId: u.id } }); break;
         case "clear_reports": await clearReports({ data: { userId: u.id } }); break;
+        case "purge":
+          await adminDeleteUser({ data: { userId: u.id, reason: reason.trim() || undefined } });
+          onDone();
+          navigate({ to: "/admin/users", replace: true });
+          return;
       }
       setMsg({ ok: true, text: "Action applied successfully." });
       onDone();
@@ -375,6 +384,8 @@ function Actions({ u, onDone }: { u: AdminUserDetail; onDone: () => void }) {
     } finally {
       setRunning(false);
       setPending(null);
+      setReason("");
+      setConfirmText("");
     }
   };
 
@@ -389,24 +400,48 @@ function Actions({ u, onDone }: { u: AdminUserDetail; onDone: () => void }) {
     reset_discovery: { label: "Reset discovery", desc: "Re-enable discovery and profile visibility.", icon: <Radio style={I} /> },
     force_logout: { label: "Force logout", desc: "Revoke every active session; the user must sign in again.", icon: <LogOut style={I} /> },
     clear_reports: { label: "Clear reports", desc: "Mark all open reports against this user as resolved.", icon: <Flag style={I} /> },
+    purge: { label: "Permanently delete user", desc: "Irreversibly erase this account and everything linked to it — profile, photos, matches, chats, swipes and reports. An audit note is kept.", danger: true, icon: <Trash2 style={I} /> },
   };
 
   if (pending) {
     const m = META[pending];
+    const isPurge = pending === "purge";
+    const canConfirm = !isPurge || confirmText.trim().toUpperCase() === "DELETE";
     return (
       <Card padding={spacing[4]} style={{ border: `1px solid ${m.danger ? "rgba(255,59,48,0.24)" : surfaces.border}` }}>
         <Text variant="headingSm" color={colors.textPrimary}>{m.label}</Text>
         <Text variant="body" tone="secondary" style={{ marginTop: spacing[1] }}>{m.desc}</Text>
         <Text variant="caption" tone="muted" style={{ marginTop: spacing[2] }}>Target: {u.fullName || u.phone || u.id}</Text>
+        {isPurge && (
+          <div style={{ marginTop: spacing[3], display: "flex", flexDirection: "column", gap: spacing[2] }}>
+            <textarea
+              value={reason}
+              onChange={(e) => setReason(e.target.value)}
+              maxLength={500}
+              rows={2}
+              placeholder="Reason for deletion (saved to the audit log)"
+              className="w-full outline-none"
+              style={{ borderRadius: radii.md, padding: "10px 14px", fontSize: 14, background: surfaces.glassSoft, border: `1px solid ${surfaces.border}`, color: colors.textPrimary, resize: "none" }}
+            />
+            <input
+              value={confirmText}
+              onChange={(e) => setConfirmText(e.target.value)}
+              placeholder='Type "DELETE" to confirm'
+              autoCapitalize="characters"
+              className="w-full outline-none"
+              style={{ borderRadius: radii.md, padding: "10px 14px", fontSize: 14, background: surfaces.glassSoft, border: `1px solid ${surfaces.border}`, color: colors.textPrimary }}
+            />
+          </div>
+        )}
         <div className="flex items-center" style={{ gap: spacing[2], marginTop: spacing[4] }}>
-          <Button variant={m.danger ? "danger" : "primary"} loading={running} onClick={run}>Confirm</Button>
-          <Button variant="ghost" onClick={() => setPending(null)} disabled={running}>Cancel</Button>
+          <Button variant={m.danger ? "danger" : "primary"} loading={running} disabled={!canConfirm} onClick={run}>Confirm</Button>
+          <Button variant="ghost" onClick={() => { setPending(null); setReason(""); setConfirmText(""); }} disabled={running}>Cancel</Button>
         </div>
       </Card>
     );
   }
 
-  const order: ActionKey[] = ["suspend", "ban", "restore", "delete", "verify", "unverify", "pending", "reset_discovery", "force_logout", "clear_reports"];
+  const order: ActionKey[] = ["suspend", "ban", "restore", "delete", "verify", "unverify", "pending", "reset_discovery", "force_logout", "clear_reports", "purge"];
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: spacing[3] }}>
       {msg && (
