@@ -368,7 +368,12 @@ function Actions({ u, onDone }: { u: AdminUserDetail; onDone: () => void }) {
         case "verify": await setVerification({ data: { userId: u.id, status: "verified" } }); break;
         case "unverify": await setVerification({ data: { userId: u.id, status: "unverified" } }); break;
         case "pending": await setVerification({ data: { userId: u.id, status: "pending" } }); break;
-        case "reset_discovery": await resetDiscovery({ data: { userId: u.id } }); break;
+        case "reset_discovery": {
+          const r = await resetDiscovery({ data: { userId: u.id } });
+          setMsg({ ok: true, text: `Discovery re-enabled — ${r.swipesCleared} swipe${r.swipesCleared === 1 ? "" : "s"} cleared, deck refreshed.` });
+          onDone();
+          return;
+        }
         case "force_logout": await forceLogout({ data: { userId: u.id } }); break;
         case "clear_reports": await clearReports({ data: { userId: u.id } }); break;
         case "purge":
