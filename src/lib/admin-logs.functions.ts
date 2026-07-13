@@ -26,6 +26,8 @@ export type LogCategory =
 
 export type LogSeverity = "info" | "warning" | "error" | "critical";
 
+export type Json = string | number | boolean | null | { [key: string]: Json } | Json[];
+
 export type LogRow = {
   log_id: string;
   source: string;
