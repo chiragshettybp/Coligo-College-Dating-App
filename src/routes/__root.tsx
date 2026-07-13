@@ -29,6 +29,46 @@ function AnimatedOutlet() {
   );
 }
 
+/** Keyboard/screen-reader shortcut that jumps past chrome to the page's main
+ *  landmark. Visually hidden until focused via Tab. */
+function SkipToContent() {
+  return (
+    <a
+      href="#main"
+      onClick={(e) => {
+        const main = document.querySelector("main");
+        if (main) {
+          e.preventDefault();
+          main.setAttribute("tabindex", "-1");
+          (main as HTMLElement).focus();
+          main.scrollIntoView();
+        }
+      }}
+      style={{
+        position: "fixed",
+        top: 8,
+        left: 8,
+        zIndex: 100,
+        padding: "10px 16px",
+        borderRadius: 12,
+        background: "var(--primary)",
+        color: "var(--primary-foreground)",
+        fontWeight: 600,
+        transform: "translateY(-150%)",
+        transition: "transform 0.18s ease",
+      }}
+      onFocus={(e) => {
+        e.currentTarget.style.transform = "translateY(0)";
+      }}
+      onBlur={(e) => {
+        e.currentTarget.style.transform = "translateY(-150%)";
+      }}
+    >
+      Skip to content
+    </a>
+  );
+}
+
 /** Announces route changes to screen readers via a polite live region. */
 function RouteAnnouncer() {
   const pathname = useRouterState({ select: (s) => s.location.pathname });
@@ -175,6 +215,7 @@ function RootComponent() {
 
   return (
     <QueryClientProvider client={queryClient}>
+      <SkipToContent />
       {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
       <AnimatedOutlet />
       <RouteAnnouncer />
