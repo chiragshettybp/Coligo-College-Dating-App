@@ -24,7 +24,6 @@ import {
   Menu,
   X,
   LogOut,
-  Bell,
 } from "lucide-react";
 
 import { supabase } from "@/integrations/supabase/client";
