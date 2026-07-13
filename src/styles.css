@@ -474,3 +474,21 @@
     transition: outline-offset 0.12s ease;
   }
 }
+
+/* Native-style route cross-fade driven by TanStack Router's View Transitions.
+   Kept short so navigation feels instant, not laggy. */
+@media (prefers-reduced-motion: no-preference) {
+  ::view-transition-old(root),
+  ::view-transition-new(root) {
+    animation-duration: 0.22s;
+    animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1);
+  }
+}
+
+/* Respect reduced-motion: no cross-fade, instant swap. */
+@media (prefers-reduced-motion: reduce) {
+  ::view-transition-old(root),
+  ::view-transition-new(root) {
+    animation: none;
+  }
+}

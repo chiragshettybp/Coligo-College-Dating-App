@@ -24,6 +24,10 @@ export const getRouter = () => {
     routeTree,
     context: { queryClient },
     scrollRestoration: true,
+    // Smooth, native-style cross-fade between routes via the View Transitions
+    // API (no-op in browsers that lack it, and suppressed under
+    // prefers-reduced-motion by the CSS guard in styles.css).
+    defaultViewTransition: true,
     // Preload route chunks + loader data on hover/touch-start so navigation
     // feels instant. defaultPreloadStaleTime: 0 lets TanStack Query own freshness.
     defaultPreload: "intent",
