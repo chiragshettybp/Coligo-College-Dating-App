@@ -37,6 +37,7 @@ import {
   resetDiscovery,
   forceLogout,
   clearReports,
+  adminDeleteUser,
   type AdminUserDetail,
 } from "@/lib/admin-users.functions";
 import { adminGuardQuery } from "@/lib/admin.functions";
