@@ -593,6 +593,3 @@ const dotBadge: React.CSSProperties = {
   border: "2px solid #fff",
 };
 
-// Silence unused import in some tree-shake configs — Bell reserved for the
-// future notification center wired into the header.
-void Bell;
