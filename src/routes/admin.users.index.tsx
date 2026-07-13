@@ -20,6 +20,7 @@ import {
   Trash2,
   Download,
   PauseCircle,
+  UserPlus,
   X,
 } from "lucide-react";
 
@@ -33,6 +34,7 @@ import {
   type AdminUserSort,
 } from "@/lib/admin-users.functions";
 import { adminGuardQuery, logAdminAction } from "@/lib/admin.functions";
+import { seedDemoStudents } from "@/lib/admin-seed.functions";
 import { useAdminRealtime } from "@/lib/use-admin-realtime";
 import { Text, Badge, Skeleton, Avatar, Button, Chip } from "@/components/ds/glass";
 import { Card, EmptyStateCard } from "@/components/ds/card";
@@ -151,6 +153,27 @@ function AdminUsers() {
   const [bulk, setBulk] = useState<BulkMode>(null);
   const [running, setRunning] = useState(false);
   const [result, setResult] = useState<{ ok: number; fail: number } | null>(null);
+  const [seeding, setSeeding] = useState(false);
+  const [seedMsg, setSeedMsg] = useState<{ ok: boolean; text: string } | null>(null);
+
+  const onSeedDemo = async () => {
+    if (seeding) return;
+    haptic("medium");
+    setSeeding(true);
+    setSeedMsg(null);
+    try {
+      const summary = await seedDemoStudents();
+      setSeedMsg({
+        ok: true,
+        text: `Added ${summary.total} demo students (${summary.created} created, ${summary.updated} updated).`,
+      });
+      qc.invalidateQueries({ queryKey: ["admin"] });
+    } catch (e) {
+      setSeedMsg({ ok: false, text: e instanceof Error ? e.message : "Failed to add demo users." });
+    } finally {
+      setSeeding(false);
+    }
+  };
 
   useEffect(() => {
     const id = setTimeout(() => setDebounced(term), 300);
@@ -262,11 +285,31 @@ function AdminUsers() {
         title="User Management"
         onBack={() => navigate({ to: "/admin/dashboard" })}
         trailing={
-          <button onClick={onLogout} aria-label="Sign out" style={{ display: "flex", padding: 8, color: colors.textSecondary, background: "transparent", border: "none", cursor: "pointer" }}>
-            <LogOut style={{ width: 20, height: 20 }} />
-          </button>
+          <div style={{ display: "flex", alignItems: "center", gap: spacing[2] }}>
+            <Button
+              size="sm"
+              variant="primary"
+              loading={seeding}
+              leftIcon={<UserPlus style={{ width: 15, height: 15 }} />}
+              onClick={onSeedDemo}
+            >
+              Add 10 demo users
+            </Button>
+            <button onClick={onLogout} aria-label="Sign out" style={{ display: "flex", padding: 8, color: colors.textSecondary, background: "transparent", border: "none", cursor: "pointer" }}>
+              <LogOut style={{ width: 20, height: 20 }} />
+            </button>
+          </div>
         }
       />
+
+      {/* Seed demo users result */}
+      {seedMsg && (
+        <Card padding={spacing[3]} style={{ marginTop: spacing[3] }}>
+          <Text variant="body" color={seedMsg.ok ? colors.success : colors.warning}>
+            {seedMsg.text}
+          </Text>
+        </Card>
+      )}
 
       {/* Search */}
       <div style={{ marginTop: spacing[4] }}>
