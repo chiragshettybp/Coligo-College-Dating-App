@@ -187,7 +187,10 @@ function SplashPage() {
     return () => window.clearTimeout(t);
   }, [offline]);
 
-  // ---- Video autoplay (attempt with audio, fall back to muted). -----------
+  // ---- Video autoplay (muted-first for guaranteed inline playback). -------
+  // Mobile Safari/iOS only autoplay inline video when it is muted; attempting
+  // sound-first gets blocked and can leave the splash blank. So we always start
+  // muted (guaranteed to display), then best-effort enable sound once playing.
   useEffect(() => {
     const v = videoRef.current;
     if (!v || videoFailed) return;
@@ -195,18 +198,18 @@ function SplashPage() {
     let cancelled = false;
     const tryPlay = async () => {
       try {
-        v.muted = false;
+        v.muted = true;
         await v.play();
-      } catch {
-        // Browser blocked autoplay-with-sound → play muted so the intro still
-        // runs (never mute otherwise; this is only the last-resort fallback).
         if (cancelled) return;
+        // Best-effort: unmute after playback has started. If the browser
+        // blocks it, the intro simply stays muted but remains visible.
         try {
-          v.muted = true;
-          await v.play();
+          v.muted = false;
         } catch {
-          /* handled by onError / ended fallback */
+          /* keep muted — visibility is what matters */
         }
+      } catch {
+        /* handled by onError / ended fallback */
       }
     };
     void tryPlay();
