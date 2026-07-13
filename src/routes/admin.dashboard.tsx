@@ -467,6 +467,7 @@ function QuickActions({ pending }: { pending: number }) {
             else if (a.to === "/admin/chats") navigate({ to: "/admin/chats" });
             else if (a.to === "/admin/analytics") navigate({ to: "/admin/analytics" });
             else if (a.to === "/admin/settings") navigate({ to: "/admin/settings" });
+            else if (a.to === "/admin/logs") navigate({ to: "/admin/logs" });
             /* other modules — future dashboard entry points */
           }}
         />
