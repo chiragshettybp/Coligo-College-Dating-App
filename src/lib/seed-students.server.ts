@@ -168,8 +168,21 @@ const PERSONAS: Persona[] = [
 
 // ------------------------------------------------------------------ Utilities
 
-function seedEmail(seq: number): string {
-  return `seed.student.${String(seq).padStart(2, "0")}@coligo.dev`;
+function seedEmail(seq: number, batch: string): string {
+  // Unique per run → every click creates a fresh, non-colliding batch of 10.
+  return `seed.student.${batch}.${String(seq).padStart(2, "0")}@coligo.dev`;
+}
+
+// Name pools to vary identities across batches so accounts feel distinct.
+const FIRST_NAMES_WOMEN = ["Ananya", "Meghana", "Sneha", "Divya", "Priya", "Aishwarya", "Nisha", "Kavya", "Shreya", "Pooja", "Rakshita", "Bhavana", "Nandini", "Anushka", "Deepika"];
+const FIRST_NAMES_MEN = ["Rohan", "Arjun", "Karthik", "Aditya", "Vikram", "Nikhil", "Manoj", "Sachin", "Praveen", "Harish", "Suraj", "Kiran", "Tejas", "Varun", "Akshay"];
+const LAST_NAMES = ["Kulkarni", "Shetty", "Rao", "Nair", "Patil", "Gowda", "Hegde", "Deshpande", "Menon", "Reddy", "Bhat", "Kamath", "Naik", "Pai", "Acharya"];
+
+function randomName(gender: Gender, seq: number): string {
+  const pool = gender === "man" ? FIRST_NAMES_MEN : FIRST_NAMES_WOMEN;
+  const first = pool[Math.floor(Math.random() * pool.length)];
+  const last = LAST_NAMES[Math.floor(Math.random() * LAST_NAMES.length)];
+  return `${first} ${last}`;
 }
 
 function dobForAge(age: number, seq: number): string {
