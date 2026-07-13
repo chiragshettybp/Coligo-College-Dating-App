@@ -1,72 +1,52 @@
-# Admin Settings Module (`/admin/settings`)
+# Admin Logs & Observability Module (`/admin/logs`)
 
-Central configuration center for Coligo. Reuses the exact patterns already shipped in the other admin modules (admin-gated `SECURITY DEFINER` RPCs → thin `createServerFn` wrappers → realtime hook → DS-only UI). No mock data, everything persists to Supabase and propagates live.
+## Goal
+A single enterprise-grade audit/monitoring surface that reads **real** activity already recorded across Coligo's existing tables — no new mock event streams. It unifies scattered audit sources into one searchable, filterable, exportable, realtime log platform, admin-only.
 
-## What already exists (reused, not rebuilt)
-- `application_settings` (maintenance, support email, min app version) — extend, don't replace.
-- `feature_flags` (key/enabled/payload) — becomes the backing store for the Feature Flags section.
-- `announcements`, `app_versions`, `admin_logs` (audit trail), `settings` (per-user defaults).
-- App-side readers already consume these: `__root.tsx`, `system.maintenance.tsx`, `settings.functions.ts`, `matches.functions.ts`, `profile-full.functions.ts`. New settings must feed the same readers so changes take effect live.
+## What already exists (reuse, don't duplicate)
+The DB already logs real events in:
+`admin_logs`, `system_logs`, `error_reports`, `settings_audit_log`, `chat_admin_actions`, `match_admin_actions`, `moderation_actions`, `admin_login_attempts`, `device_sessions`.
 
-## Phase 1 — Database (single migration)
-Normalized per-domain config tables (one row = one live config, not JSON blobs), each with the standard 4-step (CREATE → GRANT → RLS → POLICY) and `updated_at` trigger:
-- `platform_settings` (general: app name, description, support phone, copyright, current/min version, force-update).
-- `authentication_settings` (mobile/OTP/password login toggles, OTP expiry, max OTP attempts, session duration, auto-logout, password rules, account-lock threshold).
-- `onboarding_settings` (min age, min/max photos, max bio, min/max interests, college/department/semester rules, mandatory fields jsonb).
-- `discovery_settings` (enabled, match creation, auto-match, ranking algo, same/cross-college, cache refresh).
-- `chat_settings` (enabled, image/voice/replies/reactions/read-receipts/typing toggles, max image size, max voice duration, max message length).
-- `notification_settings` (in-app, match, message, announcement, system, broadcast toggles).
-- `moderation_settings` (auto-block/report/warning thresholds, auto-suspension).
-- `storage_settings` (limits/config only; live usage is computed at read time).
-- `security_settings` (session timeout, JWT lifetime, rate limits, API limits, admin session duration, device limits, require-reauth flag).
-- `settings_audit_log` (immutable: admin_id, category, setting_key, previous_value, new_value, reason, ip, created_at) — insert-only, no update/delete policy.
+The build normalizes these into one logical stream rather than inventing fake tables. Admin module patterns (`admin-analytics.functions.ts`, `use-admin-analytics-realtime.ts`, `admin.analytics.index.tsx`, DS components) are the template.
 
-Maintenance mode + feature flags reuse `application_settings` and `feature_flags`.
+## Phase 1 — Database (migration)
+1. **`public.unified_logs` normalizing SQL VIEW** mapping each source table into a common shape:
+   `log_id, source, category (auth|user|admin|moderation|security|system|database|storage|api|realtime), severity (info|warning|error|critical), event, description, user_id, admin_id, ip, device, module, status, request_id, related_entity_type, related_entity_id, metadata (jsonb), created_at`.
+   - `admin_logs` → admin; `moderation_actions`/`chat_admin_actions`/`match_admin_actions` → moderation; `settings_audit_log` → system; `error_reports` → database/error; `admin_login_attempts` → security/auth (severity by `success`); `system_logs` → user/system by `event_type`; `device_sessions` → auth.
+2. **`app_role`-gated `SECURITY DEFINER` RPCs** (all call `has_role(auth.uid(),'admin')`, else raise):
+   - `admin_logs_list(filters jsonb, sort text, page int, page_size int)` — server pagination over the view, indexed by `created_at`.
+   - `admin_logs_kpis(range)` — the KPI counts (total, today, errors today, critical, security events, failed/successful logins, admin actions, moderation actions, api/storage/realtime errors, active sessions, suspicious).
+   - `admin_logs_timeseries(range, bucket)` — logs/errors/auth per hour.
+   - `admin_logs_distribution(dimension, range)` — by category/severity.
+   - `admin_logs_detail(source, id)` — full record + JSON payload + prev/new state.
+   - `admin_logs_investigation(key_type, key_value)` — event chain by user/request/match/chat/report/session id.
+3. **Immutability**: view is read-only by construction; keep RLS on all base tables; no write RPCs. Grant `EXECUTE` on RPCs to `authenticated` only.
 
-RLS: every table `SELECT/UPDATE` gated to `has_role(auth.uid(),'admin')`; audit log `SELECT` admin-only, `INSERT` via RPC only. Public app reads continue through the existing narrow readers / server fns.
+## Phase 2 — Server functions (`src/lib/admin-logs.functions.ts`)
+`createServerFn` wrappers with Zod validation over each RPC (via `context.supabase` from `requireSupabaseAuth`), mirroring `admin-analytics.functions.ts`. Functions: `getLogsKpis`, `listLogs`, `getLogsTimeseries`, `getLogsDistribution`, `getLogDetail`, `getLogInvestigation`.
 
-Seed one default row per config table so the UI never shows empty state.
+## Phase 3 — Realtime (`src/lib/use-admin-logs-realtime.ts`)
+Subscribe to `postgres_changes` INSERT on the base log tables; on event, `invalidateQueries` for logs keys (debounced). Follows `use-admin-analytics-realtime.ts` exactly, with `removeChannel` cleanup.
 
-Realtime: `ALTER PUBLICATION supabase_realtime ADD TABLE` for the config tables + `settings_audit_log`.
-
-RPCs (`SECURITY DEFINER`, each re-checks `has_role`, raises `Forbidden`):
-- `admin_settings_overview()` → dashboard cards (platform status, maintenance, active/online users, versions, DB/storage/realtime/auth health, pending-changes count, last update ts).
-- `admin_settings_get(_category)` / `admin_settings_update(_category, _values jsonb, _reason)` — validates ranges server-side, writes the row, and writes an audit entry atomically (returns new row).
-- `admin_feature_flag_set(_key,_enabled,_payload,_reason)`.
-- `admin_settings_history(_category,_limit,_offset)` → audit log page.
-- `admin_settings_export()` / `admin_settings_import(_payload jsonb,_reason)` — transactional, rollback on validation failure.
-- `admin_storage_stats()` → images/voice/backups/available (from storage metadata).
-
-## Phase 2 — Server functions (`src/lib/admin-settings.functions.ts`)
-Thin `createServerFn` wrappers with Zod validators over the RPCs, mirroring `admin.functions.ts`. Export `queryOptions` for each read. `admin-settings` guard reuses the existing `adminGuardQuery` pattern.
-
-## Phase 3 — Realtime (`src/lib/use-admin-settings-realtime.ts`)
-One channel subscribing to all config tables + audit log; debounced `queryClient.invalidateQueries` on the settings query keys. Same shape as `use-admin-analytics-realtime.ts`.
-
-## Phase 4 — UI (`src/routes/admin.settings.index.tsx` + `src/components/admin/settings-bits.tsx`)
-Mobile-first, DS-only (`ds/glass`, `ds/card`, `ds/navigation`, existing toggles/inputs/tabs). Structure:
-- Admin guard + redirect to `/admin/login` (identical to other admin routes).
-- Realtime overview cards at top.
-- Tabbed / accordioned categories (General, Authentication, Onboarding, Discovery, Chat, Notifications, Moderation, Colleges, Profile, Storage, Security, Maintenance, Feature Flags, Announcements, System Info).
-- Per-category form: local dirty state, client-side validation matching server rules, Save/Reset with success/error feedback, preserves input on failure.
-- Instant settings search filtering across all sections.
-- Config history panel (previous → new value, admin, timestamp, reason).
-- Bulk actions (reset category/platform, export/import) → dedicated in-page confirmation views, never popups.
-- Storage section shows live usage + maintenance action buttons.
-- "Coming Soon" badges for future-flagged items (AI/image/voice moderation, allowed IPs, force-update) — labeled, not faked.
+## Phase 4 — UI (`/admin/logs`)
+Route `src/routes/admin.logs.index.tsx` (registered under existing `admin.tsx` gate), mobile-first, using only DS components + `analytics-bits`/`charts`:
+- **KPI cards** grid (realtime).
+- **Filter/search bar**: debounced search, severity + category multi-select, date range, admin/user/college/device/status; URL-persisted (like analytics filters).
+- **Sort** control (newest/oldest/severity/duration/recent errors).
+- **Logs table** → responsive stacked cards on mobile; virtualized/paginated; severity badges; empty + skeleton states.
+- **Detail panel/section**: full event, related entities as links (user/match/chat/report/college), expandable JSON viewer, prev/new state.
+- **Timeline** and **analytics charts** (logs/hour, error rate, auth activity, etc.).
+- **Investigation**: click a linked id → event chain.
+- **Export**: CSV/XLSX/JSON via existing `xlsx` util; PDF via print-friendly view. In-page confirm for large exports.
+- Robust error/retry states that preserve filters.
 
 ## Phase 5 — Integration
-- Add "Settings" entry to `/admin/dashboard` module nav (`admin.dashboard.tsx`).
-- Wire new config into existing app readers so changes take effect: maintenance already read in `__root.tsx`/`system.maintenance.tsx`; feature flags gate Discovery/Chat/etc.; onboarding/chat/discovery/security readers pull from the new tables via existing server fns.
-- Announcements section reuses the existing `announcements` table.
+Add "Logs" entry to `/admin/dashboard` nav alongside Analytics/Settings.
 
 ## Phase 6 — Verification
-- `tsgo` typecheck + build.
-- Playwright: unauthenticated `/admin/settings` redirects to `/admin/login`; after admin sign-in, save a setting → confirm persistence + audit row + realtime refresh.
-- Confirm no secrets/env values ever rendered.
+`tsgo` typecheck; confirm route registration; Playwright: admin sign-in → `/admin/logs` loads real rows, filters/search/export/detail work, non-admin is blocked.
 
 ## Technical notes
-- Reserved-schema safe: only `public` tables + `supabase_realtime` publication.
-- Concurrent-edit safety: `admin_settings_update` compares/stamps `updated_at`; stale writes rejected with a recoverable error.
-- Validation triggers (not CHECK constraints) for range rules.
-- Zod on both client and server; ranges/limits identical on both sides.
+- Read path only; no fake log generation. Coverage of categories reflects what the app actually records today; empty categories show proper empty states rather than mock rows (honest observability, extensible when new emitters land).
+- All aggregation server-side for scale; indexed on `created_at`.
+- Security: every RPC re-checks `has_role`; RLS stays enabled; logs are append-only/immutable.
