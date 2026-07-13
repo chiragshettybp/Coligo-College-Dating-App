@@ -445,7 +445,7 @@ const ACTIONS: { label: string; icon: React.ReactNode; badge?: boolean; to?: str
   { label: "Manage Chats", icon: <MessagesSquare style={I} />, to: "/admin/chats" },
   { label: "Analytics", icon: <Activity style={I} />, to: "/admin/analytics" },
   { label: "Settings", icon: <SettingsIcon style={I} />, to: "/admin/settings" },
-  { label: "Audit Logs", icon: <ShieldAlert style={I} /> },
+  { label: "Audit Logs", icon: <ShieldAlert style={I} />, to: "/admin/logs" },
 ];
 
 function QuickActions({ pending }: { pending: number }) {
@@ -467,6 +467,7 @@ function QuickActions({ pending }: { pending: number }) {
             else if (a.to === "/admin/chats") navigate({ to: "/admin/chats" });
             else if (a.to === "/admin/analytics") navigate({ to: "/admin/analytics" });
             else if (a.to === "/admin/settings") navigate({ to: "/admin/settings" });
+            else if (a.to === "/admin/logs") navigate({ to: "/admin/logs" });
             /* other modules — future dashboard entry points */
           }}
         />
