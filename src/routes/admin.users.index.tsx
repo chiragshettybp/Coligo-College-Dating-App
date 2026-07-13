@@ -285,11 +285,31 @@ function AdminUsers() {
         title="User Management"
         onBack={() => navigate({ to: "/admin/dashboard" })}
         trailing={
-          <button onClick={onLogout} aria-label="Sign out" style={{ display: "flex", padding: 8, color: colors.textSecondary, background: "transparent", border: "none", cursor: "pointer" }}>
-            <LogOut style={{ width: 20, height: 20 }} />
-          </button>
+          <div style={{ display: "flex", alignItems: "center", gap: spacing[2] }}>
+            <Button
+              size="sm"
+              variant="primary"
+              loading={seeding}
+              leftIcon={<UserPlus style={{ width: 15, height: 15 }} />}
+              onClick={onSeedDemo}
+            >
+              Add 10 demo users
+            </Button>
+            <button onClick={onLogout} aria-label="Sign out" style={{ display: "flex", padding: 8, color: colors.textSecondary, background: "transparent", border: "none", cursor: "pointer" }}>
+              <LogOut style={{ width: 20, height: 20 }} />
+            </button>
+          </div>
         }
       />
+
+      {/* Seed demo users result */}
+      {seedMsg && (
+        <Card padding={spacing[3]} style={{ marginTop: spacing[3] }}>
+          <Text variant="body" color={seedMsg.ok ? colors.success : colors.warning}>
+            {seedMsg.text}
+          </Text>
+        </Card>
+      )}
 
       {/* Search */}
       <div style={{ marginTop: spacing[4] }}>
