@@ -3,19 +3,13 @@
 // Confirms onboarding is complete (incomplete members go back to Onboarding),
 // then renders the matched child route (dashboard, rankings, college detail).
 // ============================================================================
-import { createFileRoute, Outlet, redirect } from "@tanstack/react-router";
+import { createFileRoute, Outlet } from "@tanstack/react-router";
 
-import { myProfileQuery } from "@/lib/profile.functions";
+import { requireCompletedOnboarding } from "@/lib/route-guards";
 import { RouteFallback } from "@/components/system/RouteFallback";
 
 export const Route = createFileRoute("/_authenticated/home")({
-  loader: async ({ context }) => {
-    const profile = await context.queryClient.ensureQueryData(myProfileQuery());
-    if (!profile?.onboardingCompleted) {
-      throw redirect({ to: "/onboarding" });
-    }
-    return profile;
-  },
+  loader: ({ context }) => requireCompletedOnboarding(context.queryClient),
   pendingComponent: RouteFallback,
   component: () => <Outlet />,
 });
