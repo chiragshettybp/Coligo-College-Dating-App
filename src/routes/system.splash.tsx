@@ -260,6 +260,7 @@ function SplashPage() {
           src={introVideo.url}
           poster={introPoster.url}
           autoPlay
+          muted
           playsInline
           preload="auto"
           // eslint-disable-next-line react/no-unknown-property
