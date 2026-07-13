@@ -1479,6 +1479,43 @@ export type Database = {
         Args: { _body: string; _report_id: string }
         Returns: Json
       }
+      admin_analytics_distribution: {
+        Args: { p_college?: string; p_department?: string; p_dimension: string }
+        Returns: Json
+      }
+      admin_analytics_heatmap: {
+        Args: { p_end: string; p_metric: string; p_start: string }
+        Returns: Json
+      }
+      admin_analytics_kpis: {
+        Args: {
+          p_college?: string
+          p_department?: string
+          p_end: string
+          p_gender?: string
+          p_start: string
+          p_verification?: string
+        }
+        Returns: Json
+      }
+      admin_analytics_leaderboard: {
+        Args: { p_kind: string; p_limit?: number }
+        Returns: Json
+      }
+      admin_analytics_moderation: {
+        Args: { p_end: string; p_start: string }
+        Returns: Json
+      }
+      admin_analytics_timeseries: {
+        Args: {
+          p_bucket?: string
+          p_college?: string
+          p_end: string
+          p_metric: string
+          p_start: string
+        }
+        Returns: Json
+      }
       admin_archive_chat: {
         Args: { _chat_id: string; _reason?: string; _restore?: boolean }
         Returns: Json
