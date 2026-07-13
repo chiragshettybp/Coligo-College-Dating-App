@@ -67,6 +67,8 @@ function BioPage() {
             rows={7}
             placeholder="Share something real — hobbies, what you're studying, a fun fact…"
             aria-label="Bio"
+            aria-invalid={error ? true : undefined}
+            aria-describedby={error ? "bio-error" : undefined}
             style={{
               width: "100%",
               borderRadius: radii.md,
@@ -76,7 +78,7 @@ function BioPage() {
               lineHeight: 1.5,
               color: colors.textPrimary,
               background: surfaces.glassSoft,
-              border: `1px solid ${surfaces.border}`,
+              border: `1px solid ${error ? colors.danger : surfaces.border}`,
               outline: "none",
               resize: "vertical",
             }}
@@ -89,7 +91,12 @@ function BioPage() {
         </div>
 
         {error && (
-          <Text variant="bodySm" style={{ color: colors.danger, marginTop: spacing[2] }}>
+          <Text
+            id="bio-error"
+            role="alert"
+            variant="bodySm"
+            style={{ color: colors.danger, marginTop: spacing[2] }}
+          >
             {error}
           </Text>
         )}
