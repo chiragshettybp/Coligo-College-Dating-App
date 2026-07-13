@@ -59,7 +59,7 @@ import {
   type Field,
   type SettingsValues,
 } from "@/components/admin/settings-bits";
-import { Text, Button, Toggle, TextField, Skeleton, Badge, Chip } from "@/components/ds/glass";
+import { Text, Button, Toggle, TextField, Skeleton, Badge } from "@/components/ds/glass";
 import { Card, StatCard, SettingsCard } from "@/components/ds/card";
 import { TopBar, SearchBar, ScrollTabs } from "@/components/ds/navigation";
 import { colors, spacing, surfaces, radii } from "@/lib/ds";
@@ -141,7 +141,7 @@ function SettingsConsole() {
       <TopBar
         title="Settings"
         onBack={() => navigate({ to: "/admin/dashboard" })}
-        right={
+        trailing={
           <Badge tone={overview.data?.maintenance_enabled ? "danger" : "success"}>
             {overview.data?.maintenance_enabled ? "Maintenance" : "Live"}
           </Badge>
@@ -227,7 +227,7 @@ function StatusLine({ status }: { status: null | { ok: boolean; msg: string } })
       }}
     >
       {status.ok ? <CheckCircle2 style={I} /> : <AlertTriangle style={I} />}
-      <Text variant="footnote" color={status.ok ? colors.success : colors.danger}>{status.msg}</Text>
+      <Text variant="caption" color={status.ok ? colors.success : colors.danger}>{status.msg}</Text>
     </div>
   );
 }
@@ -250,9 +250,9 @@ function FieldRow({
         <div style={{ minWidth: 0 }}>
           <div className="flex items-center" style={{ gap: spacing[2] }}>
             <Text variant="body" color={colors.textPrimary}>{field.label}</Text>
-            {field.comingSoon && <Chip size="sm">Soon</Chip>}
+            {field.comingSoon && <Badge tone="warning">Soon</Badge>}
           </div>
-          {field.hint && <Text variant="footnote" tone="secondary">{field.hint}</Text>}
+          {field.hint && <Text variant="caption" tone="secondary">{field.hint}</Text>}
         </div>
         <div className="shrink-0">
           {field.type === "toggle" && (
@@ -330,7 +330,7 @@ function FieldRow({
         </div>
       )}
       {error && field.type === "number" && (
-        <Text variant="footnote" color={colors.danger} style={{ marginTop: 4 }}>{error}</Text>
+        <Text variant="caption" color={colors.danger} style={{ marginTop: 4 }}>{error}</Text>
       )}
     </div>
   );
@@ -401,7 +401,7 @@ function CategoryForm({ category, initial, search }: { category: Category; initi
     <Card>
       <div style={{ padding: spacing[4] }}>
         <Text variant="headingSm" color={colors.textPrimary}>{category.label}</Text>
-        <Text variant="footnote" tone="secondary" style={{ marginTop: 2 }}>{category.desc}</Text>
+        <Text variant="caption" tone="secondary" style={{ marginTop: 2 }}>{category.desc}</Text>
 
         <div style={{ marginTop: spacing[3] }}>
           {visibleFields.length === 0 ? (
@@ -476,7 +476,7 @@ function FeatureFlagsPanel({ bundle }: { bundle?: SettingsBundle }) {
     <Card>
       <div style={{ padding: spacing[4] }}>
         <Text variant="headingSm" color={colors.textPrimary}>Feature flags</Text>
-        <Text variant="footnote" tone="secondary" style={{ marginTop: 2 }}>
+        <Text variant="caption" tone="secondary" style={{ marginTop: 2 }}>
           Toggling a flag immediately affects the relevant module across the app.
         </Text>
         <div style={{ marginTop: spacing[3] }}>
@@ -570,7 +570,7 @@ function MaintenancePanel({ bundle }: { bundle?: SettingsBundle }) {
         </div>
         <TextField label="Maintenance title" value={title} onChange={(e) => setTitle(e.target.value)} />
         <div>
-          <Text variant="footnote" tone="secondary" style={{ marginBottom: 6 }}>Maintenance message</Text>
+          <Text variant="caption" tone="secondary" style={{ marginBottom: 6 }}>Maintenance message</Text>
           <textarea
             value={message}
             rows={3}
@@ -617,7 +617,7 @@ function StoragePanel({ bundle }: { bundle?: SettingsBundle }) {
       <Card>
         <div style={{ padding: spacing[4] }}>
           <Text variant="headingSm" color={colors.textPrimary}>Storage maintenance</Text>
-          <Text variant="footnote" tone="secondary" style={{ marginTop: 2 }}>Bulk storage jobs — arriving in a future release.</Text>
+          <Text variant="caption" tone="secondary" style={{ marginTop: 2 }}>Bulk storage jobs — arriving in a future release.</Text>
           <div className="flex flex-wrap" style={{ gap: spacing[2], marginTop: spacing[3] }}>
             {STORAGE_ACTIONS.map((a) => (
               <Button key={a} variant="secondary" disabled>{a} · Soon</Button>
@@ -650,15 +650,15 @@ function HistoryPanel() {
     <Card>
       <div style={{ padding: spacing[4] }}>
         <Text variant="headingSm" color={colors.textPrimary}>Configuration history</Text>
-        <Text variant="footnote" tone="secondary" style={{ marginTop: 2 }}>{page.total} total change{page.total === 1 ? "" : "s"} · immutable audit log</Text>
+        <Text variant="caption" tone="secondary" style={{ marginTop: 2 }}>{page.total} total change{page.total === 1 ? "" : "s"} · immutable audit log</Text>
         <div style={{ marginTop: spacing[3], display: "flex", flexDirection: "column", gap: spacing[2] }}>
           {page.rows.map((r) => (
             <div key={r.id} style={{ padding: spacing[3], borderRadius: radii.md, background: surfaces.glassSoft, border: `1px solid ${surfaces.borderSoft}` }}>
               <div className="flex items-center justify-between" style={{ gap: spacing[2] }}>
-                <Chip size="sm" style={{ textTransform: "capitalize" }}>{r.category.replace(/_/g, " ")}</Chip>
-                <Text variant="footnote" tone="secondary">{timeAgo(r.created_at)}</Text>
+                <Badge tone="info">{r.category.replace(/_/g, " ")}</Badge>
+                <Text variant="caption" tone="secondary">{timeAgo(r.created_at)}</Text>
               </div>
-              <Text variant="footnote" tone="secondary" style={{ marginTop: 6 }}>
+              <Text variant="caption" tone="secondary" style={{ marginTop: 6 }}>
                 {r.admin_name}{r.setting_key ? ` · ${r.setting_key}` : ""}{r.reason ? ` · ${r.reason}` : ""}
               </Text>
             </div>
@@ -732,7 +732,7 @@ function BackupPanel() {
     <Card>
       <div style={{ padding: spacing[4], display: "flex", flexDirection: "column", gap: spacing[3] }}>
         <Text variant="headingSm" color={colors.textPrimary}>Backup & recovery</Text>
-        <Text variant="footnote" tone="secondary">Export the full platform configuration or restore it from a file.</Text>
+        <Text variant="caption" tone="secondary">Export the full platform configuration or restore it from a file.</Text>
         <StatusLine status={status} />
         <div className="flex flex-wrap" style={{ gap: spacing[2] }}>
           <Button variant="primary" leftIcon={<Download style={I} />} loading={doExport.isPending} onClick={() => doExport.mutate()}>
