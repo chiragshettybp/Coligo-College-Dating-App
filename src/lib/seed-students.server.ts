@@ -361,7 +361,6 @@ export async function seedStudents(): Promise<SeedSummary> {
   if (ref.colleges.length === 0) throw new Error("No active colleges found to assign.");
   if (ref.interests.length < 3) throw new Error("Need at least 3 active interests to seed.");
 
-  const photoBuffers = await downloadPhotos();
   const accounts: SeedAccountResult[] = [];
   let created = 0;
   let updated = 0;
