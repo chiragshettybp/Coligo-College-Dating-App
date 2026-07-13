@@ -5,7 +5,20 @@ import { NotFoundView } from "@/components/system/NotFoundView";
 import { ServerErrorView } from "@/components/system/ServerErrorView";
 
 export const getRouter = () => {
-  const queryClient = new QueryClient();
+  const queryClient = new QueryClient({
+    defaultOptions: {
+      queries: {
+        // Consistent freshness across the app: dedupe rapid refetches, but
+        // always resync after the tab regains focus or the network reconnects
+        // so no screen shows stale data.
+        staleTime: 30_000,
+        gcTime: 5 * 60_000,
+        refetchOnWindowFocus: true,
+        refetchOnReconnect: "always",
+        retry: 2,
+      },
+    },
+  });
 
   const router = createRouter({
     routeTree,
