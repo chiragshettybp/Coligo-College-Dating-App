@@ -48,9 +48,9 @@ export const Route = createFileRoute("/system/splash")({
 });
 
 const TASK_TIMEOUT = 8000;
-const FADE_MS = 300; // cross-fade duration
+const FADE_MS = 700; // cinematic cross-fade duration
 const MAX_VIDEO_RETRIES = 2;
-const MAX_SPLASH_MS = 1000; // hard cap: never keep the user on the splash longer than this
+const MAX_SPLASH_MS = 15000; // safety cap only: never strand the user if the video stalls
 
 function SplashPage() {
   const navigate = useNavigate();
