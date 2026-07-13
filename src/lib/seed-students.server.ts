@@ -394,22 +394,22 @@ export async function seedStudents(): Promise<SeedSummary> {
     );
 
 
-    // 3. Photos (rebuilt each run for idempotency) → primary drives avatar_url.
-    const primaryPath = await rebuildPhotos(userId, photoBuffers, persona.photoCount, persona.seq);
+    // 3. Photos → primary drives avatar_url.
+    const primaryPath = await rebuildPhotos(userId, photoBuffers, persona.photoCount, rnd);
 
     // 4. Full profile — the exact fields the onboarding flow writes.
     const { error: pErr } = await supabaseAdmin
       .from("profiles")
       .update({
-        full_name: persona.fullName,
-        display_name: persona.fullName,
+        full_name: fullName,
+        display_name: fullName,
         gender: persona.gender,
         looking_for: persona.lookingFor,
-        date_of_birth: dobForAge(persona.age, persona.seq),
+        date_of_birth: dobForAge(persona.age, rnd),
         college_id: college.id,
         department_id: department?.id ?? null,
         graduation_year: graduationYearForAge(persona.age),
-        semester: semesterForAge(persona.age, persona.seq),
+        semester: semesterForAge(persona.age, rnd),
         bio: persona.bio,
         avatar_url: primaryPath,
         verification_status: "verified",
@@ -420,6 +420,7 @@ export async function seedStudents(): Promise<SeedSummary> {
       })
       .eq("id", userId);
     if (pErr) throw new Error(`profile ${email}: ${pErr.message}`);
+
 
     // 5. Interests (rebuilt each run for idempotency).
     await supabaseAdmin.from("user_interests").delete().eq("user_id", userId);
