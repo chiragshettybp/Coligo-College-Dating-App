@@ -18,9 +18,10 @@ import {
   Trophy,
   Zap,
   Megaphone,
-  Sparkles,
+  
   Building2,
   UserRound,
+  MessageCircle,
 } from "lucide-react";
 
 import { supabase } from "@/integrations/supabase/client";
@@ -161,10 +162,10 @@ function HomeDashboardPage() {
     () => [
       { icon: (p) => <Heart {...p} fill="currentColor" />, label: "Home" },
       { icon: (p) => <Flame {...p} />, label: "Discover" },
-      { icon: (p) => <Sparkles {...p} />, label: "Matches", badge: data.matches.mine || undefined },
+      { icon: (p) => <MessageCircle {...p} />, label: "Chat" },
       { icon: (p) => <UserRound {...p} />, label: "Profile" },
     ],
-    [data.matches.mine],
+    [],
   );
 
   const gs = data.college ? genderSummary(data.college.gender) : null;
@@ -450,8 +451,8 @@ function HomeDashboardPage() {
             active={0}
             onChange={(i) => {
               if (i === 1) navigate({ to: "/discover" });
-              else if (i === 2) navigate({ to: "/matches" });
-              else if (i === 3) setComingSoon("Profile");
+              else if (i === 2) navigate({ to: "/chat" });
+              else if (i === 3) navigate({ to: "/profile" });
             }}
           />
         </div>
