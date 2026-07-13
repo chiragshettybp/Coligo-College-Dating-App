@@ -6,6 +6,7 @@
 import { createFileRoute, Outlet, redirect } from "@tanstack/react-router";
 
 import { myProfileQuery } from "@/lib/profile.functions";
+import { RouteFallback } from "@/components/system/RouteFallback";
 
 export const Route = createFileRoute("/_authenticated/discover")({
   loader: async ({ context }) => {
@@ -15,5 +16,6 @@ export const Route = createFileRoute("/_authenticated/discover")({
     }
     return profile;
   },
+  pendingComponent: RouteFallback,
   component: () => <Outlet />,
 });
