@@ -286,10 +286,10 @@ export const setVerification = createServerFn({ method: "POST" })
 export const resetDiscovery = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((d: unknown) => uuidInput.parse(d))
-  .handler(async ({ data, context }): Promise<{ ok: boolean }> => {
+  .handler(async ({ data, context }): Promise<{ ok: boolean; swipesCleared: number }> => {
     const { data: res, error } = await context.supabase.rpc("admin_reset_discovery", { _user_id: data.userId });
     if (error) throw new Error(error.message);
-    return res as unknown as { ok: boolean };
+    return res as unknown as { ok: boolean; swipesCleared: number };
   });
 
 export const forceLogout = createServerFn({ method: "POST" })
