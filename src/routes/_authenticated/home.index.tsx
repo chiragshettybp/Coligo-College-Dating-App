@@ -223,9 +223,20 @@ function HomeDashboardPage() {
               <Text variant="caption" tone="muted">
                 {greeting()}
               </Text>
-              <Text variant="headingSm" color={colors.textPrimary}>
-                Chirag 👋
-              </Text>
+              <div style={{ display: "flex", alignItems: "center", gap: spacing[1] }}>
+                <Text variant="headingSm" color={colors.textPrimary}>
+                  Chirag
+                </Text>
+                <div 
+                  style={{ 
+                    width: 8, 
+                    height: 8, 
+                    borderRadius: "50%", 
+                    background: colors.success,
+                    marginTop: 1
+                  }} 
+                />
+              </div>
             </div>
           </button>
           <div className="flex items-center" style={{ gap: spacing[0] }}>
