@@ -66,6 +66,7 @@ import { Route as AuthenticatedMatchesIndexRouteImport } from './routes/_authent
 import { Route as AuthenticatedHomeIndexRouteImport } from './routes/_authenticated/home.index'
 import { Route as AuthenticatedDiscoverIndexRouteImport } from './routes/_authenticated/discover.index'
 import { Route as AuthenticatedChatIndexRouteImport } from './routes/_authenticated/chat.index'
+import { Route as ApiPublicSocialShareRouteImport } from './routes/api/public/social-share'
 import { Route as ApiPublicPushRouteImport } from './routes/api/public/push'
 import { Route as AdminUsersUserIdRouteImport } from './routes/admin.users.$userId'
 import { Route as AdminReportsReportIdRouteImport } from './routes/admin.reports.$reportId'
@@ -402,6 +403,11 @@ const AuthenticatedChatIndexRoute = AuthenticatedChatIndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => AuthenticatedChatRoute,
+} as any)
+const ApiPublicSocialShareRoute = ApiPublicSocialShareRouteImport.update({
+  id: '/api/public/social-share',
+  path: '/api/public/social-share',
+  getParentRoute: () => rootRouteImport,
 } as any)
 const ApiPublicPushRoute = ApiPublicPushRouteImport.update({
   id: '/api/public/push',
@@ -742,6 +748,7 @@ export interface FileRoutesByFullPath {
   '/admin/reports/$reportId': typeof AdminReportsReportIdRoute
   '/admin/users/$userId': typeof AdminUsersUserIdRoute
   '/api/public/push': typeof ApiPublicPushRoute
+  '/api/public/social-share': typeof ApiPublicSocialShareRoute
   '/chat/': typeof AuthenticatedChatIndexRoute
   '/discover/': typeof AuthenticatedDiscoverIndexRoute
   '/home/': typeof AuthenticatedHomeIndexRoute
@@ -838,6 +845,7 @@ export interface FileRoutesByTo {
   '/admin/reports/$reportId': typeof AdminReportsReportIdRoute
   '/admin/users/$userId': typeof AdminUsersUserIdRoute
   '/api/public/push': typeof ApiPublicPushRoute
+  '/api/public/social-share': typeof ApiPublicSocialShareRoute
   '/chat': typeof AuthenticatedChatIndexRoute
   '/discover': typeof AuthenticatedDiscoverIndexRoute
   '/home': typeof AuthenticatedHomeIndexRoute
@@ -944,6 +952,7 @@ export interface FileRoutesById {
   '/admin/reports/$reportId': typeof AdminReportsReportIdRoute
   '/admin/users/$userId': typeof AdminUsersUserIdRoute
   '/api/public/push': typeof ApiPublicPushRoute
+  '/api/public/social-share': typeof ApiPublicSocialShareRoute
   '/_authenticated/chat/': typeof AuthenticatedChatIndexRoute
   '/_authenticated/discover/': typeof AuthenticatedDiscoverIndexRoute
   '/_authenticated/home/': typeof AuthenticatedHomeIndexRoute
@@ -1049,6 +1058,7 @@ export interface FileRouteTypes {
     | '/admin/reports/$reportId'
     | '/admin/users/$userId'
     | '/api/public/push'
+    | '/api/public/social-share'
     | '/chat/'
     | '/discover/'
     | '/home/'
@@ -1145,6 +1155,7 @@ export interface FileRouteTypes {
     | '/admin/reports/$reportId'
     | '/admin/users/$userId'
     | '/api/public/push'
+    | '/api/public/social-share'
     | '/chat'
     | '/discover'
     | '/home'
@@ -1250,6 +1261,7 @@ export interface FileRouteTypes {
     | '/admin/reports/$reportId'
     | '/admin/users/$userId'
     | '/api/public/push'
+    | '/api/public/social-share'
     | '/_authenticated/chat/'
     | '/_authenticated/discover/'
     | '/_authenticated/home/'
@@ -1294,6 +1306,7 @@ export interface RootRouteChildren {
   SystemMaintenanceRoute: typeof SystemMaintenanceRoute
   SystemSplashRoute: typeof SystemSplashRoute
   ApiPublicPushRoute: typeof ApiPublicPushRoute
+  ApiPublicSocialShareRoute: typeof ApiPublicSocialShareRoute
   ApiPublicSeedStudentsRoute: typeof ApiPublicSeedStudentsRoute
 }
 
@@ -1697,6 +1710,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/chat/'
       preLoaderRoute: typeof AuthenticatedChatIndexRouteImport
       parentRoute: typeof AuthenticatedChatRoute
+    }
+    '/api/public/social-share': {
+      id: '/api/public/social-share'
+      path: '/api/public/social-share'
+      fullPath: '/api/public/social-share'
+      preLoaderRoute: typeof ApiPublicSocialShareRouteImport
+      parentRoute: typeof rootRouteImport
     }
     '/api/public/push': {
       id: '/api/public/push'
@@ -2375,8 +2395,19 @@ const rootRouteChildren: RootRouteChildren = {
   SystemMaintenanceRoute: SystemMaintenanceRoute,
   SystemSplashRoute: SystemSplashRoute,
   ApiPublicPushRoute: ApiPublicPushRoute,
+  ApiPublicSocialShareRoute: ApiPublicSocialShareRoute,
   ApiPublicSeedStudentsRoute: ApiPublicSeedStudentsRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { startInstance } from './start.ts'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+    config: Awaited<ReturnType<typeof startInstance.getOptions>>
+  }
+}
