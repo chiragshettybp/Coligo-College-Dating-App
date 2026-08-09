@@ -175,9 +175,9 @@ function ProfilePage() {
 
       {/* Stats */}
       <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: spacing[2], marginTop: spacing[3] }}>
-        <StatCard label="Matches" value={stats.totalMatches} />
-        <StatCard label="Chats" value={stats.totalChats} />
-        <StatCard label="Member" value={memberSinceLabel(stats.memberSince)} />
+        <StatCard label="Matches" value={stats.totalMatches} padding={spacing[3]} />
+        <StatCard label="Chats" value={stats.totalChats} padding={spacing[3]} />
+        <StatCard label="Member" value={memberSinceLabel(stats.memberSince)} padding={spacing[3]} />
       </div>
 
       {/* Gallery */}
