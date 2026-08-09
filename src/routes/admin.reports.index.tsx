@@ -77,8 +77,11 @@ const SORTS: { value: ReportSort; label: string }[] = [
 export const Route = createFileRoute("/admin/reports/")({
   head: () => ({
     meta: [
-      { title: "Reports & Moderation — Coligo admin" },
+      { title: "Reports & Moderation — Coligo Admin" },
       { name: "robots", content: "noindex, nofollow" },
+      { property: "og:title", content: "Reports & Moderation — Coligo Admin" },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
     ],
   }),
   validateSearch: (s: Record<string, unknown>): Search => ({

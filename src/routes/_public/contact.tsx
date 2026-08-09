@@ -19,18 +19,18 @@ import { haptic } from "@/lib/haptics";
 export const Route = createFileRoute("/_public/contact")({
   head: () => ({
     meta: [
-      { title: "Contact Coligo — Get in Touch" },
+      { title: "Contact Coligo — Support & Student Enquiries" },
       {
         name: "description",
-        content:
-          "Reach the Coligo team for support, safety concerns, verification help, or partnerships. We're here to help verified students.",
+        content: "Need help with verification or have a safety concern? Contact the Coligo team today.",
       },
-      { property: "og:title", content: "Contact Coligo" },
+      { property: "og:title", content: "Contact Coligo Support" },
       {
         property: "og:description",
-        content: "Get in touch with the Coligo support team.",
+        content: "Get in touch for student support and enquiries.",
       },
       { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
     ],
   }),
   component: ContactPage,

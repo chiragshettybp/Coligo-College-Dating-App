@@ -23,18 +23,18 @@ import { colors, spacing, radii } from "@/lib/ds";
 export const Route = createFileRoute("/_public/about")({
   head: () => ({
     meta: [
-      { title: "About Coligo — Our Mission" },
+      { title: "About Coligo — The Verified College Dating Mission" },
       {
         name: "description",
-        content:
-          "Coligo is on a mission to help verified college students in India form genuine, safe connections. Learn about our vision, values, and roadmap.",
+        content: "Learn about Coligo's mission to build the safest dating community for verified college students in India.",
       },
-      { property: "og:title", content: "About Coligo — Our Mission" },
+      { property: "og:title", content: "About Coligo" },
       {
         property: "og:description",
-        content: "Our mission to help verified college students connect safely.",
+        content: "Our mission to build a safe, verified student dating community.",
       },
       { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
     ],
   }),
   loader: ({ context }) => {

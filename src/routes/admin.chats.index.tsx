@@ -82,8 +82,11 @@ const SORTS: { value: ChatSort; label: string }[] = [
 export const Route = createFileRoute("/admin/chats/")({
   head: () => ({
     meta: [
-      { title: "Chat Management — Coligo admin" },
+      { title: "Chat Management — Coligo Admin" },
       { name: "robots", content: "noindex, nofollow" },
+      { property: "og:title", content: "Chat Management — Coligo Admin" },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
     ],
   }),
   validateSearch: (s: Record<string, unknown>): Search => ({

@@ -59,6 +59,12 @@ const MAX_IMAGE_BYTES = 8 * 1024 * 1024;
 const ALLOWED = ["image/jpeg", "image/png", "image/webp", "image/gif"];
 
 export const Route = createFileRoute("/_authenticated/chat/$chatId")({
+  head: () => ({
+    meta: [
+      { title: "Conversation — Coligo Chat" },
+      { name: "robots", content: "noindex, nofollow" },
+    ],
+  }),
   loader: ({ context, params }) =>
     Promise.all([
       context.queryClient.ensureQueryData(chatInfoQuery(params.chatId)),

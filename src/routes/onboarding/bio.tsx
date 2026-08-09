@@ -9,7 +9,12 @@ import { Text } from "@/components/ds/glass";
 import { colors, radii, surfaces } from "@/lib/ds";
 
 export const Route = createFileRoute("/onboarding/bio")({
-  head: () => ({ meta: [{ title: "Your bio — Coligo" }, { name: "robots", content: "noindex" }] }),
+  head: () => ({
+    meta: [
+      { title: "Write Your Bio — Coligo Onboarding" },
+      { name: "robots", content: "noindex, nofollow" },
+    ],
+  }),
   component: BioStep,
 });
 

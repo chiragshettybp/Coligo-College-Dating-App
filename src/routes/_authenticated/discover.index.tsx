@@ -34,6 +34,20 @@ import {
 import { DiscoverShell } from "@/components/discover/shell";
 
 export const Route = createFileRoute("/_authenticated/discover/")({
+  head: () => ({
+    meta: [
+      { title: "Discover — Meet Verified Students" },
+      {
+        name: "description",
+        content: "Discover and connect with verified college students from your campus and nearby institutions.",
+      },
+      { property: "og:title", content: "Coligo Discover — Verified Dating" },
+      { property: "og:description", content: "Swipe and connect with real students in your college community." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
+      { name: "robots", content: "noindex, nofollow" },
+    ],
+  }),
   loader: ({ context }) => context.queryClient.ensureQueryData(discoveryFeedQuery()),
   pendingComponent: DiscoverSkeleton,
   errorComponent: DiscoverError,

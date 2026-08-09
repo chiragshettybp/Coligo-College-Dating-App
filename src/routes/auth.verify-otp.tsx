@@ -22,7 +22,12 @@ export const Route = createFileRoute("/auth/verify-otp")({
   validateSearch: (search: Record<string, unknown>) => ({
     phone: typeof search.phone === "string" ? search.phone : "",
   }),
-  head: () => ({ meta: [{ title: "Verify your number — Coligo" }] }),
+  head: () => ({
+    meta: [
+      { title: "Verify Your Identity — Coligo Security" },
+      { name: "robots", content: "noindex, nofollow" },
+    ],
+  }),
   component: VerifyOtpPage,
 });
 

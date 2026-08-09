@@ -9,7 +9,12 @@ import { Text } from "@/components/ds/glass";
 import { colors, radii, surfaces, spacing } from "@/lib/ds";
 
 export const Route = createFileRoute("/onboarding/date-of-birth")({
-  head: () => ({ meta: [{ title: "Your birthday — Coligo" }, { name: "robots", content: "noindex" }] }),
+  head: () => ({
+    meta: [
+      { title: "Date of Birth — Coligo Onboarding" },
+      { name: "robots", content: "noindex, nofollow" },
+    ],
+  }),
   component: DobStep,
 });
 

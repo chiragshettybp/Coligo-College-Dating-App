@@ -29,6 +29,20 @@ import { EmptyState, EmptyStateFromPreset } from "@/components/ds/empty-state";
 import { DiscoverShell } from "@/components/discover/shell";
 
 export const Route = createFileRoute("/_authenticated/matches/")({
+  head: () => ({
+    meta: [
+      { title: "Your Matches — Coligo" },
+      {
+        name: "description",
+        content: "Manage your connections and view your verified student matches on Coligo.",
+      },
+      { property: "og:title", content: "Coligo Matches — Verified Student Connections" },
+      { property: "og:description", content: "View and manage your matches from your college and beyond." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
+      { name: "robots", content: "noindex, nofollow" },
+    ],
+  }),
   loader: ({ context }) => context.queryClient.ensureQueryData(matchesQuery()),
   pendingComponent: MatchesSkeleton,
   errorComponent: MatchesError,

@@ -14,7 +14,18 @@ import { phoneSchema, OTP_ENABLED } from "@/lib/auth";
 import { haptic } from "@/lib/haptics";
 
 export const Route = createFileRoute("/auth/forgot-password")({
-  head: () => ({ meta: [{ title: "Reset password — Coligo" }] }),
+  head: () => ({
+    meta: [
+      { title: "Reset your Coligo Password — Account Recovery" },
+      {
+        name: "description",
+        content: "Lost access to your Coligo account? Enter your mobile number to recover your verified student profile.",
+      },
+      { property: "og:title", content: "Reset Coligo Password" },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
+    ],
+  }),
   component: ForgotPasswordPage,
 });
 

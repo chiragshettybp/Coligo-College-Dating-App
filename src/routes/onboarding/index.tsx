@@ -5,7 +5,12 @@ import { useOnboardingState } from "@/components/onboarding/useOnboarding";
 import { ONBOARDING_STEPS, maxAllowedIndex } from "@/lib/onboarding";
 
 export const Route = createFileRoute("/onboarding/")({
-  head: () => ({ meta: [{ title: "Set up your profile — Coligo" }, { name: "robots", content: "noindex" }] }),
+  head: () => ({
+    meta: [
+      { title: "Complete your Coligo Profile — Verified Student Dating" },
+      { name: "robots", content: "noindex, nofollow" },
+    ],
+  }),
   component: OnboardingResume,
 });
 

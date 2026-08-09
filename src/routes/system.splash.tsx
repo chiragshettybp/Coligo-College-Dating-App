@@ -35,8 +35,8 @@ export const Route = createFileRoute("/system/splash")({
   ssr: false,
   head: () => ({
     meta: [
-      { title: "Starting Coligo" },
-      { name: "robots", content: "noindex" },
+      { title: "Initializing Coligo" },
+      { name: "robots", content: "noindex, nofollow" },
     ],
     links: [
       // Preload the intro video + poster for instant, flash-free startup.

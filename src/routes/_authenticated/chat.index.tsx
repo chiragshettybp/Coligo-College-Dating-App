@@ -23,6 +23,20 @@ import { usePushNotifications } from "@/lib/use-push";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/_authenticated/chat/")({
+  head: () => ({
+    meta: [
+      { title: "Messages — Coligo Chat" },
+      {
+        name: "description",
+        content: "Chat securely with your verified matches on Coligo. Your privacy is our priority.",
+      },
+      { property: "og:title", content: "Coligo Messages — Secure Campus Chat" },
+      { property: "og:description", content: "Connect and message safely with other verified students." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
+      { name: "robots", content: "noindex, nofollow" },
+    ],
+  }),
   loader: ({ context }) => context.queryClient.ensureQueryData(chatListQuery()),
   pendingComponent: ChatListSkeleton,
   errorComponent: ChatListError,

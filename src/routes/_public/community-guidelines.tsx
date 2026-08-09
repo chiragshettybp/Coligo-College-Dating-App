@@ -25,18 +25,18 @@ import { colors, spacing, radii } from "@/lib/ds";
 export const Route = createFileRoute("/_public/community-guidelines")({
   head: () => ({
     meta: [
-      { title: "Community Guidelines — Coligo" },
+      { title: "Community Guidelines — Coligo Safety Standards" },
       {
         name: "description",
-        content:
-          "How to keep Coligo safe and respectful: our community guidelines on communication, harassment, safety, and reporting.",
+        content: "Read the rules for keeping Coligo a safe, respectful, and authentic community for verified students.",
       },
-      { property: "og:title", content: "Community Guidelines — Coligo" },
+      { property: "og:title", content: "Coligo Community Guidelines" },
       {
         property: "og:description",
-        content: "How to keep Coligo safe and respectful for everyone.",
+        content: "Safety standards for our student community.",
       },
-      { property: "og:type", content: "article" },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
     ],
   }),
   loader: ({ context }) =>

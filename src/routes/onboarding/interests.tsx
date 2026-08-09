@@ -14,7 +14,12 @@ import { Text, Chip, Skeleton } from "@/components/ds/glass";
 import { colors, radii, surfaces, spacing } from "@/lib/ds";
 
 export const Route = createFileRoute("/onboarding/interests")({
-  head: () => ({ meta: [{ title: "Your interests — Coligo" }, { name: "robots", content: "noindex" }] }),
+  head: () => ({
+    meta: [
+      { title: "Your Interests — Coligo Onboarding" },
+      { name: "robots", content: "noindex, nofollow" },
+    ],
+  }),
   component: InterestsStep,
 });
 

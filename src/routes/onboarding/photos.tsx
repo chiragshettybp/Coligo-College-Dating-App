@@ -20,7 +20,12 @@ import { Text } from "@/components/ds/glass";
 import { colors, radii, surfaces, spacing, shadows, gradients } from "@/lib/ds";
 
 export const Route = createFileRoute("/onboarding/photos")({
-  head: () => ({ meta: [{ title: "Your photos — Coligo" }, { name: "robots", content: "noindex" }] }),
+  head: () => ({
+    meta: [
+      { title: "Profile Photos — Coligo Onboarding" },
+      { name: "robots", content: "noindex, nofollow" },
+    ],
+  }),
   component: PhotosStep,
 });
 

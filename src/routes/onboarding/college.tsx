@@ -9,7 +9,12 @@ import { useOnboardingState, useSaveStep } from "@/components/onboarding/useOnbo
 import { collegesQuery } from "@/lib/onboarding.functions";
 
 export const Route = createFileRoute("/onboarding/college")({
-  head: () => ({ meta: [{ title: "Your college — Coligo" }, { name: "robots", content: "noindex" }] }),
+  head: () => ({
+    meta: [
+      { title: "Select Your College — Coligo Onboarding" },
+      { name: "robots", content: "noindex, nofollow" },
+    ],
+  }),
   component: CollegeStep,
 });
 

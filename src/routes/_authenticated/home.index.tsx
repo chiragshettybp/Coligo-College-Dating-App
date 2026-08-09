@@ -55,6 +55,20 @@ import {
 import { EmptyStateFromPreset } from "@/components/ds/empty-state";
 
 export const Route = createFileRoute("/_authenticated/home/")({
+  head: () => ({
+    meta: [
+      { title: "Home — Coligo Dashboard" },
+      {
+        name: "description",
+        content: "Your Coligo home dashboard. View live campus activity, college rankings, and your latest matches.",
+      },
+      { property: "og:title", content: "Coligo Home — Verified Campus Dating" },
+      { property: "og:description", content: "See what's happening on campus and connect with verified students." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
+      { name: "robots", content: "noindex, nofollow" },
+    ],
+  }),
   loader: ({ context }) => context.queryClient.ensureQueryData(homeDashboardQuery()),
   pendingComponent: HomeSkeleton,
   errorComponent: HomeError,
