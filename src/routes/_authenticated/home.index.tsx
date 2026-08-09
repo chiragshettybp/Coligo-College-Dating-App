@@ -463,6 +463,7 @@ function HomeDashboardPage() {
         open={comingSoon != null}
         onClose={() => setComingSoon(null)}
         title={`${comingSoon ?? ""} — coming soon`}
+        background="#ffffff"
       >
         <Text variant="body" tone="secondary" style={{ marginTop: spacing[2] }}>
           The {comingSoon} experience is on its way. It will plug into this dashboard using your

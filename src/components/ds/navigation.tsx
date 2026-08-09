@@ -472,11 +472,13 @@ export function BottomSheet({
   onClose,
   title,
   children,
+  background,
 }: {
   open: boolean;
   onClose: () => void;
   title?: string;
   children: ReactNode;
+  background?: string;
 }) {
   const [drag, setDrag] = useState(0);
   const startY = useRef<number | null>(null);
