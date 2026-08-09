@@ -103,14 +103,14 @@ function ProfilePage() {
               <Avatar
                 src={profile.avatarUrl ?? undefined}
                 initials={name.slice(0, 1).toUpperCase()}
-                size="xl"
+                size="lg"
                 ring
                 verified={profile.verificationStatus === "verified"}
               />
             </span>
             <div style={{ flex: 1, minWidth: 0 }}>
               <div className="flex items-center" style={{ gap: spacing[1] }}>
-                <Text variant="headingMd" truncate style={{ flex: 1, minWidth: 0 }}>
+                <Text variant="headingSm" truncate style={{ flex: 1, minWidth: 0 }}>
                   {name}
                   {profile.age ? `, ${profile.age}` : ""}
                 </Text>
@@ -150,20 +150,22 @@ function ProfilePage() {
             )}
           </div>
 
-          <div className="flex items-center" style={{ gap: spacing[2], marginTop: spacing[4] }}>
+          <div className="flex items-center" style={{ gap: spacing[2], marginTop: spacing[3] }}>
             <Button
               variant="primary"
               fullWidth
+              size="sm"
               onClick={() => navigate({ to: "/profile/edit" })}
-              leftIcon={<Pencil style={{ width: 16, height: 16 }} />}
+              leftIcon={<Pencil style={{ width: 14, height: 14 }} />}
             >
               Edit
             </Button>
             <Button
               variant="glass"
               fullWidth
+              size="sm"
               onClick={() => navigate({ to: "/profile/preview" })}
-              leftIcon={<Eye style={{ width: 16, height: 16 }} />}
+              leftIcon={<Eye style={{ width: 14, height: 14 }} />}
             >
               Preview
             </Button>
@@ -298,11 +300,11 @@ function ProfilePage() {
       )}
 
       {/* Quick links */}
-      <div className="flex items-center" style={{ gap: spacing[2], marginTop: spacing[5] }}>
-        <Button variant="glass" fullWidth onClick={() => navigate({ to: "/profile/bio" })}>
+      <div className="flex items-center" style={{ gap: spacing[2], marginTop: spacing[4] }}>
+        <Button variant="glass" fullWidth size="sm" onClick={() => navigate({ to: "/profile/bio" })}>
           Edit bio
         </Button>
-        <Button variant="glass" fullWidth onClick={() => navigate({ to: "/profile/preferences" })}>
+        <Button variant="glass" fullWidth size="sm" onClick={() => navigate({ to: "/profile/preferences" })}>
           Preferences
         </Button>
       </div>
