@@ -681,6 +681,8 @@ export function Avatar({
   ring = false,
   verified = false,
   initials,
+  className,
+  style,
 }: {
   src?: string;
   alt?: string;
