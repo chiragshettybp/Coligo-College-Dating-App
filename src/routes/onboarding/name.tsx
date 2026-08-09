@@ -8,7 +8,12 @@ import { nameSchema, LIMITS } from "@/lib/onboarding";
 import { colors, radii, surfaces } from "@/lib/ds";
 
 export const Route = createFileRoute("/onboarding/name")({
-  head: () => ({ meta: [{ title: "Your name — Coligo" }, { name: "robots", content: "noindex" }] }),
+  head: () => ({
+    meta: [
+      { title: "Your Name — Coligo Onboarding" },
+      { name: "robots", content: "noindex, nofollow" },
+    ],
+  }),
   component: NameStep,
 });
 

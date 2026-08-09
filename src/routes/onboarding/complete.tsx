@@ -11,7 +11,12 @@ import { colors, spacing, radii, gradients } from "@/lib/ds";
 import { haptic } from "@/lib/haptics";
 
 export const Route = createFileRoute("/onboarding/complete")({
-  head: () => ({ meta: [{ title: "You're all set — Coligo" }, { name: "robots", content: "noindex" }] }),
+  head: () => ({
+    meta: [
+      { title: "Onboarding Complete — Welcome to Coligo" },
+      { name: "robots", content: "noindex, nofollow" },
+    ],
+  }),
   component: CompleteStep,
 });
 

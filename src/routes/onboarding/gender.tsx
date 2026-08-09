@@ -8,7 +8,12 @@ import { useOnboardingState, useSaveStep } from "@/components/onboarding/useOnbo
 import { GENDER_OPTIONS } from "@/lib/onboarding";
 
 export const Route = createFileRoute("/onboarding/gender")({
-  head: () => ({ meta: [{ title: "Your gender — Coligo" }, { name: "robots", content: "noindex" }] }),
+  head: () => ({
+    meta: [
+      { title: "Identify Yourself — Coligo Onboarding" },
+      { name: "robots", content: "noindex, nofollow" },
+    ],
+  }),
   component: GenderStep,
 });
 
