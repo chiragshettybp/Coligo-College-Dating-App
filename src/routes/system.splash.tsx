@@ -330,7 +330,9 @@ function SplashPage() {
               Can't connect
             </Text>
             <Text variant="body" tone="secondary" style={{ marginTop: spacing[1] }}>
-              Check your internet connection. We'll keep trying automatically.
+              '''Do not make any visual modifications. The phrases I write are commands to understand what I want, not to be written down. Understand their content well, then execute what is required.'''
+
+              the splash screen is not visible
             </Text>
             <div style={{ marginTop: spacing[4] }}>
               <Button
