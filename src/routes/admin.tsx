@@ -9,6 +9,12 @@ import { AdminShell } from "@/components/admin/admin-shell";
 import { APP_BACKGROUND, FONT_FAMILY, colors, spacing } from "@/lib/ds";
 
 export const Route = createFileRoute("/admin")({
+  head: () => ({
+    meta: [
+      { title: "Coligo Administration" },
+      { name: "robots", content: "noindex, nofollow" },
+    ],
+  }),
   component: AdminLayout,
   errorComponent: AdminError,
 });

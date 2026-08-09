@@ -34,6 +34,12 @@ import {
 } from "@/components/notifications/notification-visuals";
 
 export const Route = createFileRoute("/_authenticated/notifications/")({
+  head: () => ({
+    meta: [
+      { title: "Notifications — Coligo" },
+      { name: "robots", content: "noindex, nofollow" },
+    ],
+  }),
   loader: async ({ context }) => {
     await Promise.all([
       context.queryClient.ensureQueryData(notificationsQuery()),

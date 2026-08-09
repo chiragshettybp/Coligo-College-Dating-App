@@ -25,7 +25,12 @@ import { TopBar } from "@/components/ds/navigation";
 import { DiscoverShell } from "@/components/discover/shell";
 
 export const Route = createFileRoute("/_authenticated/profile/edit")({
-  head: () => ({ meta: [{ title: "Edit profile — Coligo" }, { name: "robots", content: "noindex" }] }),
+  head: () => ({
+    meta: [
+      { title: "Edit Your Profile — Coligo" },
+      { name: "robots", content: "noindex, nofollow" },
+    ],
+  }),
   loader: ({ context }) => {
     context.queryClient.ensureQueryData(fullProfileQuery());
     context.queryClient.ensureQueryData(collegesQuery());

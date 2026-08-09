@@ -22,7 +22,12 @@ import { TopBar } from "@/components/ds/navigation";
 import { DiscoverShell } from "@/components/discover/shell";
 
 export const Route = createFileRoute("/_authenticated/profile/bio")({
-  head: () => ({ meta: [{ title: "Edit bio — Coligo" }, { name: "robots", content: "noindex" }] }),
+  head: () => ({
+    meta: [
+      { title: "Update Your Bio — Coligo" },
+      { name: "robots", content: "noindex, nofollow" },
+    ],
+  }),
   loader: ({ context }) => context.queryClient.ensureQueryData(fullProfileQuery()),
   pendingComponent: BioSkeleton,
   errorComponent: BioError,
