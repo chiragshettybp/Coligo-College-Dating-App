@@ -137,7 +137,6 @@ export function PublicNav() {
             </span>
           </div>
           <Link to="/auth/login" style={{ textDecoration: "none" }}>
-          <Link to="/auth/login" style={{ textDecoration: "none" }}>
             <Button variant="ghost" size="sm">
               Log in
             </Button>
