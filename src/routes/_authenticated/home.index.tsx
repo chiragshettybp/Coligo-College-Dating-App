@@ -440,7 +440,7 @@ function HomeDashboardPage() {
       </div>
 
       {/* Announcement detail */}
-      <BottomSheet open={openAnn != null} onClose={() => setOpenAnn(null)} title={openAnn?.title}>
+      <BottomSheet open={openAnn != null} onClose={() => setOpenAnn(null)} title={openAnn?.title} background="#ffffff">
         <Text
           variant="body"
           tone="secondary"
