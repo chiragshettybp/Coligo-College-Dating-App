@@ -202,7 +202,7 @@ function HomeDashboardPage() {
           >
             <div style={{ position: "relative" }}>
               <Avatar
-                src={chiragAvatar.url}
+                src={data.profile.avatarUrl ?? undefined}
                 initials={(data.profile.firstName ?? "U").slice(0, 1).toUpperCase()}
                 size="md"
                 ring
@@ -226,7 +226,7 @@ function HomeDashboardPage() {
               </Text>
               <div style={{ display: "flex", alignItems: "center", gap: spacing[1] }}>
                 <Text variant="headingSm" color={colors.textPrimary}>
-                  Chirag
+                  {data.profile.firstName}
                 </Text>
                 <div 
                   style={{ 
