@@ -118,22 +118,24 @@ export function PublicNav() {
 
         {/* Desktop CTAs */}
         <div className="hidden items-center md:flex" style={{ gap: spacing[2] }}>
-          <div className="flex items-center" style={{ gap: spacing[1], marginRight: spacing[2] }}>
-            <img 
-              src={chiragAvatar.url}
-              alt="Chirag"
-              style={{ 
-                width: 32, 
-                height: 32, 
-                borderRadius: "50%", 
-                objectFit: "cover",
-                border: `2px solid ${colors.success}`
-              }}
-            />
-            <span style={{ fontSize: 15, fontWeight: 600, color: colors.textPrimary }}>
-              Chirag
-            </span>
-          </div>
+          {pathname === "/" && (
+            <div className="flex items-center" style={{ gap: spacing[1], marginRight: spacing[2] }}>
+              <img 
+                src={chiragAvatar.url}
+                alt="Chirag"
+                style={{ 
+                  width: 32, 
+                  height: 32, 
+                  borderRadius: "50%", 
+                  objectFit: "cover",
+                  border: `2px solid ${colors.success}`
+                }}
+              />
+              <span style={{ fontSize: 15, fontWeight: 600, color: colors.textPrimary }}>
+                Chirag
+              </span>
+            </div>
+          )}
           <Link to="/auth/login" style={{ textDecoration: "none" }}>
             <Button variant="ghost" size="sm">
               Log in
