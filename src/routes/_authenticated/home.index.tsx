@@ -199,18 +199,32 @@ function HomeDashboardPage() {
             style={{ gap: spacing[2], background: "transparent" }}
             aria-label="Open profile"
           >
-            <Avatar
-              src={data.profile.avatarUrl ?? undefined}
-              initials={(data.profile.firstName ?? "U").slice(0, 1).toUpperCase()}
-              size="md"
-              ring
-            />
+            <div style={{ position: "relative" }}>
+              <Avatar
+                src={data.profile.avatarUrl ?? undefined}
+                initials={(data.profile.firstName ?? "U").slice(0, 1).toUpperCase()}
+                size="md"
+                ring
+              />
+              <div
+                style={{
+                  position: "absolute",
+                  bottom: -2,
+                  right: -2,
+                  width: 14,
+                  height: 14,
+                  borderRadius: "50%",
+                  background: colors.success,
+                  border: `2px solid ${APP_BACKGROUND}`,
+                }}
+              />
+            </div>
             <div style={{ textAlign: "left" }}>
               <Text variant="caption" tone="muted">
                 {greeting()}
               </Text>
               <Text variant="headingSm" color={colors.textPrimary}>
-                {data.profile.firstName ?? "there"} 👋
+                Chirag 👋
               </Text>
             </div>
           </button>
