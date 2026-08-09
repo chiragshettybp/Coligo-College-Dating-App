@@ -736,8 +736,8 @@ export function Avatar({
 
   return (
     <div
-      className={`relative inline-block ${ring ? "ds-halo" : ""}`}
-      style={{ width: px, height: px }}
+      className={cn("relative inline-block", ring && "ds-halo", className)}
+      style={{ width: px, height: px, ...style }}
     >
       {ring && (
         <>
