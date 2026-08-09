@@ -475,7 +475,7 @@ function HomeDashboardPage() {
             <Avatar 
               src={chiragAvatar.url} 
               size="xs" 
-              style={{ border: `1px solid ${surfaces.border}` }}
+              className="border border-white/10"
             />
             <Text variant="caption" tone="muted">
               Built by
