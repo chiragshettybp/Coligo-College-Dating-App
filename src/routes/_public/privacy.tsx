@@ -13,18 +13,18 @@ import { spacing } from "@/lib/ds";
 export const Route = createFileRoute("/_public/privacy")({
   head: () => ({
     meta: [
-      { title: "Privacy Policy — Coligo" },
+      { title: "Privacy Policy — How Coligo Protects Your Data" },
       {
         name: "description",
-        content:
-          "Read how Coligo collects, uses, and protects your data. Privacy-first by design for verified college students.",
+        content: "Your privacy is our priority. Learn how Coligo secures student data and manages your personal information.",
       },
-      { property: "og:title", content: "Privacy Policy — Coligo" },
+      { property: "og:title", content: "Coligo Privacy Policy" },
       {
         property: "og:description",
-        content: "How Coligo collects, uses, and protects your personal data.",
+        content: "Learn how we protect and manage your verified student data.",
       },
-      { property: "og:type", content: "article" },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
     ],
   }),
   loader: ({ context }) => context.queryClient.ensureQueryData(legalDocumentQuery("privacy")),

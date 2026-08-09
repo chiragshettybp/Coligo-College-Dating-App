@@ -22,7 +22,12 @@ import { PhotoCarousel } from "@/components/ds/swipe";
 import { DiscoverShell } from "@/components/discover/shell";
 
 export const Route = createFileRoute("/_authenticated/profile/preview")({
-  head: () => ({ meta: [{ title: "Preview profile — Coligo" }, { name: "robots", content: "noindex" }] }),
+  head: () => ({
+    meta: [
+      { title: "Profile Preview — Coligo" },
+      { name: "robots", content: "noindex, nofollow" },
+    ],
+  }),
   loader: ({ context }) => {
     context.queryClient.ensureQueryData(fullProfileQuery());
     context.queryClient.ensureQueryData(profileGalleryQuery());

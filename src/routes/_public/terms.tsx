@@ -13,18 +13,18 @@ import { spacing } from "@/lib/ds";
 export const Route = createFileRoute("/_public/terms")({
   head: () => ({
     meta: [
-      { title: "Terms & Conditions — Coligo" },
+      { title: "Terms & Conditions — Coligo Service Agreement" },
       {
         name: "description",
-        content:
-          "The terms of service for using Coligo, the verified dating app for college students in India.",
+        content: "Review the terms and conditions for using Coligo. We ensure a safe and verified dating experience for college students.",
       },
-      { property: "og:title", content: "Terms & Conditions — Coligo" },
+      { property: "og:title", content: "Coligo Terms & Conditions" },
       {
         property: "og:description",
-        content: "The terms of service for using Coligo.",
+        content: "Our service agreement for verified college students.",
       },
-      { property: "og:type", content: "article" },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
     ],
   }),
   loader: ({ context }) => context.queryClient.ensureQueryData(legalDocumentQuery("terms")),

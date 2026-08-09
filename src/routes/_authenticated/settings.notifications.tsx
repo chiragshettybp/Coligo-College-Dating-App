@@ -23,7 +23,10 @@ import { DiscoverShell } from "@/components/discover/shell";
 
 export const Route = createFileRoute("/_authenticated/settings/notifications")({
   head: () => ({
-    meta: [{ title: "Notifications — Coligo" }, { name: "robots", content: "noindex" }],
+    meta: [
+      { title: "Notification Settings — Coligo" },
+      { name: "robots", content: "noindex, nofollow" },
+    ],
   }),
   loader: ({ context }) => context.queryClient.ensureQueryData(notificationPreferencesQuery()),
   pendingComponent: NotifSkeleton,

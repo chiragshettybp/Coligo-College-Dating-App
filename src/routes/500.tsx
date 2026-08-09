@@ -9,8 +9,8 @@ export const Route = createFileRoute("/500")({
   ssr: false,
   head: () => ({
     meta: [
-      { title: "Something went wrong — Coligo" },
-      { name: "robots", content: "noindex" },
+      { title: "Internal Server Error — Coligo" },
+      { name: "robots", content: "noindex, nofollow" },
     ],
   }),
   component: () => <ServerErrorView />,
