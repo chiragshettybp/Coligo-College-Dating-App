@@ -84,8 +84,11 @@ const SORTS: { value: MatchSort; label: string }[] = [
 export const Route = createFileRoute("/admin/matches/")({
   head: () => ({
     meta: [
-      { title: "Match Management — Coligo admin" },
+      { title: "Match Management — Coligo Admin" },
       { name: "robots", content: "noindex, nofollow" },
+      { property: "og:title", content: "Match Management — Coligo Admin" },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
     ],
   }),
   validateSearch: (s: Record<string, unknown>): Search => ({
