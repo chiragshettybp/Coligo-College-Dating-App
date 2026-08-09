@@ -116,7 +116,27 @@ export function PublicNav() {
         </ul>
 
         {/* Desktop CTAs */}
-        <div className="hidden items-center md:flex" style={{ gap: spacing[1] }}>
+        <div className="hidden items-center md:flex" style={{ gap: spacing[2] }}>
+          <div className="flex items-center" style={{ gap: spacing[1], marginRight: spacing[2] }}>
+            <div 
+              style={{ 
+                width: 32, 
+                height: 32, 
+                borderRadius: "50%", 
+                background: colors.success,
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                fontSize: 16
+              }}
+            >
+              👤
+            </div>
+            <span style={{ fontSize: 15, fontWeight: 600, color: colors.textPrimary }}>
+              Chirag
+            </span>
+          </div>
+          <Link to="/auth/login" style={{ textDecoration: "none" }}>
           <Link to="/auth/login" style={{ textDecoration: "none" }}>
             <Button variant="ghost" size="sm">
               Log in
