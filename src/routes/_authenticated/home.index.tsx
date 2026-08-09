@@ -413,14 +413,13 @@ function HomeDashboardPage() {
       {/* Bottom navigation */}
       <div
         style={{
-          position: "sticky",
-          bottom: 0,
+          position: "fixed",
           left: 0,
           right: 0,
+          bottom: 0,
           padding: `0 ${spacing[4]}px ${spacing[3]}px`,
           zIndex: 30,
           pointerEvents: "none",
-          marginTop: "auto",
         }}
       >
         <div style={{ maxWidth: 560, margin: "0 auto", pointerEvents: "auto" }}>
