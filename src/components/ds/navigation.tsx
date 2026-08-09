@@ -547,7 +547,7 @@ export function BottomSheet({
           overflowY: "auto",
           padding: `${spacing[2]}px ${spacing[4]}px ${spacing[5]}px`,
           borderRadius: `${radii.xl}px ${radii.xl}px 0 0`,
-          background: surfaces.glassSoft,
+          background: background || surfaces.glassSoft,
           border: `1px solid ${surfaces.borderSoft}`,
           boxShadow: shadows.large,
           transform: open
