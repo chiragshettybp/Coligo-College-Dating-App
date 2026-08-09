@@ -59,8 +59,10 @@ const I = { width: 16, height: 16 } as const;
 export const Route = createFileRoute("/admin/dashboard")({
   head: () => ({
     meta: [
-      { title: "Admin dashboard — Coligo" },
+      { title: "Dashboard — Coligo Control Center" },
       { name: "robots", content: "noindex, nofollow" },
+      { property: "og:title", content: "Admin Dashboard — Coligo" },
+      { property: "og:type", content: "website" },
     ],
   }),
   component: AdminDashboardGuard,

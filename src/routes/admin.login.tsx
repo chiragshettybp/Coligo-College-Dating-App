@@ -42,8 +42,10 @@ function clearAttempts() {
 export const Route = createFileRoute("/admin/login")({
   head: () => ({
     meta: [
-      { title: "Admin sign in — Coligo" },
+      { title: "Admin Login — Coligo Access Control" },
       { name: "robots", content: "noindex, nofollow" },
+      { property: "og:title", content: "Admin Login — Coligo" },
+      { property: "og:type", content: "website" },
     ],
   }),
   component: AdminLogin,

@@ -16,8 +16,14 @@ import { haptic } from "@/lib/haptics";
 export const Route = createFileRoute("/auth/login")({
   head: () => ({
     meta: [
-      { title: "Sign in — Coligo" },
-      { name: "description", content: "Sign in to Coligo to connect with verified college students." },
+      { title: "Sign in to Coligo — Verified Student Dating" },
+      {
+        name: "description",
+        content: "Log in to your Coligo account to connect with verified students from your campus.",
+      },
+      { property: "og:title", content: "Sign in to Coligo" },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
     ],
   }),
   component: LoginPage,
