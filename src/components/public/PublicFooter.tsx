@@ -160,9 +160,29 @@ export function PublicFooter() {
             borderTop: `1px solid ${surfaces.borderSoft}`,
           }}
         >
-          <Text variant="caption" tone="muted">
-            © {year} Coligo. All rights reserved. Made for verified college students in India.
-          </Text>
+          <div className="flex flex-wrap items-center justify-between" style={{ gap: spacing[2] }}>
+            <Text variant="caption" tone="muted">
+              © {year} Coligo. All rights reserved. Made for verified college students in India.
+            </Text>
+            <a
+              href="https://chiragbp-doc.lovable.app/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="ds-press inline-flex items-center"
+              style={{ 
+                gap: spacing[0], 
+                textDecoration: "none",
+                background: "transparent"
+              }}
+            >
+              <Text variant="caption" tone="muted">
+                Built by
+              </Text>
+              <Text variant="caption" color={colors.primary} style={{ fontWeight: 600, marginLeft: 4 }}>
+                Chirag
+              </Text>
+            </a>
+          </div>
         </div>
       </div>
     </footer>
