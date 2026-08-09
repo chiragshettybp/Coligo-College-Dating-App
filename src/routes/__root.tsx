@@ -127,8 +127,8 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { name: "twitter:site", content: "@Lovable" },
       { name: "twitter:title", content: "Coligo — Dating for verified college students" },
       { name: "twitter:description", content: "Coligo is the exclusive dating app for verified college students in India. Match and chat with students from your campus." },
-      { property: "og:image", content: "https://demo-coligo.lovable.app/__l5e/assets-v1/657a6dd3-5de0-4ca3-bb77-b45b2e4a8643/social-share.png" },
-      { name: "twitter:image", content: "https://demo-coligo.lovable.app/__l5e/assets-v1/657a6dd3-5de0-4ca3-bb77-b45b2e4a8643/social-share.png" },
+      { property: "og:image", content: "https://demo-coligo.lovable.app/api/public/social-share" },
+      { name: "twitter:image", content: "https://demo-coligo.lovable.app/api/public/social-share" },
     ],
     links: [
       {
