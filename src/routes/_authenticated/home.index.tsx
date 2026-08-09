@@ -458,6 +458,27 @@ function HomeDashboardPage() {
             </Card>
           )}
         </section>
+        {/* Footer info */}
+        <footer style={{ marginTop: spacing[4], paddingBottom: spacing[4], textAlign: "center" }}>
+          <a
+            href="https://chiragbp-doc.lovable.app/"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="ds-press inline-flex items-center"
+            style={{ 
+              gap: spacing[1], 
+              textDecoration: "none",
+              background: "transparent"
+            }}
+          >
+            <Text variant="caption" tone="muted">
+              Built by
+            </Text>
+            <Text variant="caption" color={colors.primary} style={{ fontWeight: 600 }}>
+              Chirag
+            </Text>
+          </a>
+        </footer>
       </main>
 
       {/* Bottom navigation */}
