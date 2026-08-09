@@ -40,6 +40,8 @@ export const Route = createFileRoute("/_public/")({
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
+      { property: "og:image", content: "https://demo-coligo.lovable.app/__l5e/assets-v1/657a6dd3-5de0-4ca3-bb77-b45b2e4a8643/social-share.png" },
+      { name: "twitter:image", content: "https://demo-coligo.lovable.app/__l5e/assets-v1/657a6dd3-5de0-4ca3-bb77-b45b2e4a8643/social-share.png" },
     ],
   }),
   loader: ({ context }) => {
