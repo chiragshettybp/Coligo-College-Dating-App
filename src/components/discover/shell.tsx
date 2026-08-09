@@ -42,12 +42,15 @@ export function DiscoverShell({
   return (
     <div
       style={{
-        minHeight: "100vh",
+        height: "100vh",
+        overflow: "hidden",
+        display: "flex",
+        flexDirection: "column",
         background: APP_BACKGROUND,
-        backgroundAttachment: "fixed",
         fontFamily: FONT_FAMILY,
       }}
     >
+      <div style={{ flex: 1, overflowY: "auto", WebkitOverflowScrolling: "touch" }}>
       <main
         style={{
           maxWidth,
@@ -59,7 +62,8 @@ export function DiscoverShell({
         }}
       >
         {children}
-      </main>
+        </main>
+      </div>
 
       <div
         style={{
