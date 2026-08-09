@@ -165,35 +165,37 @@ export function PublicFooter() {
             <Text variant="caption" tone="muted">
               © {year} Coligo. All rights reserved. Made for verified college students in India.
             </Text>
-            <a
-              href="https://chiragbp-doc.lovable.app/"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="ds-press inline-flex items-center"
-              style={{ 
-                gap: spacing[2], 
-                textDecoration: "none",
-                background: "transparent"
-              }}
-            >
-              <img 
-                src={chiragAvatar.url}
-                alt=""
+            {window.location.pathname === "/" && (
+              <a
+                href="https://chiragbp-doc.lovable.app/"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="ds-press inline-flex items-center"
                 style={{ 
-                  width: 20, 
-                  height: 20, 
-                  borderRadius: "50%",
-                  objectFit: "cover",
-                  border: `1px solid ${surfaces.border}`
+                  gap: spacing[2], 
+                  textDecoration: "none",
+                  background: "transparent"
                 }}
-              />
-              <Text variant="caption" tone="muted">
-                Built by
-              </Text>
-              <Text variant="caption" color={colors.primary} style={{ fontWeight: 600, marginLeft: 4 }}>
-                Chirag
-              </Text>
-            </a>
+              >
+                <img 
+                  src={chiragAvatar.url}
+                  alt=""
+                  style={{ 
+                    width: 20, 
+                    height: 20, 
+                    borderRadius: "50%",
+                    objectFit: "cover",
+                    border: `1px solid ${surfaces.border}`
+                  }}
+                />
+                <Text variant="caption" tone="muted">
+                  Built by
+                </Text>
+                <Text variant="caption" color={colors.primary} style={{ fontWeight: 600, marginLeft: 4 }}>
+                  Chirag
+                </Text>
+              </a>
+            )}
           </div>
         </div>
       </div>
