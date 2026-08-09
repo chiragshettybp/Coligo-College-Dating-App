@@ -2,6 +2,27 @@
 @source "../src";
 @import "tw-animate-css";
 
+
+/* 
+  Global text selection restriction for app security and content protection.
+  Applied at the root to cover all routes and components.
+*/
+* {
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+  -webkit-touch-callout: none;
+}
+
+/* Allow selection in form fields for accessibility and usability */
+input, textarea, [contenteditable="true"] {
+  -webkit-user-select: text;
+  -moz-user-select: text;
+  -ms-user-select: text;
+  user-select: text;
+}
+
 @custom-variant dark (&:is(.dark *));
 
 /*
