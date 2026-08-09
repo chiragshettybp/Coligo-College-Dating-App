@@ -689,6 +689,8 @@ export function Avatar({
   ring?: boolean;
   verified?: boolean;
   initials?: string;
+  className?: string;
+  style?: React.CSSProperties;
 }) {
   const px = avatarSizes[size];
   const ringW = Math.max(2, Math.round(px * 0.05));
