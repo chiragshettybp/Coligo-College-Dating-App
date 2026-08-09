@@ -681,6 +681,8 @@ export function Avatar({
   ring = false,
   verified = false,
   initials,
+  className,
+  style,
 }: {
   src?: string;
   alt?: string;
@@ -689,6 +691,8 @@ export function Avatar({
   ring?: boolean;
   verified?: boolean;
   initials?: string;
+  className?: string;
+  style?: React.CSSProperties;
 }) {
   const px = avatarSizes[size];
   const ringW = Math.max(2, Math.round(px * 0.05));
@@ -734,8 +738,8 @@ export function Avatar({
 
   return (
     <div
-      className={`relative inline-block ${ring ? "ds-halo" : ""}`}
-      style={{ width: px, height: px }}
+      className={cn("relative inline-block", ring && "ds-halo", className)}
+      style={{ width: px, height: px, ...style }}
     >
       {ring && (
         <>
