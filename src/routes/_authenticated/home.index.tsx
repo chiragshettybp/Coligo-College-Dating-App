@@ -44,6 +44,7 @@ import {
   surfaces,
 } from "@/lib/ds";
 import { Text, Avatar, Button, Badge, Skeleton } from "@/components/ds/glass";
+import chiragAvatar from "@/assets/chirag-avatar.png.asset.json";
 import { Card, CardHeader, StatCard } from "@/components/ds/card";
 import {
   BottomNav,
@@ -201,7 +202,7 @@ function HomeDashboardPage() {
           >
             <div style={{ position: "relative" }}>
               <Avatar
-                src={data.profile.avatarUrl ?? undefined}
+                src={chiragAvatar.url}
                 initials={(data.profile.firstName ?? "U").slice(0, 1).toUpperCase()}
                 size="md"
                 ring
@@ -466,11 +467,16 @@ function HomeDashboardPage() {
             rel="noopener noreferrer"
             className="ds-press inline-flex items-center"
             style={{ 
-              gap: spacing[1], 
+              gap: spacing[2], 
               textDecoration: "none",
               background: "transparent"
             }}
           >
+            <Avatar 
+              src={chiragAvatar.url} 
+              size="xs" 
+              style={{ border: `1px solid ${surfaces.border}` }}
+            />
             <Text variant="caption" tone="muted">
               Built by
             </Text>

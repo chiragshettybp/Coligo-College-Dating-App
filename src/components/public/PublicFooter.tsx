@@ -4,6 +4,7 @@ import { Mail, Instagram, Twitter, Linkedin } from "lucide-react";
 import { Text } from "@/components/ds/glass";
 import { BrandLogo } from "@/components/brand/BrandLogo";
 import { colors, radii, spacing, surfaces } from "@/lib/ds";
+import chiragAvatar from "@/assets/chirag-avatar.png.asset.json";
 
 const LEGAL_LINKS = [
   { to: "/privacy", label: "Privacy Policy" },
@@ -170,11 +171,22 @@ export function PublicFooter() {
               rel="noopener noreferrer"
               className="ds-press inline-flex items-center"
               style={{ 
-                gap: spacing[0], 
+                gap: spacing[2], 
                 textDecoration: "none",
                 background: "transparent"
               }}
             >
+              <img 
+                src={chiragAvatar.url}
+                alt=""
+                style={{ 
+                  width: 20, 
+                  height: 20, 
+                  borderRadius: "50%",
+                  objectFit: "cover",
+                  border: `1px solid ${surfaces.border}`
+                }}
+              />
               <Text variant="caption" tone="muted">
                 Built by
               </Text>

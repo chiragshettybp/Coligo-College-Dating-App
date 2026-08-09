@@ -5,6 +5,7 @@ import { Menu, X } from "lucide-react";
 import { Button } from "@/components/ds/glass";
 import { BrandLogo as BrandMark } from "@/components/brand/BrandLogo";
 import { colors, radii, spacing, surfaces, shadows } from "@/lib/ds";
+import chiragAvatar from "@/assets/chirag-avatar.png.asset.json";
 import { easing, durationMs } from "@/lib/motion";
 import { haptic } from "@/lib/haptics";
 
@@ -118,20 +119,17 @@ export function PublicNav() {
         {/* Desktop CTAs */}
         <div className="hidden items-center md:flex" style={{ gap: spacing[2] }}>
           <div className="flex items-center" style={{ gap: spacing[1], marginRight: spacing[2] }}>
-            <div 
+            <img 
+              src={chiragAvatar.url}
+              alt="Chirag"
               style={{ 
                 width: 32, 
                 height: 32, 
                 borderRadius: "50%", 
-                background: colors.success,
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                fontSize: 16
+                objectFit: "cover",
+                border: `2px solid ${colors.success}`
               }}
-            >
-              👤
-            </div>
+            />
             <span style={{ fontSize: 15, fontWeight: 600, color: colors.textPrimary }}>
               Chirag
             </span>
